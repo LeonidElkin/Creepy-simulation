@@ -30,3 +30,35 @@
 *.exe
 *.out
 *.app
+
+### CMake ###
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+CMakePresets.json
+CTestTestfile.cmake
+cmake_*
+cmake-*
+Testing
+
+### BUILD ###
+Makefile
+build
+compile_commands.json
+
+### IDE ###
+.vscode
+.cache
+.idea
+
+### VCPKG ###
+vcpkg-configuration.json
+vcpkg_installed
+
+### Doxygen ###
+/html/
+
+### OTHER ###
+_deps
+install_manifest.txt

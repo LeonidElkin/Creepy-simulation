@@ -1,0 +1,14 @@
+{
+  "dependencies": [
+    "glog",
+    "python3"
+  ],
+  "features": {
+    "tests": {
+      "description": "testing Creepy-simulation",
+      "dependencies": [
+        "gtest"
+      ]
+    }
+  }
+}
