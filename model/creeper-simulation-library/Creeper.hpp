@@ -2,14 +2,16 @@
 #define CREEPY_SIMULATION_CREEPER_HPP
 
 class Creeper {
-	double x_;
-	double y_;
-	enum class State;
-	State state_;
+    double x_;
+    double y_;
+    enum class State;
+    State state_;
 public:
-	void updatePositions();
+    void updatePositions();
 
-	explicit Creeper(double x, double y);
+    Creeper() = default;
+
+    explicit Creeper(double x, double y);
 };
 
 
