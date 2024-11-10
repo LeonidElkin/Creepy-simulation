@@ -14,6 +14,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+add_subdirectory(model)
+
 # Sanitizers for Debug build
 include(cmake/sanitizers.cmake)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
