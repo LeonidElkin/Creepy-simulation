@@ -14,6 +14,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+# Compiler check up
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14.0)
+        message(FATAL_ERROR "GCC version 14.0 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
+    endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18.0)
+        message(FATAL_ERROR "Clang version 18.0 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
+    endif ()
+else()
+    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+endif()
+
 add_subdirectory(model)
 
 # Sanitizers for Debug build
