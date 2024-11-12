@@ -1,18 +1,34 @@
 #ifndef CREEPY_SIMULATION_CREEPER_HPP
 #define CREEPY_SIMULATION_CREEPER_HPP
 
+#include <cstdint>
+#include <functional>
+#include <utility>
+#include <vector>
+
+struct Point {
+    double x;
+    double y;
+};
+
 class Creeper {
-    double x_;
-    double y_;
-    enum class State;
-    State state_;
+    Point coord_;
+    std::function<Point()> posGenerator_;
+    enum class State : std::uint8_t { Born,
+                                      Walk,
+                                      Hissing,
+                                      Explodes } state_;
+
 public:
+    void walk();
+
+    Creeper::State updateState(Creeper const &another, const std::function<double(Point, Point)> &distanceFun, double explodeRadius);
+
+    explicit Creeper(decltype(posGenerator_) posGenerator);
+
+protected:
     void updatePositions();
-
-    Creeper() = default;
-
-    explicit Creeper(double x, double y);
 };
 
 
-#endif //CREEPY_SIMULATION_CREEPER_HPP
+#endif//CREEPY_SIMULATION_CREEPER_HPP
