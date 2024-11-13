@@ -7,4 +7,4 @@ def update_config(nums: int, thao: float, radius: float):
 
 
 def new_states(nums: int):
-    return [(randint(10, 700), randint(10, 700)) for _ in range(nums)]
+    return [(randint(0, 1920), randint(0, 1080)) for _ in range(nums)]
