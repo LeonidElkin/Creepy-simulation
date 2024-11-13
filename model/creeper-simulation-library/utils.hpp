@@ -8,10 +8,6 @@ struct Point {
   double y;
 };
 
-auto &getRandom() {
-  static auto rd = std::random_device();
-  static auto gen = std::mt19937(rd());
-  return gen;
-}
+std::mt19937& getRandom();
 
 #endif  // CREEPY_SIMULATION_UTILS_HPP

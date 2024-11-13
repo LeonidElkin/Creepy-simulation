@@ -20,6 +20,7 @@ Field::Field(Point size, double r0, size_t creepersNum)
       leftDownBound_(-size.x / 2, -size.y / 2),
       rightUpBound_(size.x / 2, size.y / 2),
       r_0_(r0) {
+  // TODO: negative size error
   creepers_ =
       std::views::repeat([this] -> Point {
         static auto x_dist =

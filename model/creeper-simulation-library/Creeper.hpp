@@ -6,7 +6,7 @@
 #include <utility>
 #include <vector>
 
-#include "Utils.hpp"
+#include "utils.hpp"
 
 class Creeper {
  public:
@@ -18,6 +18,9 @@ class Creeper {
   State state_ = State::Born;
 
  public:
+  auto getState() { return state_; }
+  auto getCoord() { return coord_; }
+
   void rebornTheDead();
 
   void walk();

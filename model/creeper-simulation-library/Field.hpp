@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Creeper.hpp"
-#include "Utils.hpp"
+#include "utils.hpp"
 
 class Field {
   Point size_;
@@ -21,6 +21,8 @@ class Field {
   auto shuffleCreepers();
 
  public:
+  auto const& getCreepers() { return creepers_; }
+
   void updateField();
 
   explicit Field(Point size, double r0, size_t creepersNum);
