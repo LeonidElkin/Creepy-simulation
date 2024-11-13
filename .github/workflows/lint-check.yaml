@@ -16,6 +16,7 @@ jobs:
         run: |
           pip install ttkbootstrap
           pip install black
+          pip install pre-commit
 
       - name: Lint with black
         run: black . --check --diff --color
