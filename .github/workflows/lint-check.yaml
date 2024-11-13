@@ -1,0 +1,26 @@
+name: Check code
+
+on: [ push, pull_request ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      - name: Install dependencies
+        run: |
+          pip install ttkbootstrap
+          pip install black
+
+      - name: Lint with black
+        run: black . --check --diff --color
+
+      - name: Install pre-commit
+        run: |
+          pre-commit install
+          pre-commit run --all-files --color always --verbose --show-diff-on-failure
