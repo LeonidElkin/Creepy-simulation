@@ -3,7 +3,7 @@ name: Check code
 on: [ push, pull_request ]
 
 jobs:
-  test:
+  check:
     runs-on: ubuntu-latest
 
     steps:
@@ -16,12 +16,6 @@ jobs:
         run: |
           pip install ttkbootstrap
           pip install black
-          pip install pre-commit
 
       - name: Lint with black
         run: black . --check --diff --color
-
-      - name: Install pre-commit
-        run: |
-          pre-commit install
-          pre-commit run --all-files --color always --verbose --show-diff-on-failure
