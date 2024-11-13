@@ -6,29 +6,31 @@
 #include <utility>
 #include <vector>
 
-struct Point {
-    double x;
-    double y;
-};
+#include "Utils.hpp"
 
 class Creeper {
-    Point coord_;
-    std::function<Point()> posGenerator_;
-    enum class State : std::uint8_t { Born,
-                                      Walk,
-                                      Hissing,
-                                      Explodes } state_;
+ public:
+  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes };
 
-public:
-    void walk();
+ private:
+  Point coord_;
+  std::function<Point()> posGenerator_;
+  State state_;
 
-    Creeper::State updateState(Creeper const &another, const std::function<double(Point, Point)> &distanceFun, double explodeRadius);
+ public:
+  void rebornTheDead();
 
-    explicit Creeper(decltype(posGenerator_) posGenerator);
+  void walk();
 
-protected:
-    void updatePositions();
+  Creeper::State updateState(
+      Creeper const &another,
+      const std::function<double(Point, Point)> &distanceFun,
+      double explodeRadius);
+
+  explicit Creeper(decltype(posGenerator_) posGenerator);
+
+ protected:
+  void updatePositions();
 };
 
-
-#endif//CREEPY_SIMULATION_CREEPER_HPP
+#endif  // CREEPY_SIMULATION_CREEPER_HPP
