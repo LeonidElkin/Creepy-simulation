@@ -22,11 +22,11 @@ Field::Field(Point size, double r0, size_t creepersNum)
       r_0_(r0) {
   creepers_ =
       std::views::repeat([this] -> Point {
-        static auto x_unif =
+        static auto x_dist =
             std::uniform_real_distribution(leftDownBound_.x, rightUpBound_.x);
-        static auto y_unif =
+        static auto y_dist =
             std::uniform_real_distribution(leftDownBound_.y, rightUpBound_.y);
-        return Point(x_unif(getRandom()), y_unif(getRandom()));
+        return Point(x_dist(getRandom()), y_dist(getRandom()));
       }) |
       std::views::transform([](auto dist) { return Creeper(dist); }) |
       std::views::take(creepersNum) | std::ranges::to<std::vector>();

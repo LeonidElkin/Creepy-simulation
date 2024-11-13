@@ -13,9 +13,9 @@ class Creeper {
   enum class State : std::uint8_t { Born, Walk, Hissing, Explodes };
 
  private:
-  Point coord_;
+  Point coord_{};
   std::function<Point()> posGenerator_;
-  State state_;
+  State state_ = State::Born;
 
  public:
   void rebornTheDead();
