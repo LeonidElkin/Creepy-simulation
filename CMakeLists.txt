@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
+set(BUILD_TESTING ON)
 if (BUILD_TESTING)
     # vcpkg enable testing dependencies
     list(APPEND VCPKG_MANIFEST_FEATURES "tests")
@@ -23,9 +24,9 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18.0)
         message(FATAL_ERROR "Clang version 18.0 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
     endif ()
-else()
+else ()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
-endif()
+endif ()
 
 add_subdirectory(model)
 
@@ -39,6 +40,8 @@ endif ()
 find_package(glog REQUIRED)
 
 # Testing
-include(CTest)
 if (BUILD_TESTING)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(tests)
 endif ()

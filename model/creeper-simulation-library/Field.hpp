@@ -1,19 +1,31 @@
 #ifndef CREEPY_SIMULATION_FIELD_HPP
 #define CREEPY_SIMULATION_FIELD_HPP
 
+#include <functional>
 #include <vector>
 
 #include "Creeper.hpp"
+#include "utils.hpp"
 
 class Field {
-    size_t X_;
-    size_t Y_;
-    std::vector<Creeper> creepers_;
-public:
-    void updateField();
+  Point size_;
+  Point leftDownBound_;
+  Point rightUpBound_;
+  double r_0_;
 
-    explicit Field(size_t height, size_t width, size_t creepersNum);
+  std::function<double(Point p1, Point p2)> distance_func_;
+
+  std::vector<Creeper> creepers_;
+  std::vector<std::reference_wrapper<Creeper>> dead_creepers_;
+
+  auto shuffleCreepers();
+
+ public:
+  auto const& getCreepers() { return creepers_; }
+
+  void updateField();
+
+  explicit Field(Point size, double r0, size_t creepersNum);
 };
 
-
-#endif //CREEPY_SIMULATION_FIELD_HPP
+#endif  // CREEPY_SIMULATION_FIELD_HPP
