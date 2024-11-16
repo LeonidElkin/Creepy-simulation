@@ -14,5 +14,5 @@ jobs:
           python-version: '3.12'
       - name: Install pre-commit
         run: |
-          run pre-commit install
-          run pre-commit run --all-files --color always --verbose --show-diff-on-failure
+          pre-commit install
+          pre-commit run --all-files --color always --verbose --show-diff-on-failure
