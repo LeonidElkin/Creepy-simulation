@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "creepy-simulation"
+version = "0.1.0"
+description = ""
+authors = ["Lesh79, KotYrod, FerventReaper"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pygame = "^2.6.1"
+pygame-gui = "^0.6.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
