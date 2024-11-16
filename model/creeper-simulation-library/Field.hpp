@@ -8,17 +8,15 @@
 #include "utils.hpp"
 
 class Field {
-  Point size_;
   Point leftDownBound_;
   Point rightUpBound_;
   double r_0_;
 
-  std::function<double(Point p1, Point p2)> distance_func_;
+  std::function<Point()> generatePosition_;
+  std::function<double(Point p1, Point p2)> distanceFunc_;
 
   std::vector<Creeper> creepers_;
-  std::vector<std::reference_wrapper<Creeper>> dead_creepers_;
-
-  auto shuffleCreepers();
+  std::vector<std::reference_wrapper<Creeper>> deadCreepers_;
 
  public:
   auto const& getCreepers() { return creepers_; }

@@ -4,55 +4,31 @@
 #include <random>
 #include <ranges>
 
-constexpr auto moving_creepers = 250;
-
-auto Field::shuffleCreepers() {
-  std::uniform_int_distribution<decltype(creepers_.size())> dist(
-      0, creepers_.size());
-  std::vector<unsigned int> creepersToMoveIndices(moving_creepers);
-  std::ranges::generate_n(creepersToMoveIndices.begin(), moving_creepers,
-                          [&] { return dist(getRandom()); });
-  return creepersToMoveIndices;
-}
-
 Field::Field(Point size, double r0, size_t creepersNum)
-    : size_(size),
-      leftDownBound_(-size.x / 2, -size.y / 2),
+    : leftDownBound_(-size.x / 2, -size.y / 2),
       rightUpBound_(size.x / 2, size.y / 2),
-      r_0_(r0) {
+      r_0_(r0),
+      generatePosition_([this] -> Point {
+        auto xDist =
+            std::uniform_real_distribution(leftDownBound_.x, rightUpBound_.x);
+        auto yDist =
+            std::uniform_real_distribution(leftDownBound_.y, rightUpBound_.y);
+        return Point(xDist(getRandom()), yDist(getRandom()));
+      }) {
   if (size.x <= 0 | size.y <= 0) {
     throw std::invalid_argument("The field size must be greater than 0");
   }
-  creepers_ =
-      std::views::repeat([this] -> Point {
-        static auto x_dist =
-            std::uniform_real_distribution(leftDownBound_.x, rightUpBound_.x);
-        static auto y_dist =
-            std::uniform_real_distribution(leftDownBound_.y, rightUpBound_.y);
-        return Point(x_dist(getRandom()), y_dist(getRandom()));
-      }) |
-      std::views::transform([](auto dist) { return Creeper(dist); }) |
-      std::views::take(creepersNum) | std::ranges::to<std::vector>();
+  creepers_ = std::views::repeat(Creeper(generatePosition_)) |
+              std::views::take(creepersNum) | std::ranges::to<std::vector>();
 }
 
 void Field::updateField() {
-  std::ranges::for_each(dead_creepers_, &Creeper::rebornTheDead);
+  std::ranges::for_each(
+      creepers_, [this](auto creeper) { creeper.walk(generatePosition_); });
 
-  dead_creepers_.clear();
-
-  auto creepersToMoveIndices = shuffleCreepers();
-
-  for (auto i : creepersToMoveIndices) {
-    creepers_[i].walk();
+  for (auto [i, creeper1] : creepers_ | std::views::enumerate) {
+    for (auto creeper2 : creepers_ | std::views::drop(i)) {
+      creeper1.updateState(creeper2, distanceFunc_, r_0_);
+    }
   }
-
-  dead_creepers_ =
-      creepers_ | std::views::filter([&](auto &creeper) {
-        return bool(creepersToMoveIndices | std::views::filter([&](auto i) {
-                      return creeper.updateState(creepers_[i], distance_func_,
-                                                 r_0_) ==
-                             Creeper::State::Explodes;
-                    }));
-      }) |
-      std::ranges::to<decltype(dead_creepers_)>();
 }
