@@ -1,6 +1,8 @@
+import sys
+
 import pygame
 import pygame_gui
-from handler import update_config, new_states
+from handler import new_states, update_config
 
 
 class Creeper:
@@ -51,7 +53,7 @@ class Simulation:
         except Exception as e:
             print(f"Error loading image: {e}")
             pygame.quit()
-            exit()
+            sys.exit()
 
         # Initialize creepers
         self.create_creepers()
@@ -146,9 +148,8 @@ class Simulation:
                         self.radius = int(event.value)
                         self.radius_label.set_text(f"Radius: {self.radius}")
                         update_config(self.creeper_count, self.thao / 1000, self.radius)
-                elif event.type == pygame_gui.UI_BUTTON_PRESSED:
-                    if event.ui_element == self.start_button:
-                        self.create_creepers()
+                elif event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == self.start_button:
+                    self.create_creepers()
 
             self.manager.process_events(event)
             self.manager.update(time_delta)
