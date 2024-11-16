@@ -12,10 +12,7 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
-      - name: Install dependencies
+      - name: Install pre-commit
         run: |
-          pip install ttkbootstrap
-          pip install black
-
-      - name: Lint with black
-        run: black . --check --diff --color
+          poetry run pre-commit install
+          poetry run pre-commit run --all-files --color always --verbose --show-diff-on-failure
