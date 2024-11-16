@@ -1,16 +1,8 @@
-from enum import Enum
-from random import sample
+import sys
 
-import ttkbootstrap as ttk
-from PIL import Image, ImageDraw, ImageTk
-from handler import update_config, new_states
-
-
-class States(Enum):
-    CHILL = "Chill"
-    MOVING = "Move"
-    HISS = "Hiss"
-    SLEEP = "Sleep"
+import pygame
+import pygame_gui
+from handler import new_states, update_config
 
 
 class Creeper:
@@ -38,152 +30,143 @@ class Creeper:
         return self.steps_left > 0
 
 
-class Window:
-    def __init__(self, size: str = "1920x1080"):
-        self.app = ttk.Window(title="Creepy", themename="minty")
-        self.app.geometry(size)
-        self.entries = {}
-        self.canvas = None
+class Simulation:
+    def __init__(self, width=1920, height=1080, image_path="view/image/creeper_icon.png"):
+        pygame.init()
+        self.width = width
+        self.height = height
+        self.screen = pygame.display.set_mode((width, height))
+        pygame.display.set_caption("Creepy Simulation")
+        self.clock = pygame.time.Clock()
+        self.manager = pygame_gui.UIManager((width, height))
+
+        # Default simulation parameters
+        self.creeper_count = 1000
+        self.thao = 2000  # Target update interval in milliseconds
+        self.radius = 100
+        self.last_update_time = pygame.time.get_ticks()
         self.creepers = []
-        self.active_creepers = []
-        self.create_paned_window()
-        self.creeper_image = None
-        self.thao = 2000
-        self.frames_per_second = 100
-        self.animation_interval = 1000 // self.frames_per_second
-        self.animation_job = None
 
-    def create_paned_window(self):
-        main_frame = ttk.Frame(self.app)
-        main_frame.pack(fill="both", expand=True)
+        try:
+            self.creeper_image = pygame.image.load(image_path).convert_alpha()
+            self.creeper_image = pygame.transform.scale(self.creeper_image, (10, 10))  # Resize to 20x20 pixels
+        except Exception as e:
+            print(f"Error loading image: {e}")
+            pygame.quit()
+            sys.exit()
 
-        top_frame = self.create_top_frame(main_frame)
-        top_frame.pack(fill="x", padx=10, pady=10)
+        # Initialize creepers
+        self.create_creepers()
 
-        bottom_frame = self.create_bottom_frame(main_frame)
-        bottom_frame.pack(fill="both", expand=True, padx=10, pady=10)
+        # UI elements
+        self.create_ui_elements()
 
-    def create_top_frame(self, parent):
-        left_frame = ttk.Frame(parent, width=200)
-        ttk.Label(left_frame, text="Введите данные", font=("Arial", 12, "bold")).pack(
-            pady=10
+    def create_ui_elements(self):
+        # Creeper count slider
+        self.creeper_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect=pygame.Rect((10, 10), (400, 40)),
+            start_value=self.creeper_count,
+            value_range=(1, 50000),
+            manager=self.manager,
+        )
+        self.creeper_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((420, 10), (200, 40)),
+            text=f"Creepers: {self.creeper_count}",
+            manager=self.manager,
         )
 
-        self.create_scale_entry(left_frame, "Криперы:", 1, 50000, "nums")
-        self.create_scale_entry(left_frame, "Частота:", 0.1, 5, "thao")
-        self.create_scale_entry(left_frame, "Радиус:", 1, 100, "radius")
-
-        submit_button = ttk.Button(
-            left_frame,
-            text="Запуск симуляции",
-            bootstyle="danger-outline",
-            command=self.submit,
+        self.thao_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect=pygame.Rect((10, 60), (400, 40)),
+            start_value=self.thao // 1000,
+            value_range=(0.1, 5),
+            manager=self.manager,
         )
-        submit_button.pack(pady=10)
-        return left_frame
-
-    def create_bottom_frame(self, parent):
-        right_frame = ttk.Frame(parent)
-        self.canvas = ttk.Canvas(right_frame, background="white")
-        self.canvas.pack(fill="both", expand=True, padx=10, pady=10)
-        return right_frame
-
-    def create_scale_entry(self, parent, label_text, from_, to, entry_key):
-        frame = ttk.Frame(parent)
-        frame.pack(fill="x", padx=10, pady=5)
-
-        ttk.Label(frame, text=label_text, font=("Arial", 10, "bold")).pack(side="left")
-
-        scale = ttk.Scale(
-            frame,
-            from_=from_,
-            to=to,
-            orient="horizontal",
-            length=150,
-            command=lambda v: self.update_scale_value(entry_key, v),
+        self.thao_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((420, 60), (200, 40)),
+            text=f"Thao: {self.thao / 1000:.1f} s",
+            manager=self.manager,
         )
-        scale.pack(side="left", fill="x", expand=True, padx=5)
-        self.entries[entry_key] = scale
 
-        value_label = ttk.Label(frame, text=str(scale.get()))
-        value_label.pack(side="right")
-        self.entries[f"{entry_key}_value_label"] = value_label
+        self.radius_slider = pygame_gui.elements.UIHorizontalSlider(
+            relative_rect=pygame.Rect((10, 110), (400, 40)),
+            start_value=self.radius,
+            value_range=(10, 100),
+            manager=self.manager,
+        )
+        self.radius_label = pygame_gui.elements.UILabel(
+            relative_rect=pygame.Rect((420, 110), (200, 40)),
+            text=f"Radius: {self.radius}",
+            manager=self.manager,
+        )
 
-    def update_scale_value(self, entry_key, value):
-        self.entries[f"{entry_key}_value_label"].config(text=f"{float(value):.2f}")
+        self.start_button = pygame_gui.elements.UIButton(
+            relative_rect=pygame.Rect((10, 160), (150, 40)),
+            text="Start Simulation",
+            manager=self.manager,
+        )
 
-    def submit(self):
-        if self.animation_job is not None:
-            self.app.after_cancel(self.animation_job)
-            self.animation_job = None
-
-        self.creepers.clear()
-        self.canvas.delete("all")
-        self.active_creepers.clear()
-
-        nums = int(self.entries["nums"].get())
-        self.thao = int(float(self.entries["thao"].get()) * 1000)
-        radius = float(self.entries["radius"].get())
-
-        update_config(nums, self.thao, radius)
-        self.create_creepers(nums)
-        self.update_targets()
-        self.animate_creeper_positions()
-
-    def create_creepers(self, nums):
-        self.creepers = []
-        for x, y in new_states(nums):
-            creeper = Creeper(x, y)
-            self.creepers.append(creeper)
+    def create_creepers(self):
+        initial_positions = new_states(self.creeper_count)
+        self.creepers = [Creeper(pos_x=x, pos_y=y) for x, y in initial_positions]
 
     def update_targets(self):
-        if not self.active_creepers:
-            self.active_creepers = sample(self.creepers, min(len(self.creepers), 250))
-            steps = max(1, self.thao // self.animation_interval)
-
-            new_positions = new_states(len(self.active_creepers))
-            for creeper, (new_x, new_y) in zip(self.active_creepers, new_positions):
-                creeper.set_target(new_x, new_y, steps)
-
-        self.app.after(self.thao, self.update_targets)
+        steps = max(1, self.thao // 16)
+        for creeper in self.creepers:
+            target_x, target_y = new_states(1)[0]
+            creeper.set_target(target_x, target_y, steps)
 
     def animate_creeper_positions(self):
-        image = Image.new("RGB", (1920, 1080), "white")
-        draw = ImageDraw.Draw(image)
+        self.screen.fill((255, 255, 255))  # White background
 
         moving = False
-
         for creeper in self.creepers:
             if creeper.update_position():
                 moving = True
+            # Draw PNG image
+            self.screen.blit(self.creeper_image, (int(creeper.pos_x), int(creeper.pos_y)))
 
-            draw.ellipse(
-                (
-                    creeper.pos_x - 2,
-                    creeper.pos_y - 2,
-                    creeper.pos_x + 2,
-                    creeper.pos_y + 2,
-                ),
-                fill="black",
-            )
-
-        self.creeper_image = ImageTk.PhotoImage(image)
-        self.canvas.create_image(0, 0, image=self.creeper_image, anchor="nw")
-
-        if moving:
-            self.animation_job = self.app.after(
-                self.animation_interval, self.animate_creeper_positions
-            )
-        else:
-            self.active_creepers.clear()
-            self.update_targets()
-            self.animation_job = self.app.after(
-                self.animation_interval, self.animate_creeper_positions
-            )
+        return moving
 
     def run(self):
-        self.app.mainloop()
+        running = True
+
+        while running:
+            time_delta = self.clock.tick(60) / 1000.0
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+                    if event.ui_element == self.creeper_slider:
+                        self.creeper_count = int(event.value)
+                        self.creeper_label.set_text(f"Creepers: {self.creeper_count}")
+                        update_config(self.creeper_count, self.thao / 1000, self.radius)
+                    elif event.ui_element == self.thao_slider:
+                        self.thao = int(event.value * 1000)
+                        self.thao_label.set_text(f"Thao: {self.thao / 1000:.1f} s")
+                        update_config(self.creeper_count, self.thao / 1000, self.radius)
+                    elif event.ui_element == self.radius_slider:
+                        self.radius = int(event.value)
+                        self.radius_label.set_text(f"Radius: {self.radius}")
+                        update_config(self.creeper_count, self.thao / 1000, self.radius)
+                elif event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == self.start_button:
+                    self.create_creepers()
+
+            self.manager.process_events(event)
+            self.manager.update(time_delta)
+
+            if pygame.time.get_ticks() - self.last_update_time > self.thao:
+                self.update_targets()
+                self.last_update_time = pygame.time.get_ticks()
+
+            moving = self.animate_creeper_positions()
+            if not moving:
+                self.update_targets()
+
+            self.manager.draw_ui(self.screen)
+            pygame.display.flip()
+
+        pygame.quit()
 
 
-app = Window()
-app.run()
+if __name__ == "__main__":
+    Simulation().run()

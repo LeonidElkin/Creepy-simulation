@@ -1,6 +1,6 @@
 name: Check code
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 jobs:
   check:
@@ -14,8 +14,9 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          pip install ttkbootstrap
-          pip install black
-
-      - name: Lint with black
-        run: black . --check --diff --color
+          python -m pip install --upgrade pip
+          pip install pre-commit
+      - name: Install pre-commit hooks
+        run: pre-commit install
+      - name: Run pre-commit hooks
+        run: pre-commit run --all-files --color always --verbose --show-diff-on-failure
