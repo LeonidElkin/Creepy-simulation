@@ -2,23 +2,21 @@
 
 #include <random>
 
-Creeper::Creeper(const std::function<Point()> &posGenerator) {
-  updatePositions(posGenerator);
+Creeper::Creeper(
+    const std::function<Point(std::optional<Point>)> &posGenerator) {
+  coord_ = posGenerator({});
 }
 
-void Creeper::updatePositions(const std::function<Point()> &posGenerator) {
-  coord_ = posGenerator();
-}
-
-void Creeper::walk(const std::function<Point()> &posGenerator) {
-  updatePositions(posGenerator);
-
+void Creeper::walk(
+    const std::function<Point(std::optional<Point>)> &posGenerator) {
   switch (state_) {
     case State::Explodes:
       state_ = State::Born;
+      coord_ = posGenerator({});
       break;
     default:
       state_ = State::Walk;
+      coord_ = posGenerator(coord_);
   }
 }
 
