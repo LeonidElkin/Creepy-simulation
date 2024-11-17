@@ -1,12 +1,22 @@
 import sys
+from enum import Enum
 
 import pygame
 import pygame_gui
 from handler import new_states, update_config
 
 
+class State(Enum):
+    BORN = "Born"
+    HISS = "Hiss"
+    SLEEP = "Sleep"
+    WALK = "Walk"
+    EXPLOSION = "Explosion"
+
+
 class Creeper:
-    def __init__(self, pos_x=0, pos_y=0):
+    def __init__(self, pos_x=0, pos_y=0, explosion_frames=None):
+        self.explosion_frames = explosion_frames
         self.pos_x = pos_x
         self.pos_y = pos_y
         self.target_x = pos_x
@@ -14,6 +24,28 @@ class Creeper:
         self.dx = 0
         self.dy = 0
         self.steps_left = 0
+        self.state = State.WALK
+        self.explosion_frame_index = 0
+        self.explosion_timer = 0
+
+    def start_explosion(self):
+        self.state = State.EXPLOSION
+        self.explosion_frame_index = 0
+        self.explosion_timer = pygame.time.get_ticks()
+
+    def update_explosion(self):
+        timer = 100
+        if self.state == State.EXPLOSION:
+            if pygame.time.get_ticks() - self.explosion_timer > timer:  # 100 ms between frames
+                self.explosion_frame_index += 1
+                self.explosion_timer = pygame.time.get_ticks()
+            if self.explosion_frame_index >= len(self.explosion_frames):
+                self.state = State.BORN  # Change to a different state after the explosion
+                self.explosion_frame_index = len(self.explosion_frames) - 1  # Keep last frame if needed
+
+    def draw(self, screen):
+        if self.state == State.EXPLOSION:
+            screen.blit(self.explosion_frames[self.explosion_frame_index], (int(self.pos_x), int(self.pos_y)))
 
     def set_target(self, target_x, target_y, steps=10):
         self.target_x = target_x
@@ -21,6 +53,7 @@ class Creeper:
         self.dx = (target_x - self.pos_x) / steps
         self.dy = (target_y - self.pos_y) / steps
         self.steps_left = steps
+        self.state = State.WALK
 
     def update_position(self):
         if self.steps_left > 0:
@@ -31,7 +64,7 @@ class Creeper:
 
 
 class Simulation:
-    def __init__(self, width=1920, height=1080, image_path="view/image/creeper_icon.png"):
+    def __init__(self, width=1920, height=1080):
         pygame.init()
         self.width = width
         self.height = height
@@ -46,11 +79,20 @@ class Simulation:
         self.radius = 100
         self.last_update_time = pygame.time.get_ticks()
         self.creepers = []
-
+        self.explosion_frames = [
+            pygame.image.load(f"view/image/regularExplosion{i}.png").convert_alpha() for i in range(0, 8)
+        ]
+        self.explosion_frames = [pygame.transform.scale(frame, (20, 20)) for frame in self.explosion_frames]
         try:
-            self.creeper_image = pygame.image.load(image_path).convert_alpha()
-            self.creeper_image = pygame.transform.scale(self.creeper_image, (10, 10))  # Resize to 20x20 pixels
-        except Exception as e:
+            self.creeper_image_walk = pygame.image.load("view/image/walk.png").convert_alpha()
+            self.creeper_image_walk = pygame.transform.scale(self.creeper_image_walk, (10, 10))
+            self.creeper_image_hiss = pygame.image.load("view/image/hiss.png").convert_alpha()
+            self.creeper_image_hiss = pygame.transform.scale(self.creeper_image_hiss, (20, 20))
+            self.creeper_image_sleep = pygame.image.load("view/image/sleep.png").convert_alpha()
+            self.creeper_image_sleep = pygame.transform.scale(self.creeper_image_sleep, (20, 20))
+            self.creeper_image_born = pygame.image.load("view/image/born.png").convert_alpha()
+            self.creeper_image_born = pygame.transform.scale(self.creeper_image_born, (20, 20))
+        except pygame.error as e:
             print(f"Error loading image: {e}")
             pygame.quit()
             sys.exit()
@@ -107,7 +149,11 @@ class Simulation:
 
     def create_creepers(self):
         initial_positions = new_states(self.creeper_count)
-        self.creepers = [Creeper(pos_x=x, pos_y=y) for x, y in initial_positions]
+        self.creepers = [
+            Creeper(pos_x=x, pos_y=y, explosion_frames=self.explosion_frames) for x, y in initial_positions
+        ]
+        for i in range(min(10, len(self.creepers))):
+            self.creepers[i].state = State.WALK
 
     def update_targets(self):
         steps = max(1, self.thao // 16)
@@ -122,8 +168,17 @@ class Simulation:
         for creeper in self.creepers:
             if creeper.update_position():
                 moving = True
-            # Draw PNG image
-            self.screen.blit(self.creeper_image, (int(creeper.pos_x), int(creeper.pos_y)))
+            if creeper.state == State.WALK:
+                self.screen.blit(self.creeper_image_walk, (int(creeper.pos_x), int(creeper.pos_y)))
+            elif creeper.state == State.EXPLOSION:
+                creeper.update_explosion()
+                creeper.draw(self.screen)
+            elif creeper.state == State.BORN:
+                self.screen.blit(self.creeper_image_born, (int(creeper.pos_x), int(creeper.pos_y)))
+            elif creeper.state == State.SLEEP:
+                self.screen.blit(self.creeper_image_sleep, (int(creeper.pos_x), int(creeper.pos_y)))
+            elif creeper.state == State.HISS:
+                self.screen.blit(self.creeper_image_hiss, (int(creeper.pos_x), int(creeper.pos_y)))
 
         return moving
 
