@@ -25,7 +25,8 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
         message(FATAL_ERROR "Clang version 18.0 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
     endif ()
 else ()
-    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang and GCC.")
+    message(WARNING "You are using an unsupported compiler: \"${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}\"!"
+            "Compilation has only been tested with Clang and GCC.")
 endif ()
 
 add_subdirectory(model)
