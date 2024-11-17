@@ -45,6 +45,8 @@ endif ()
 find_package(glog REQUIRED)
 
 # Testing
-include(CTest)
 if (BUILD_TESTING)
+    include(CTest)
+    enable_testing()
+    add_subdirectory(tests)
 endif ()
