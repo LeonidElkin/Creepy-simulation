@@ -1,8 +1,16 @@
 import sys
+from enum import Enum
 
 import pygame
 import pygame_gui
 from handler import new_states, update_config
+
+
+class State(Enum):
+    BORN = "Born"
+    HISS = "Hiss"
+    SLEEP = "Sleep"
+    WALK = "Walk"
 
 
 class Creeper:
@@ -14,6 +22,7 @@ class Creeper:
         self.dx = 0
         self.dy = 0
         self.steps_left = 0
+        self.state = State.WALK
 
     def set_target(self, target_x, target_y, steps=10):
         self.target_x = target_x
@@ -21,6 +30,7 @@ class Creeper:
         self.dx = (target_x - self.pos_x) / steps
         self.dy = (target_y - self.pos_y) / steps
         self.steps_left = steps
+        self.state = State.WALK
 
     def update_position(self):
         if self.steps_left > 0:
@@ -31,7 +41,7 @@ class Creeper:
 
 
 class Simulation:
-    def __init__(self, width=1920, height=1080, image_path="view/image/creeper_icon.png"):
+    def __init__(self, width=1920, height=1080):
         pygame.init()
         self.width = width
         self.height = height
@@ -48,8 +58,14 @@ class Simulation:
         self.creepers = []
 
         try:
-            self.creeper_image = pygame.image.load(image_path).convert_alpha()
-            self.creeper_image = pygame.transform.scale(self.creeper_image, (10, 10))  # Resize to 20x20 pixels
+            self.creeper_image_walk = pygame.image.load("view/image/walk.png").convert_alpha()
+            self.creeper_image_walk = pygame.transform.scale(self.creeper_image_walk, (10, 10))
+            self.creeper_image_hiss = pygame.image.load("view/image/hiss.png").convert_alpha()
+            self.creeper_image_hiss = pygame.transform.scale(self.creeper_image_hiss, (20, 20))
+            self.creeper_image_sleep = pygame.image.load("view/image/sleep.png").convert_alpha()
+            self.creeper_image_sleep = pygame.transform.scale(self.creeper_image_sleep, (20, 20))
+            self.creeper_image_born = pygame.image.load("view/image/born.png").convert_alpha()
+            self.creeper_image_born = pygame.transform.scale(self.creeper_image_born, (20, 20))
         except Exception as e:
             print(f"Error loading image: {e}")
             pygame.quit()
@@ -108,6 +124,9 @@ class Simulation:
     def create_creepers(self):
         initial_positions = new_states(self.creeper_count)
         self.creepers = [Creeper(pos_x=x, pos_y=y) for x, y in initial_positions]
+        # Set the state of some creepers to BORN for demonstration
+        for i in range(min(10, len(self.creepers))):
+            self.creepers[i].state = State.WALK
 
     def update_targets(self):
         steps = max(1, self.thao // 16)
@@ -122,8 +141,14 @@ class Simulation:
         for creeper in self.creepers:
             if creeper.update_position():
                 moving = True
-            # Draw PNG image
-            self.screen.blit(self.creeper_image, (int(creeper.pos_x), int(creeper.pos_y)))
+            if creeper.state == State.WALK:
+                self.screen.blit(self.creeper_image_walk, (int(creeper.pos_x), int(creeper.pos_y)))
+            elif creeper.state == State.BORN:
+                self.screen.blit(self.creeper_image_born, (int(creeper.pos_x), int(creeper.pos_y)))
+            elif creeper.state == State.SLEEP:
+                self.screen.blit(self.creeper_image_sleep, (int(creeper.pos_x), int(creeper.pos_y)))
+            elif creeper.state == State.HISS:
+                self.screen.blit(self.creeper_image_hiss, (int(creeper.pos_x), int(creeper.pos_y)))
 
         return moving
 
