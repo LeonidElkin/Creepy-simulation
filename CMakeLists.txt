@@ -32,8 +32,17 @@ else ()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang, MSVC and GCC.")
 endif ()
 
+include(FetchContent)
+
+FetchContent_Declare(
+        pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11.git
+        GIT_TAG v2.11.1
+)
+
+FetchContent_MakeAvailable(pybind11)
+
 add_subdirectory(model)
-add_subdirectory(controller)
 
 # Sanitizers for Debug build
 include(cmake/sanitizers.cmake)

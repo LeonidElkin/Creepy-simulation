@@ -1,8 +1,6 @@
 {
   "dependencies": [
-    "glog",
-    "pybind11",
-    "python3"
+    "glog"
   ],
   "features": {
     "tests": {
