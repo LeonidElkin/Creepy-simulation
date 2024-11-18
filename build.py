@@ -120,8 +120,6 @@ class CMakeBuild(build_ext):
 
 def build(setup_kwargs):
     ext_modules = [CMakeExtension("creepers")]
-    print("-------------------------")
-    print(ext_modules)
     setup_kwargs.update(
         {
             "ext_modules": ext_modules,
