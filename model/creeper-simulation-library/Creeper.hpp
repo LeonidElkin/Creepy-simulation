@@ -11,7 +11,7 @@
 
 class Creeper {
  public:
-  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes };
+  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes, Sleep };
 
  private:
   Point coord_{};

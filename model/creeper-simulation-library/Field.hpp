@@ -21,7 +21,8 @@ class Field {
   std::vector<std::reference_wrapper<Creeper>> deadCreepers_;
 
  public:
-  explicit Field(Point size, double r0, size_t creepersNum, double moveRadius);
+  explicit Field(Point size, double r0, size_t creepersNum, double moveRadius,
+                 FuncType funcType);
 
   void updateField();
 

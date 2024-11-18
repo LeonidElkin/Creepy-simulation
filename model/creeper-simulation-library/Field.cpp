@@ -4,7 +4,8 @@
 #include <random>
 #include <ranges>
 
-Field::Field(Point size, double r0, size_t creepersNum, double moveRadius)
+Field::Field(Point size, double r0, size_t creepersNum, double moveRadius,
+             FuncType funcType)
     : leftDownBound_(-size.x / 2, -size.y / 2),
       rightUpBound_(size.x / 2, size.y / 2),
       r_0_(r0),
@@ -26,7 +27,7 @@ Field::Field(Point size, double r0, size_t creepersNum, double moveRadius)
                                                  rightUpBound_.y);
         return Point(xDist(getRandom()), yDist(getRandom()));
       }),
-      distanceFunc_(&euclideanDistance) {
+      distanceFunc_(getFuncFromEnum(funcType)) {
   if (size.x <= 0 | size.y <= 0) {
     throw std::invalid_argument("The field size must be greater than 0");
   }

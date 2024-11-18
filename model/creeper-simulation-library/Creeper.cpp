@@ -2,6 +2,8 @@
 
 #include <random>
 
+constexpr auto sleep_probability = 0.1;
+
 Creeper::Creeper(
     const std::function<Point(std::optional<Point>)> &posGenerator) {
   coord_ = posGenerator({});
@@ -33,10 +35,14 @@ Creeper::State Creeper::updateState(
     return state_;
   }
 
-  static auto dist = std::bernoulli_distribution(1. / (distance * distance));
-  if (dist(getRandom())) {
+  auto distHissing = std::bernoulli_distribution(1. / (distance * distance));
+  static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
+
+  if (distHissing(getRandom())) {
     state_ = State::Hissing;
     another.state_ = State::Hissing;
+  } else if (dist_sleep(getRandom())) {
+    state_ = State::Sleep;
   } else {
     state_ = State::Walk;
   }
