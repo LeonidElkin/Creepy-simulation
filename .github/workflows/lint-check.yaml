@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Install dependencies
@@ -17,6 +17,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pre-commit
       - name: Install pre-commit hooks
-        run: pre-commit install
+        run: |
+          pre-commit install
+          pre-commit autoupdate --repo https://github.com/pre-commit/pre-commit-hooks
       - name: Run pre-commit hooks
         run: pre-commit run --all-files --color always --verbose --show-diff-on-failure
