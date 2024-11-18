@@ -2,6 +2,7 @@
 #define CREEPY_SIMULATION_FIELD_HPP
 
 #include <functional>
+#include <optional>
 #include <vector>
 
 #include "Creeper.hpp"
@@ -11,18 +12,21 @@ class Field {
   Point leftDownBound_;
   Point rightUpBound_;
   double r_0_;
+  double moveRadius_;
 
-  std::function<Point()> generatePosition_;
+  std::function<Point(std::optional<Point>)> generatePosition_;
   std::function<double(Point p1, Point p2)> distanceFunc_;
 
   std::vector<Creeper> creepers_;
+  std::vector<std::reference_wrapper<Creeper>> deadCreepers_;
 
  public:
-  auto const& getCreepers() { return creepers_; }
+  explicit Field(Point size, double r0, size_t creepersNum, double moveRadius,
+                 FuncType funcType);
 
   void updateField();
 
-  explicit Field(Point size, double r0, size_t creepersNum, FuncType funcType);
+  auto const& getCreepers() { return creepers_; }
 };
 
 #endif  // CREEPY_SIMULATION_FIELD_HPP

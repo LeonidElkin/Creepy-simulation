@@ -1,6 +1,7 @@
 #include "utils.hpp"
 
 #include <cmath>
+#include <stdexcept>
 
 struct PolarPoint {
   double r;
@@ -33,7 +34,7 @@ double polarDistance(Point p1, Point p2) {
                    (2 * pp1.r * pp2.r * std::cos(pp1.t - pp2.t)));
 }
 
-auto getFuncFromEnum(FuncType funcType) {
+std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType) {
   switch (funcType) {
     case FuncType::Euclid:
       return &euclideanDistance;
@@ -42,4 +43,5 @@ auto getFuncFromEnum(FuncType funcType) {
     case FuncType::Polar:
       return &polarDistance;
   }
+  throw std::runtime_error("unknown distance function enum was given");
 }

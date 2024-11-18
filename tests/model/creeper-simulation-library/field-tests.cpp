@@ -6,14 +6,14 @@
 
 TEST(Field, InitTest) {
   constexpr auto creeps_num = 10;
-  auto field = Field({100, 100}, 5, creeps_num);  // NOLINT
+  auto field = Field({100, 100}, 5, creeps_num, 0, FuncType::Euclid);  // NOLINT
   auto creepers = field.getCreepers();
   EXPECT_EQ(creepers.size(), creeps_num);
 }
 
 TEST(Field, LetsWalk) {
   constexpr auto creeps_num = 10;
-  auto field = Field({100, 100}, 5, creeps_num);  // NOLINT
+  auto field = Field({100, 100}, 5, creeps_num, 20, FuncType::Euclid);  // NOLINT
   field.updateField();
   auto creepers = field.getCreepers();
   EXPECT_EQ(creepers.size(), creeps_num);

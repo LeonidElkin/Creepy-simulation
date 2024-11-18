@@ -1,6 +1,7 @@
 #ifndef CREEPY_SIMULATION_UTILS_HPP
 #define CREEPY_SIMULATION_UTILS_HPP
 
+#include <functional>
 #include <random>
 
 struct Point {

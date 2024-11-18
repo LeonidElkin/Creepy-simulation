@@ -4,23 +4,21 @@
 
 constexpr auto sleep_probability = 0.1;
 
-Creeper::Creeper(const std::function<Point()> &posGenerator) {
-  updatePositions(posGenerator);
+Creeper::Creeper(
+    const std::function<Point(std::optional<Point>)> &posGenerator) {
+  coord_ = posGenerator({});
 }
 
-void Creeper::updatePositions(const std::function<Point()> &posGenerator) {
-  coord_ = posGenerator();
-}
-
-void Creeper::walk(const std::function<Point()> &posGenerator) {
-  updatePositions(posGenerator);
-
+void Creeper::walk(
+    const std::function<Point(std::optional<Point>)> &posGenerator) {
   switch (state_) {
     case State::Explodes:
       state_ = State::Born;
+      coord_ = posGenerator({});
       break;
     default:
       state_ = State::Walk;
+      coord_ = posGenerator(coord_);
   }
 }
 
@@ -43,7 +41,7 @@ Creeper::State Creeper::updateState(
   if (distHissing(getRandom())) {
     state_ = State::Hissing;
     another.state_ = State::Hissing;
-  } else if (distHissing(getRandom())) {
+  } else if (dist_sleep(getRandom())) {
     state_ = State::Sleep;
   } else {
     state_ = State::Walk;

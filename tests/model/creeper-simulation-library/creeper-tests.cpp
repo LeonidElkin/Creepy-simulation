@@ -5,7 +5,7 @@
 
 TEST(Creeper, InitTest) {
   auto point = Point(3, 3);
-  auto distFunc = std::function([=]() { return point; });
+  auto distFunc = std::function([=](std::optional<Point> _) { return point; });
   auto creeper = Creeper(distFunc);
   EXPECT_EQ(creeper.getCoord().x, point.x);
   EXPECT_EQ(creeper.getCoord().y, point.y);
@@ -16,7 +16,7 @@ TEST(Creeper, WalkTest) {
   auto point1 = Point(3, 3);
   auto point2 = Point(2, 2);
   auto num = 0;
-  auto distFunc = std::function([&]() { return num++ ? point2 : point1; });
+  auto distFunc = std::function([&](std::optional<Point> _) { return num++ ? point2 : point1; });
   auto creeper = Creeper(distFunc);
   creeper.walk(distFunc);
   EXPECT_EQ(creeper.getCoord().x, point2.x);
@@ -25,7 +25,7 @@ TEST(Creeper, WalkTest) {
 }
 
 TEST(Creeper, HissingTest) {
-  auto distFunc = std::function([&]() { return Point(3, 3); });
+  auto distFunc = std::function([&](std::optional<Point> _) { return Point(3, 3); });
   auto creeper1 = Creeper(distFunc);
   auto creeper2 = Creeper(distFunc);
   creeper1.walk(distFunc);
@@ -37,7 +37,7 @@ TEST(Creeper, HissingTest) {
 }
 
 TEST(Creeper, ExploseTest) {
-  auto distFunc = std::function([&]() { return Point(3, 3); });
+  auto distFunc = std::function([&](std::optional<Point> _) { return Point(3, 3); });
   auto creeper1 = Creeper(distFunc);
   auto creeper2 = Creeper(distFunc);
   creeper1.walk(distFunc);
