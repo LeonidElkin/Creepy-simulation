@@ -16,6 +16,7 @@ class Creeper {
  private:
   Point coord_{};
   State state_ = State::Born;
+  size_t id_;
 
  public:
   [[nodiscard]] auto getState() const { return state_; }
@@ -28,7 +29,8 @@ class Creeper {
       double explodeRadius);
 
   explicit Creeper(
-      const std::function<Point(std::optional<Point>)> &posGenerator);
+      const std::function<Point(std::optional<Point>)> &posGenerator,
+      size_t id);
 };
 
 #endif  // CREEPY_SIMULATION_CREEPER_HPP

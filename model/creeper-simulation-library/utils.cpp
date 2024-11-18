@@ -1,18 +1,21 @@
 #include "utils.hpp"
 
+#include <fmt/color.h>
 #include <cmath>
 #include <stdexcept>
 
-struct PolarPoint {
-  double r;
-  double t;
-};
-
+// Random
 std::mt19937& getRandom() {
   static auto rd = std::random_device();
   static auto gen = std::mt19937(rd());
   return gen;
 }
+
+// Distance functions
+struct PolarPoint {
+  double r;
+  double t;
+};
 
 double euclideanDistance(Point p1, Point p2) {
   return std::sqrt(std::pow(p1.x - p2.x, 2) + std::pow(p1.y - p2.y, 2));
@@ -44,4 +47,9 @@ std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType) {
       return &polarDistance;
   }
   throw std::runtime_error("unknown distance function enum was given");
+}
+
+// Logging
+void logInfo(const std::string& msg) {
+  fmt::print("{}{}\n", fmt::format(fmt::fg(fmt::color::green), "INFO: "), msg);
 }

@@ -39,6 +39,14 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(pybind11)
 
+FetchContent_Declare(
+        fmt
+        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+        GIT_TAG 11.0.2
+        OVERRIDE_FIND_PACKAGE
+)
+FetchContent_MakeAvailable(fmt)
+
 # Subdirectories
 add_subdirectory(creeper-simulation-library)
 add_subdirectory(pybind-interface)

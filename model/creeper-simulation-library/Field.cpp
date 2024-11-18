@@ -31,10 +31,11 @@ Field::Field(Point size, double r0, size_t creepersNum, double moveRadius,
   if (size.x <= 0 | size.y <= 0) {
     throw std::invalid_argument("The field size must be greater than 0");
   }
-  creepers_ =
-      std::views::repeat(generatePosition_) | std::views::take(creepersNum) |
-      std::views::transform([](auto generate) { return Creeper(generate); }) |
-      std::ranges::to<std::vector>();
+
+  creepers_ = std::views::iota(0LU, creepersNum) |
+              std::views::transform(
+                  [&](auto i) { return Creeper(generatePosition_, i); }) |
+              std::ranges::to<std::vector>();
 }
 
 void Field::updateField() {
