@@ -1,10 +1,6 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-set(BUILD_TESTING ON)
-if (BUILD_TESTING)
-    # vcpkg enable testing dependencies
-    list(APPEND VCPKG_MANIFEST_FEATURES "tests")
-endif ()
+option(BUILD_TESTING "enable test" ON)
 
 project(Creepy-simulation LANGUAGES CXX VERSION 1.0)
 
@@ -32,17 +28,18 @@ else ()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang, MSVC and GCC.")
 endif ()
 
+# Dependencies
 include(FetchContent)
 
 FetchContent_Declare(
         pybind11
         GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG v2.11.1
+        GIT_TAG v2.13.6
         OVERRIDE_FIND_PACKAGE
 )
-
 FetchContent_MakeAvailable(pybind11)
 
+# Subdirectories
 add_subdirectory(model)
 
 # Sanitizers for Debug build
@@ -51,11 +48,18 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_sanitizers()
 endif ()
 
-# Sources
-find_package(glog REQUIRED)
 
 # Testing
 if (BUILD_TESTING)
+    FetchContent_Declare(
+            GTest
+            GIT_REPOSITORY https://github.com/google/googletest.git
+            GIT_TAG v1.15.2
+            OVERRIDE_FIND_PACKAGE
+    )
+
+    FetchContent_MakeAvailable(GTest)
+
     include(CTest)
     enable_testing()
     add_subdirectory(tests)
