@@ -4,17 +4,30 @@
 #include <random>
 #include <ranges>
 
-Field::Field(Point size, double r0, size_t creepersNum)
+Field::Field(Point size, double r0, size_t creepersNum, double moveRadius,
+             FuncType funcType)
     : leftDownBound_(-size.x / 2, -size.y / 2),
       rightUpBound_(size.x / 2, size.y / 2),
       r_0_(r0),
-      generatePosition_([this] -> Point {
+      moveRadius_(moveRadius),
+      generatePosition_([this](std::optional<Point> curPosition = {}) -> Point {
         auto xDist =
-            std::uniform_real_distribution(leftDownBound_.x, rightUpBound_.x);
+            curPosition
+                ? std::uniform_real_distribution(
+                      std::max(leftDownBound_.x, curPosition->x - moveRadius_),
+                      std::min(rightUpBound_.x, curPosition->x + moveRadius_))
+                : std::uniform_real_distribution(leftDownBound_.x,
+                                                 rightUpBound_.x);
         auto yDist =
-            std::uniform_real_distribution(leftDownBound_.y, rightUpBound_.y);
+            curPosition
+                ? std::uniform_real_distribution(
+                      std::max(leftDownBound_.y, curPosition->y - moveRadius_),
+                      std::min(rightUpBound_.y, curPosition->y + moveRadius_))
+                : std::uniform_real_distribution(leftDownBound_.y,
+                                                 rightUpBound_.y);
         return Point(xDist(getRandom()), yDist(getRandom()));
-      }) {
+      }),
+      distanceFunc_(getFuncFromEnum(funcType)) {
   if (size.x <= 0 | size.y <= 0) {
     throw std::invalid_argument("The field size must be greater than 0");
   }
@@ -24,7 +37,7 @@ Field::Field(Point size, double r0, size_t creepersNum)
 
 void Field::updateField() {
   std::ranges::for_each(
-      creepers_, [this](auto creeper) { creeper.walk(generatePosition_); });
+      creepers_, [this](auto& creeper) { creeper.walk(generatePosition_); });
 
   for (auto [i, creeper1] : creepers_ | std::views::enumerate) {
     for (auto creeper2 : creepers_ | std::views::drop(i)) {

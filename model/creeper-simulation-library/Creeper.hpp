@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include <functional>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -10,27 +11,24 @@
 
 class Creeper {
  public:
-  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes };
+  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes, Sleep };
 
  private:
   Point coord_{};
   State state_ = State::Born;
 
  public:
-  auto getState() { return state_; }
-  auto getCoord() { return coord_; }
+  [[nodiscard]] auto getState() const { return state_; }
+  [[nodiscard]] auto getCoord() const { return coord_; }
 
-  void walk(const std::function<Point()> &posGenerator);
+  void walk(const std::function<Point(std::optional<Point>)> &posGenerator);
 
   Creeper::State updateState(
-      Creeper &another,
-      const std::function<double(Point, Point)> &distanceFun,
+      Creeper &another, const std::function<double(Point, Point)> &distanceFun,
       double explodeRadius);
 
-  explicit Creeper(const std::function<Point()> &posGenerator);
-
- protected:
-  void updatePositions(const std::function<Point()> &posGenerator);
+  explicit Creeper(
+      const std::function<Point(std::optional<Point>)> &posGenerator);
 };
 
 #endif  // CREEPY_SIMULATION_CREEPER_HPP
