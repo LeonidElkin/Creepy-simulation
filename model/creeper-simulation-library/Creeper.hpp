@@ -18,8 +18,8 @@ class Creeper {
   State state_ = State::Born;
 
  public:
-  auto getState() const { return state_; }
-  auto getCoord() const { return coord_; }
+  [[nodiscard]] auto getState() const { return state_; }
+  [[nodiscard]] auto getCoord() const { return coord_; }
 
   void walk(const std::function<Point(std::optional<Point>)> &posGenerator);
 
