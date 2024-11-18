@@ -8,8 +8,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pygame = "^2.6.1"
-pygame-gui = "^0.6.12"
+pygame = "^2.5.2"
+pygame-gui = "^0.6.0"
 black = "^24.10.0"
 ruff = "^0.7.4"
 

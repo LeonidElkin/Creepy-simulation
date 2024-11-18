@@ -73,6 +73,13 @@ class Simulation:
         self.clock = pygame.time.Clock()
         self.manager = pygame_gui.UIManager((width, height))
 
+        try:
+            self.background_image = pygame.image.load("view/image/background.jpg").convert()
+            self.background_image = pygame.transform.scale(self.background_image, (self.width, self.height))
+        except pygame.error as e:
+            print(f"Error loading background image: {e}")
+            self.background_image = None
+
         # Default simulation parameters
         self.creeper_count = 1000
         self.thao = 2000  # Target update interval in milliseconds
@@ -85,7 +92,7 @@ class Simulation:
         self.explosion_frames = [pygame.transform.scale(frame, (20, 20)) for frame in self.explosion_frames]
         try:
             self.creeper_image_walk = pygame.image.load("view/image/walk.png").convert_alpha()
-            self.creeper_image_walk = pygame.transform.scale(self.creeper_image_walk, (10, 10))
+            self.creeper_image_walk = pygame.transform.scale(self.creeper_image_walk, (50, 50))
             self.creeper_image_hiss = pygame.image.load("view/image/hiss.png").convert_alpha()
             self.creeper_image_hiss = pygame.transform.scale(self.creeper_image_hiss, (20, 20))
             self.creeper_image_sleep = pygame.image.load("view/image/sleep.png").convert_alpha()
@@ -162,7 +169,10 @@ class Simulation:
             creeper.set_target(target_x, target_y, steps)
 
     def animate_creeper_positions(self):
-        self.screen.fill((255, 255, 255))  # White background
+        if self.background_image:
+            self.screen.blit(self.background_image, (0, 0))
+        else:
+            self.screen.fill((255, 255, 255))  # White background
 
         moving = False
         for creeper in self.creepers:
