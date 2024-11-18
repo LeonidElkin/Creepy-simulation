@@ -10,4 +10,6 @@ struct Point {
 
 std::mt19937& getRandom();
 
+double euclideanDistance(Point p1, Point p2);
+
 #endif  // CREEPY_SIMULATION_UTILS_HPP
