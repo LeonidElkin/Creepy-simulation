@@ -1,10 +1,13 @@
 [tool.poetry]
-name = "creepy-simulation"
+name = "creepy_simulation"
 version = "0.1.0"
 description = ""
-authors = ["Lesh79, KotYrod, FerventReaper"]
+authors = ["Lesh79, Kuarni, FerventReaper"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "controller" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -36,5 +39,9 @@ ignore = ["PLR0913"]
 
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=1.0.0", "setuptools", "wheel"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.build]
+script = "build.py"
+generate-setup-file = true
