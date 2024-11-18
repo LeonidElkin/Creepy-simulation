@@ -11,8 +11,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-pygame = "^2.5.2"
-pygame-gui = "^0.6.0"
+pygame = "2.5.2"
+pygame-gui = "0.6.0"
 black = "^24.10.0"
 ruff = "^0.7.4"
 pybind11 = "^2.13.6"
@@ -35,7 +35,7 @@ line-ending = "auto"
 
 
 [tool.ruff.lint]
-select = ["A", "E", "F", "I", "PL", "RUF", "SIM", "UP", "W"]
+select = ["A", "E", "F", "I", "PL", "RUF", "SIM", "UP", "W", "F405", "F403", "E402"]
 ignore = ["PLR0913"]
 
 

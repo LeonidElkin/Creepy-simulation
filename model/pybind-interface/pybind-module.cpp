@@ -32,11 +32,11 @@ PYBIND11_MODULE(creepers, handle) {
                  {.x = point[0].cast<double>(), .y = point[1].cast<double>()},
                  r0, creepersNum, moveRadius, type);
            }),
-           "size_of_field"_a, "creepers_num"_a, "explosion_radius"_a,
+           "size_of_field"_a, "explosion_radius"_a, "creepers_num"_a
            "move_radius"_a, "func_type"_a)
       .def("update_field", &Field::updateField)
       .def("get_creepers", &Field::getCreepers);
-  py::enum_<FuncType>(handle, "FieldFuncTypeCPP")
+  py::enum_<FuncType>(handle, "DistFunc")
       .value("Polar", FuncType::Polar)
       .value("Euclid", FuncType::Euclid)
       .value("Manhattan", FuncType::Manhattan);
