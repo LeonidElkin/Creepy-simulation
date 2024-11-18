@@ -16,6 +16,12 @@ void Creeper::walk(
       state_ = State::Born;
       coord_ = posGenerator({});
       break;
+    case State::Walk:
+      static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
+      if (dist_sleep(getRandom())) {
+        state_ = State::Sleep;
+        break;
+      }
     default:
       state_ = State::Walk;
       coord_ = posGenerator(coord_);
@@ -36,14 +42,11 @@ Creeper::State Creeper::updateState(
   }
 
   auto distHissing = std::bernoulli_distribution(1. / (distance * distance));
-  static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
 
   if (distHissing(getRandom())) {
     state_ = State::Hissing;
     another.state_ = State::Hissing;
-  } else if (dist_sleep(getRandom())) {
-    state_ = State::Sleep;
-  } else {
+  } else if (state_ != State::Sleep) {
     state_ = State::Walk;
   }
 

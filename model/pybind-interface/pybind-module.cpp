@@ -9,7 +9,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
-PYBIND11_MODULE(provider, handle) {
+PYBIND11_MODULE(creepers, handle) {
   handle.doc() =
       "pybind module to provide Field from creeper-simulation-library";
   py::class_<Creeper>(handle, "Creeper")

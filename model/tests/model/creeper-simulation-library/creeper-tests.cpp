@@ -36,7 +36,7 @@ TEST(Creeper, HissingTest) {
   EXPECT_EQ(creeper2.getState(), Creeper::State::Hissing);
 }
 
-TEST(Creeper, ExploseTest) {
+TEST(Creeper, ExplodeTest) {
   auto distFunc = std::function([&](std::optional<Point> _) { return Point(3, 3); });
   auto creeper1 = Creeper(distFunc);
   auto creeper2 = Creeper(distFunc);
@@ -48,4 +48,13 @@ TEST(Creeper, ExploseTest) {
       creeper1, [](Point a, Point b) { return 0.5; }, 1);  // NOLINT
   EXPECT_EQ(creeper1.getState(), Creeper::State::Explodes);
   EXPECT_EQ(creeper2.getState(), Creeper::State::Explodes);
+}
+
+TEST(Creeper, SleepTest) {
+  auto distFunc = std::function([&](std::optional<Point> _) { return Point(2, 2); });
+  auto creeper = Creeper(distFunc);
+  while (creeper.getState() != Creeper::State::Sleep) {
+    creeper.walk(distFunc);
+  }
+  EXPECT_EQ(creeper.getState(), Creeper::State::Sleep);
 }
