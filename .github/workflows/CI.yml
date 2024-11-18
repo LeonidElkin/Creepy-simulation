@@ -1,19 +1,13 @@
 name: Simple test that everything is ok
 
-on: [ push, pull_request ]
+on: [push, pull_request]
 
 env:
   BUILD_TYPE: Debug
 
 jobs:
   build:
-    runs-on: ${{ matrix.os }}
-
-    strategy:
-      matrix:
-        os: [ ubuntu-latest ]
-        compiler: gcc
-
+    runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
