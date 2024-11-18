@@ -32,7 +32,7 @@ void Creeper::walk(
       }
     default:
       state_ = State::Walk;
-      logInfo(fmt::format("Creeper {} is just hanging around", id_));
+      logInfo(fmt::format("Creeper {} is hanging around", id_));
       coord_ = posGenerator(coord_);
   }
 }
@@ -49,19 +49,24 @@ Creeper::State Creeper::updateState(
 
   auto distance = distanceFun(coord_, another.coord_);
   if (distance <= explodeRadius) {
-    logInfo(fmt::format("Creeper {} and Creeper {} have just exploded", id_,
-                        another.id_));
+    if (state_ != State::Explodes) {
+      logInfo(fmt::format("Creeper {} and Creeper {} have just exploded", id_,
+                          another.id_));
+    }
     state_ = State::Explodes;
+    another.state_ = State::Explodes;
     return state_;
   }
+
+  if (state_ == State::Hissing) return state_;
 
   auto distHissing = std::bernoulli_distribution(1. / (distance * distance));
 
   if (distHissing(getRandom())) {
+    logInfo(fmt::format("Creeper {} and Creeper {} are hissing at each other",
+                        id_, another.id_));
     state_ = State::Hissing;
     another.state_ = State::Hissing;
-    logInfo(fmt::format("Creeper {} and Creeper {} are hissing at each other", id_,
-                        another.id_));
   } else if (state_ != State::Sleep) {
     state_ = State::Walk;
   }
