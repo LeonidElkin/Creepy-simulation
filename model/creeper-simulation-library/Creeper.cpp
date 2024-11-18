@@ -17,6 +17,7 @@ Creeper::Creeper(const std::function<Point(std::optional<Point>)> &posGenerator,
 
 void Creeper::walk(
     const std::function<Point(std::optional<Point>)> &posGenerator) {
+  static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
   switch (state_) {
     case State::Explodes:
       state_ = State::Born;
@@ -24,7 +25,6 @@ void Creeper::walk(
       coord_ = posGenerator({});
       break;
     case State::Walk:
-      static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
       if (dist_sleep(getRandom())) {
         logInfo(fmt::format("Creeper {} is getting some rest", id_));
         state_ = State::Sleep;
