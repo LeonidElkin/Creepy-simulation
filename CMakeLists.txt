@@ -24,10 +24,24 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 18.0)
         message(FATAL_ERROR "Clang version 18.0 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
     endif ()
+elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.40)
+        message(FATAL_ERROR "MSVC version 19.40 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
+    endif ()
 else ()
-    message(WARNING "You are using an unsupported compiler: \"${CMAKE_CXX_COMPILER_ID} ${CMAKE_CXX_COMPILER_VERSION}\"!"
-            "Compilation has only been tested with Clang and GCC.")
+    message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang, MSVC and GCC.")
 endif ()
+
+include(FetchContent)
+
+FetchContent_Declare(
+        pybind11
+        GIT_REPOSITORY https://github.com/pybind/pybind11.git
+        GIT_TAG v2.11.1
+        OVERRIDE_FIND_PACKAGE
+)
+
+FetchContent_MakeAvailable(pybind11)
 
 add_subdirectory(model)
 
