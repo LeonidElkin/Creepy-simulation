@@ -16,14 +16,13 @@ class Field {
   std::function<double(Point p1, Point p2)> distanceFunc_;
 
   std::vector<Creeper> creepers_;
-  std::vector<std::reference_wrapper<Creeper>> deadCreepers_;
 
  public:
   auto const& getCreepers() { return creepers_; }
 
   void updateField();
 
-  explicit Field(Point size, double r0, size_t creepersNum);
+  explicit Field(Point size, double r0, size_t creepersNum, FuncType funcType);
 };
 
 #endif  // CREEPY_SIMULATION_FIELD_HPP
