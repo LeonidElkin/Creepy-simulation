@@ -40,6 +40,8 @@ void Creeper::walk(
 Creeper::State Creeper::updateState(
     Creeper &another, const std::function<double(Point, Point)> &distanceFun,
     double explodeRadius) {
+  if (&another == this) return state_;
+
   if (state_ == State::Born || another.state_ == State::Born) {
     logInfo(
         fmt::format("Creeper {} or Creeper {} is invulnerable at the moment",
