@@ -24,6 +24,13 @@ void Creeper::walk(
       logInfo(fmt::format("Creeper {} has been born again", id_));
       coord_ = posGenerator({});
       break;
+    case State::Sleep:
+      if (dist_sleep(getRandom())) {
+        logInfo(fmt::format("Creeper {} is waking up", id_));
+        state_ = State::Walk;
+        break;
+      }
+      break;
     case State::Walk:
       if (dist_sleep(getRandom())) {
         logInfo(fmt::format("Creeper {} is getting some rest", id_));
