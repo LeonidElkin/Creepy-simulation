@@ -4,6 +4,8 @@
 #include <random>
 #include <ranges>
 
+constexpr auto creepers_num_changing_state = 250;
+
 Field::Field(Point size, double r0, size_t creepersNum, double moveRadius,
              FuncType funcType)
     : leftDownBound_(-size.x / 2, -size.y / 2),
@@ -42,9 +44,18 @@ void Field::updateField() {
   std::ranges::for_each(
       creepers_, [this](auto& creeper) { creeper.walk(generatePosition_); });
 
-  for (auto [i, creeper1] : creepers_ | std::views::enumerate) {
-    for (auto creeper2 : creepers_ | std::views::drop(i)) {
-      creeper1.updateState(creeper2, distanceFunc_, r_0_);
+  auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size());
+
+  std::vector<size_t> creepersChangingState =
+      std::views::repeat(dist) | std::views::take(creepers_num_changing_state) |
+      std::views::transform([&](auto d) { return d(getRandom()); }) |
+      std::ranges::to<std::vector>();
+
+  const double radius = r_0_ * r_0_;
+
+  for (auto i : creepersChangingState) {
+    for (auto& creeper2 : creepers_) {
+      creepers_[i].updateState(creeper2, distanceFunc_, radius);
     }
   }
 }

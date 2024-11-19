@@ -31,7 +31,9 @@ TEST(Creeper, HissingTest) {
   creeper1.walk(distFunc);
   creeper2.walk(distFunc);
   creeper1.updateState(
-      creeper2, [](Point a, Point b) { return 0.5; }, 0);  // NOLINT
+      creeper2, [](Point a, Point b) { return 0.5; }, 0); // NOLINT
+  creeper2.updateState(
+      creeper1, [](Point a, Point b) { return 0.5; }, 0); // NOLINT
   EXPECT_EQ(creeper1.getState(), Creeper::State::Hissing);
   EXPECT_EQ(creeper2.getState(), Creeper::State::Hissing);
 }
