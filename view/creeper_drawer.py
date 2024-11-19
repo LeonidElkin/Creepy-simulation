@@ -1,24 +1,4 @@
-import pygame
 from creepers import CreeperState, Field
-
-
-class DrawExplosion:
-    def __init__(self, position):
-        self.position = position
-        self.explosion_frame_index = 0
-        self.explosion_timer = pygame.time.get_ticks()
-
-    def _update_frame(self, frame_count):
-        timer = 100
-        if pygame.time.get_ticks() - self.explosion_timer > timer:  # 100 ms between frames
-            self.explosion_frame_index += 1
-            self.explosion_timer = pygame.time.get_ticks()
-        return self.explosion_frame_index > frame_count
-
-    def __call__(self, drawer):
-        if not drawer.image.explosion_frames(len(drawer.image.explosion_frames)):
-            return False
-        drawer.screen.blit(drawer.image.explosion_frames[self.explosion_frame_index], self.position)
 
 
 class CreeperDrawer:
@@ -28,13 +8,12 @@ class CreeperDrawer:
         self.target_x, self.target_y = position
         self.steps_left = 0
 
-    def update(self, new_position: tuple[float, float], state: CreeperState, steps):
+    def update(self, new_position: tuple[float, float], state: CreeperState, steps, drawer):
         self.state = state
         if state == CreeperState.Born:
             self.cur_x, self.cur_y = new_position
-            steps = 0
-        elif state == CreeperState.Sleep:
-            steps = 0
+        elif state == CreeperState.Explodes:
+            drawer.will_explodes.add(new_position)
         self.target_x, self.target_y = new_position
         self._set_target(steps)
 
@@ -53,9 +32,7 @@ class CreeperDrawer:
         return self.steps_left > 0
 
     def draw_step(self, drawer):
-        if not self.update_position():
-            drawer.register_callback_animation(DrawExplosion((self.target_x, self.target_y)))
-            return
+        self.update_position()
 
         if self.state in {CreeperState.Walk, CreeperState.Explodes}:
             drawer.screen.blit(drawer.images.creeper_image_walk, (self.cur_x, self.cur_y))
@@ -78,6 +55,7 @@ class CreepersManager:
         )
         self.shift = position_shift
         self.creepers = [CreeperDrawer(coord, state) for coord, state in self._creepers2data(self.field.get_creepers())]
+        self.field.update_field()
 
     def _creepers2data(self, creepers):
         def shift_coord(coord):
@@ -85,10 +63,10 @@ class CreepersManager:
 
         return ((shift_coord(creeper.get_coord()), creeper.get_state()) for creeper in creepers)
 
-    def update_creepers(self, steps):
+    def update_creepers(self, steps, drawer):
+        for drawers, (coord, state) in zip(self.creepers, self._creepers2data(self.field.get_creepers_wait())):
+            drawers.update(coord, state, steps, drawer)
         self.field.update_field()
-        for drawers, (coord, state) in zip(self.creepers, self._creepers2data(self.field.get_creepers())):
-            drawers.update(coord, state, steps)
 
     def draw_creepers(self, drawer):
         for creeper in self.creepers:

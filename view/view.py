@@ -1,5 +1,6 @@
 import os
 import sys
+from copy import copy
 
 import image_provider
 import pygame
@@ -14,6 +15,29 @@ sys.path.append(h)
 sys.path.append(package_path)
 
 
+class DrawExplosion:
+    def __init__(self, points):
+        self.explosion_frame_index = 0
+        self.points = points
+        self.explosion_timer = pygame.time.get_ticks()
+
+    def _update_frame(self, frame_count):
+        timer = 100
+        if pygame.time.get_ticks() - self.explosion_timer > timer:  # 100 ms between frames
+            self.explosion_frame_index += 1
+            self.explosion_timer = pygame.time.get_ticks()
+        return self.explosion_frame_index > frame_count
+
+    def __call__(self, drawer):
+        if not self.points:
+            return False
+        if self._update_frame(len(drawer.images.explosion_frames) - 1):
+            return False
+        for i in self.points:
+            drawer.screen.blit(drawer.images.explosion_frames[self.explosion_frame_index], i)
+        return True
+
+
 class Simulation:
     def __init__(self, width=1920, height=1080):
         pygame.init()
@@ -26,7 +50,6 @@ class Simulation:
         self.clock = pygame.time.Clock()
         self.manager = pygame_gui.UIManager((width, height))
         self.images = image_provider.ImageProvider()
-        self.callbacks_animations = []
 
         try:
             self.background_image = pygame.transform.scale(self.images.background_image, (self.width, self.height))
@@ -39,6 +62,8 @@ class Simulation:
         self.radius = 1
         self.radius_explosion = 1
         self.last_update_time = 0
+        self.will_explodes = set()
+        self.explode_drawer = DrawExplosion(set())
 
         self.func_type_map = {
             "Polar": DistFunc.Polar,
@@ -50,12 +75,6 @@ class Simulation:
         self.creepers_provider = None
         # UI elements
         self.ui = ui_elems.UiManager(self)
-
-    def register_callback_animation(self, callback):
-        self.callbacks_animations.append(callback)
-
-    def draw_callbacks_animations(self):
-        self.callbacks_animations = [ani for ani in self.callbacks_animations if ani(self)]
 
     def handle_event(self, event):
         if event.type == pygame.QUIT:
@@ -80,8 +99,9 @@ class Simulation:
 
     def run(self):
         running = True
+        update_time = 60
         while running:
-            time_delta = self.clock.tick(60) / 1000.0
+            time_delta = self.clock.tick(update_time) / 1000.0
             for event in pygame.event.get():
                 running = self.handle_event(event)  # Обработка события
                 self.manager.process_events(event)
@@ -92,13 +112,15 @@ class Simulation:
             if self.creepers_provider:
                 current_time = pygame.time.get_ticks()
                 if current_time - self.last_update_time >= self.thao:
-                    self.last_update_time = current_time
-                    self.creepers_provider.update_creepers(max(1, self.thao // 16))
-
+                    self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+                    self.will_explodes = set()
+                    self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
+                    self.last_update_time = pygame.time.get_ticks()
                 self.creepers_provider.draw_creepers(self)
+                self.explodes_drawer(self)
 
-            # Рисуем интерфейс
             self.manager.draw_ui(self.screen)
+
             pygame.display.flip()
 
         pygame.quit()
