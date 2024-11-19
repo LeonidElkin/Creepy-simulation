@@ -1,17 +1,18 @@
+import math
 import os
 import sys
+
+import pygame
+import pygame_gui
+from creepers import CreeperState, DistFunc, Field
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
 sys.path.append(h)
 
-import pygame
-import pygame_gui
-from creepers import *
-
 
 class CreeperDraw:
-    def __init__(self, pos_x=0, pos_y=0, explosion_frames=None):
+    def __init__(self, pos_x, pos_y, explosion_frames=None):
         self.explosion_frames = explosion_frames
         self.pos_x = pos_x
         self.pos_y = pos_y
@@ -47,6 +48,8 @@ class CreeperDraw:
             )
 
     def set_target(self, target_x, target_y, steps=10):
+        if steps <= 0:
+            steps = 1  # Минимальное количество шагов
         self.target_x = target_x
         self.target_y = target_y
         self.dx = (self.target_x - self.pos_x) / steps
@@ -56,8 +59,13 @@ class CreeperDraw:
 
     def update_position(self):
         if self.steps_left > 0:
-            self.pos_x += self.dx
-            self.pos_y += self.dy
+            if not (math.isnan(self.dx) or math.isnan(self.dy)):
+                self.pos_x += self.dx
+                self.pos_y += self.dy
+            # else:
+            # print(
+            #     f"Invalid dx/dy values: dx={self.dx}, dy={self.dy}, target_x: {self.target_x},
+            #     target_y:{self.target_y}")
             self.steps_left -= 1
         return self.steps_left > 0
 
@@ -85,6 +93,7 @@ class Simulation:
         self.thao = 2000
         self.radius = 1
         self.radius_explosion = 1
+        self.distribution = "Euclid"
         self.last_update_time = pygame.time.get_ticks()
         self.creepers = []
         self.explosion_frames = [
@@ -118,6 +127,7 @@ class Simulation:
         self.create_ui_elements()
 
     def create_ui_elements(self):
+        # Создаем слайдеры и кнопки
         self.creeper_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 10), (400, 40)),
             start_value=self.creeper_count,
@@ -153,6 +163,7 @@ class Simulation:
             text=f"Radius: {self.radius}",
             manager=self.manager,
         )
+
         self.radius_explosion_slider = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 160), (400, 40)),
             start_value=self.radius_explosion,
@@ -171,17 +182,34 @@ class Simulation:
             manager=self.manager,
         )
 
+        # # Создаем выпадающий список для выбора распределения
+        # self.distribution_dropdown = pygame_gui.elements.UIDropDownMenu(
+        #     options_list=["Polar", "Euclid", "Manhattan"],
+        #     starting_option="Manhattan",
+        #     relative_rect=pygame.Rect((10, 260), (400, 40)),
+        #     manager=self.manager,
+        # )
+        # self.distribution_label = pygame_gui.elements.UILabel(
+        #     relative_rect=pygame.Rect((420, 260), (200, 40)),
+        #     text="Distribution: Manhattan",
+        #     manager=self.manager,
+        # )
+
     def create_creepers(self):
         creepers_data = self.field.get_creepers()
-
-        self.creepers = [
-            CreeperDraw(
-                pos_x=data.get_coord()[0],
-                pos_y=data.get_coord()[1],
-                explosion_frames=self.explosion_frames,
-            )
-            for data in creepers_data
-        ]
+        self.creepers = []
+        for data in creepers_data:
+            x, y = data.get_coord()
+            if not (math.isnan(x) or math.isnan(y)):  # Проверяем, что координаты валидны
+                self.creepers.append(
+                    CreeperDraw(
+                        pos_x=x,
+                        pos_y=y,
+                        explosion_frames=self.explosion_frames,
+                    )
+                )
+            else:
+                print(f"Invalid creeper coordinates: ({x}, {y})")
 
     def update_targets(self):
         self.field.update_field()
@@ -189,7 +217,9 @@ class Simulation:
         for creeper, data in zip(self.creepers, creepers_data):
             x, y = data.get_coord()
             state = data.get_state()
-            print(f"Creeper {creeper} target: {x}, {y}")
+            # print(f"Creeper {creeper} target: {x}, {y}")
+            if math.isnan(y):
+                print(data.get_coord())
             creeper.set_target(x, y, steps=max(1, self.thao // 16))
 
             creeper.state = state
@@ -206,60 +236,80 @@ class Simulation:
         for creeper in self.creepers:
             if creeper.update_position():
                 moving = True
-            if creeper.state == CreeperState.Walk:
-                self.screen.blit(
-                    self.creeper_image_walk, (int(creeper.pos_x + self.center_x), int(creeper.pos_y + self.center_y))
-                )
-            elif creeper.state == CreeperState.Explodes:
-                creeper.update_explosion()
-                creeper.draw(self.screen, self.center_x, self.center_y)
-            elif creeper.state == CreeperState.Born:
-                self.screen.blit(
-                    self.creeper_image_born, (int(creeper.pos_x + self.center_x), int(creeper.pos_y + self.center_y))
-                )
-            elif creeper.state == CreeperState.Sleep:
-                self.screen.blit(
-                    self.creeper_image_sleep, (int(creeper.pos_x + self.center_x), int(creeper.pos_y + self.center_y))
-                )
-            elif creeper.state == CreeperState.Hissing:
-                self.screen.blit(
-                    self.creeper_image_hiss, (int(creeper.pos_x + self.center_x), int(creeper.pos_y + self.center_y))
-                )
+            x, y = creeper.pos_x + self.center_x, creeper.pos_y + self.center_y
 
+            if not (math.isnan(x) or math.isnan(y)):
+                if creeper.state == CreeperState.Walk:
+                    self.screen.blit(self.creeper_image_walk, (int(x), int(y)))
+                elif creeper.state == CreeperState.Explodes:
+                    creeper.update_explosion()
+                    creeper.draw(self.screen, self.center_x, self.center_y)
+                elif creeper.state == CreeperState.Born:
+                    self.screen.blit(self.creeper_image_born, (int(x), int(y)))
+                elif creeper.state == CreeperState.Sleep:
+                    self.screen.blit(self.creeper_image_sleep, (int(x), int(y)))
+                elif creeper.state == CreeperState.Hissing:
+                    self.screen.blit(self.creeper_image_hiss, (int(x), int(y)))
+            else:
+                print(f"Invalid creeper position: ({x}, {y})")
         return moving
+
+    def handle_event(self, event):
+        if event.type == pygame.QUIT:
+            return False  # Выход из игры
+        elif event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
+            self.handle_slider_moved(event)
+        elif event.type == pygame_gui.UI_DROP_DOWN_MENU_CHANGED:
+            self.handle_dropdown_changed(event)
+        elif event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == self.start_button:
+            self.start_game()
+        return True
+
+    def handle_slider_moved(self, event):
+        if event.ui_element == self.creeper_slider:
+            self.creeper_count = int(event.value)
+            self.creeper_label.set_text(f"Creepers: {self.creeper_count}")
+        elif event.ui_element == self.thao_slider:
+            self.thao = int(event.value * 1000)
+            self.thao_label.set_text(f"Thao: {self.thao / 1000:.1f} s")
+        elif event.ui_element == self.radius_slider:
+            self.radius = int(event.value)
+            self.radius_label.set_text(f"Radius: {self.radius}")
+        elif event.ui_element == self.radius_explosion_slider:
+            self.radius_explosion = int(event.value)
+            self.radius_explosion_label.set_text(f"Radius explosion: {self.radius_explosion}")
+
+    def handle_dropdown_changed(self, event):
+        if event.ui_element == self.distribution_dropdown:
+            self.distribution = event.text
+            self.distribution_label.set_text(f"Distribution: {self.distribution}")
+
+    def start_game(self):
+        func_type_map = {
+            "Polar": DistFunc.Polar,
+            "Euclid": DistFunc.Euclid,
+            "Manhattan": DistFunc.Manhattan,
+        }
+        func_type = func_type_map.get(self.distribution, DistFunc.Manhattan)
+
+        # Инициализация поля и криперов
+        self.field = Field(
+            (self.width, self.height),
+            creepers_num=self.creeper_count,
+            explosion_radius=self.radius_explosion,
+            move_radius=self.radius,
+            func_type=func_type,
+        )
+        self.field.update_field()
+        self.create_creepers()
+        self.update_targets()
 
     def run(self):
         running = True
         while running:
-            time_delta = self.clock.tick(60) / 1000.0  # Время между кадрами
+            time_delta = self.clock.tick(60) / 1000.0
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    running = False
-                elif event.type == pygame_gui.UI_HORIZONTAL_SLIDER_MOVED:
-                    if event.ui_element == self.creeper_slider:
-                        self.creeper_count = int(event.value)
-                        self.creeper_label.set_text(f"Creepers: {self.creeper_count}")
-                    elif event.ui_element == self.thao_slider:
-                        self.thao = int(event.value * 1000)
-                        self.thao_label.set_text(f"Thao: {self.thao / 1000:.1f} s")
-                    elif event.ui_element == self.radius_slider:
-                        self.radius = int(event.value)
-                        self.radius_label.set_text(f"Radius: {self.radius}")
-                    elif event.ui_element == self.radius_explosion_slider:
-                        self.radius_explosion = int(event.value)
-                        self.radius_explosion_label.set_text(f"Radius: {self.radius_explosion}")
-                elif event.type == pygame_gui.UI_BUTTON_PRESSED and event.ui_element == self.start_button:
-                    # Инициализация поля и криперов
-                    self.field = Field(
-                        (self.width, self.height),
-                        creepers_num=self.creeper_count,
-                        explosion_radius=self.radius_explosion,
-                        move_radius=self.radius,
-                        func_type=DistFunc.Euclid,
-                    )
-                    self.field.update_field()
-                    self.create_creepers()
-                    self.update_targets()
+                running = self.handle_event(event)  # Обработка события
 
             self.manager.process_events(event)
             self.manager.update(time_delta)
@@ -271,7 +321,7 @@ class Simulation:
 
             moving = self.animate_creeper_positions()
             if not moving:
-                self.update_targets()  # Если все криперы достигли целей, обновляем цели
+                self.update_targets()
 
             # Рисуем интерфейс
             self.manager.draw_ui(self.screen)
