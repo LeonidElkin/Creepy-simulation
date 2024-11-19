@@ -47,26 +47,26 @@ Creeper::State Creeper::updateState(
     return state_;
   }
 
+  if (state_ == State::Explodes) {
+    return state_;
+  }
+
   auto distance = distanceFun(coord_, another.coord_);
   if (distance <= explodeRadius) {
-    if (state_ != State::Explodes) {
-      logInfo(fmt::format("Creeper {} and Creeper {} have just exploded", id_,
-                          another.id_));
-    }
+    logInfo(fmt::format("Creeper {} and Creeper {} have just exploded", id_,
+                        another.id_));
     state_ = State::Explodes;
-    another.state_ = State::Explodes;
     return state_;
   }
 
   if (state_ == State::Hissing) return state_;
 
-  auto distHissing = std::bernoulli_distribution(1. / (distance * distance));
+  auto distHissing = std::bernoulli_distribution(1. / (distance));
 
   if (distHissing(getRandom())) {
     logInfo(fmt::format("Creeper {} and Creeper {} are hissing at each other",
                         id_, another.id_));
     state_ = State::Hissing;
-    another.state_ = State::Hissing;
   } else if (state_ != State::Sleep) {
     state_ = State::Walk;
   }
