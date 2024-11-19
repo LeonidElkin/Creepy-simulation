@@ -1,5 +1,7 @@
 #include "Field.hpp"
 
+#include <omp.h>
+
 #include <algorithm>
 #include <random>
 #include <ranges>
@@ -41,9 +43,10 @@ Field::Field(Point size, double r0, size_t creepersNum, double moveRadius,
 }
 
 void Field::updateField() {
-  std::ranges::for_each(
-      creepers_, [this](auto& creeper) { creeper.walk(generatePosition_); });
-
+#pragma omp parallel for
+  for (size_t i = 0; i < creepers_.size(); ++i) {
+    creepers_[i].walk(generatePosition_);
+  }
   auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size());
 
   auto creepersChangingState =
@@ -55,9 +58,13 @@ void Field::updateField() {
 
   const double radius = r_0_ * r_0_;
 
-  for (auto i : creepersChangingState) {
-    for (auto& creeper2 : creepers_) {
-      creepers_[i].updateState(creeper2, distanceFunc_, radius);
+#pragma omp parallel for
+  for (size_t idx = 0; idx < creepersChangingState.size(); ++idx) {
+    auto i = creepersChangingState[idx];
+    for (const auto& creeper2 : creepers_) {
+      if (&creepers_[i] != &creeper2) {
+        creepers_[i].updateState(creeper2, distanceFunc_, radius);
+      }
     }
   }
 }

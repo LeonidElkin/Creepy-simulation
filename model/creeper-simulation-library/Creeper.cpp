@@ -38,7 +38,7 @@ void Creeper::walk(
 }
 
 Creeper::State Creeper::updateState(
-    Creeper &another, const std::function<double(Point, Point)> &distanceFun,
+    const Creeper &another, const std::function<double(Point, Point)> &distanceFun,
     double explodeRadius) {
   if (&another == this) return state_;
 

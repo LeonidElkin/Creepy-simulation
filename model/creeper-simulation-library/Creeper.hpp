@@ -25,7 +25,7 @@ class Creeper {
   void walk(const std::function<Point(std::optional<Point>)> &posGenerator);
 
   Creeper::State updateState(
-      Creeper &another, const std::function<double(Point, Point)> &distanceFun,
+      const Creeper &another, const std::function<double(Point, Point)> &distanceFun,
       double explodeRadius);
 
   explicit Creeper(
