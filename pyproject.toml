@@ -5,6 +5,9 @@ description = ""
 authors = ["Lesh79, Kuarni, FerventReaper"]
 license = "MIT"
 readme = "README.md"
+packages = [
+    { include = "view" }
+]
 
 [tool.poetry.dependencies]
 python = "^3.11"
