@@ -55,7 +55,7 @@ class CreepersManager:
         )
         self.shift = position_shift
         self.creepers = [CreeperDrawer(coord, state) for coord, state in self._creepers2data(self.field.get_creepers())]
-        self.field.update_field()
+        self.field.run_update_field()
 
     def _creepers2data(self, creepers):
         def shift_coord(coord):
@@ -64,9 +64,10 @@ class CreepersManager:
         return ((shift_coord(creeper.get_coord()), creeper.get_state()) for creeper in creepers)
 
     def update_creepers(self, steps, drawer):
-        for drawers, (coord, state) in zip(self.creepers, self._creepers2data(self.field.get_creepers_wait())):
+        self.field.wait_update_field()
+        for drawers, (coord, state) in zip(self.creepers, self._creepers2data(self.field.get_creepers())):
             drawers.update(coord, state, steps, drawer)
-        self.field.update_field()
+        self.field.run_update_field()
 
     def draw_creepers(self, drawer):
         for creeper in self.creepers:
