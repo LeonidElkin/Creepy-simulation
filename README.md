@@ -1,6 +1,6 @@
 # Creepy-simulation
 
-## Get Started 
+## Get Started
 
 1. В коммандной строке напишите `poetry install`, чтобы подключить все необходимые зависимости
 2. Далее напишите `poetry build`, чтобы сбилдить проект
