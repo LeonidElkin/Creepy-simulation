@@ -2,12 +2,12 @@ import os
 import sys
 from copy import copy
 
-import image_provider
 import pygame
 import pygame_gui
-import ui_elems
-from creeper_drawer import CreepersManager
 from creepers import DistFunc
+
+from view import creeper_drawer as drw
+from view import image_provider, ui_elems
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -89,7 +89,7 @@ class Simulation:
 
     def start_game(self):
         # Инициализация поля и криперов
-        self.creepers_provider = CreepersManager(self, (self.center_x, self.center_y))
+        self.creepers_provider = drw.CreepersManager(self, (self.center_x, self.center_y))
 
     def draw_background(self):
         if self.background_image:
