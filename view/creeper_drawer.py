@@ -37,7 +37,12 @@ class CreeperDrawer:
 
         screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
         screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
-        size = int(20 * drawer.zoom_level)  # Базовый размер = 20, умножаем на зум
+
+        size = int(20 * drawer.zoom_level)
+
+        # Проверяем, находится ли крипер в пределах экрана
+        if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
+            return  # Крипер вне видимой области
 
         if self.state in {CreeperState.Walk, CreeperState.Explodes}:
             image = pygame.transform.scale(drawer.images.creeper_image_walk, (size, size))
@@ -79,5 +84,14 @@ class CreepersManager:
         self.field.run_update_field()
 
     def draw_creepers(self, drawer):
+        # Вычисляем границы видимой области
+        scaled_width = drawer.width / drawer.zoom_level
+        scaled_height = drawer.height / drawer.zoom_level
+        left_bound = -drawer.offset_x / drawer.zoom_level
+        top_bound = -drawer.offset_y / drawer.zoom_level
+        right_bound = left_bound + scaled_width
+        bottom_bound = top_bound + scaled_height
+
         for creeper in self.creepers:
-            creeper.draw_step(drawer)
+            if left_bound <= creeper.cur_x <= right_bound and top_bound <= creeper.cur_y <= bottom_bound:
+                creeper.draw_step(drawer)
