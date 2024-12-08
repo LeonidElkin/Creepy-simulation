@@ -1,3 +1,4 @@
+import pygame
 from creepers import CreeperState, Field
 
 
@@ -34,14 +35,27 @@ class CreeperDrawer:
     def draw_step(self, drawer):
         self.update_position()
 
+        screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
+        screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
+
+        size = int(20 * drawer.zoom_level)
+
+        # Проверяем, находится ли крипер в пределах экрана
+        if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
+            return  # Крипер вне видимой области
+
         if self.state in {CreeperState.Walk, CreeperState.Explodes}:
-            drawer.screen.blit(drawer.images.creeper_image_walk, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_walk, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
         elif self.state == CreeperState.Born:
-            drawer.screen.blit(drawer.images.creeper_image_born, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_born, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
         elif self.state == CreeperState.Sleep:
-            drawer.screen.blit(drawer.images.creeper_image_sleep, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_sleep, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
         elif self.state == CreeperState.Hissing:
-            drawer.screen.blit(drawer.images.creeper_image_hiss, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_hiss, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
 
 
 class CreepersManager:
@@ -70,5 +84,14 @@ class CreepersManager:
         self.field.run_update_field()
 
     def draw_creepers(self, drawer):
+        # Вычисляем границы видимой области
+        scaled_width = drawer.width / drawer.zoom_level
+        scaled_height = drawer.height / drawer.zoom_level
+        left_bound = -drawer.offset_x / drawer.zoom_level
+        top_bound = -drawer.offset_y / drawer.zoom_level
+        right_bound = left_bound + scaled_width
+        bottom_bound = top_bound + scaled_height
+
         for creeper in self.creepers:
-            creeper.draw_step(drawer)
+            if left_bound <= creeper.cur_x <= right_bound and top_bound <= creeper.cur_y <= bottom_bound:
+                creeper.draw_step(drawer)
