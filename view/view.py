@@ -55,8 +55,17 @@ class Simulation:
             self.background_image = pygame.transform.scale(self.images.background_image, (self.width, self.height))
         except pygame.error as e:
             print(f"Error loading background image: {e}")
+            self.background_image.fill((0, 100, 200))
             self.background_image = None
 
+        # Zoom and pan variables
+        self.zoom_level = 1.0
+        self.offset_x = 0
+        self.offset_y = 0
+        self.dragging = False
+        self.last_mouse_pos = None
+
+        # Params
         self.creeper_count = 10
         self.thao = 2000
         self.radius = 1
@@ -78,7 +87,53 @@ class Simulation:
 
     def handle_event(self, event):
         if event.type == pygame.QUIT:
-            return False  # Выход из игры
+            return False
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.zoom_level > 1.0:  # Dragging только при zoom_level > 1.0
+                self.dragging = True
+                self.last_mouse_pos = event.pos
+            elif event.button in (4, 5):  # Zoom in (4) или zoom out (5)
+                previous_zoom = self.zoom_level
+                zoom_in = 4
+                zoom_factor = 1.1 if event.button == zoom_in else 0.9
+                self.zoom_level = max(min(self.zoom_level * zoom_factor, 5.0), 1.0)
+
+                # Координаты мыши
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+
+                # Смещение до изменения масштаба
+                rel_x = (mouse_x - self.offset_x) / previous_zoom
+                rel_y = (mouse_y - self.offset_y) / previous_zoom
+
+                # Смещение после изменения масштаба
+                self.offset_x = mouse_x - rel_x * self.zoom_level
+                self.offset_y = mouse_y - rel_y * self.zoom_level
+
+                # Если возвращаемся к масштабу 1.0, сбросить смещение
+                if self.zoom_level == 1.0:
+                    self.offset_x = 0
+                    self.offset_y = 0
+        elif event.type == pygame.MOUSEBUTTONUP:
+            if event.button == 1:
+                self.dragging = False
+        elif event.type == pygame.MOUSEMOTION and self.dragging:
+            if self.last_mouse_pos and self.zoom_level > 1.0:
+                dx = event.pos[0] - self.last_mouse_pos[0]
+                dy = event.pos[1] - self.last_mouse_pos[1]
+
+                # Вычисление пределов смещения
+                scaled_width = int(self.width * self.zoom_level)
+                scaled_height = int(self.height * self.zoom_level)
+                max_offset_x = 0
+                max_offset_y = 0
+                min_offset_x = self.width - scaled_width
+                min_offset_y = self.height - scaled_height
+
+                # Применяем смещение c учетом ограничений
+                self.offset_x = max(min(self.offset_x + dx, max_offset_x), min_offset_x)
+                self.offset_y = max(min(self.offset_y + dy, max_offset_y), min_offset_y)
+
+                self.last_mouse_pos = event.pos
         elif event.type in [
             pygame_gui.UI_HORIZONTAL_SLIDER_MOVED,
             pygame_gui.UI_DROP_DOWN_MENU_CHANGED,
@@ -92,10 +147,27 @@ class Simulation:
         self.creepers_provider = drw.CreepersManager(self, (self.center_x, self.center_y))
 
     def draw_background(self):
-        if self.background_image:
-            self.screen.blit(self.background_image, (0, 0))
+        if self.zoom_level < 1.0:  # Убедимся, что фон всегда покрывает весь экран
+            # Масштабируем фон до размеров экрана
+            scaled_background = pygame.transform.scale(self.background_image, (self.width, self.height))
+            display_rect = scaled_background.get_rect()
+            display_rect.topleft = (0, 0)
         else:
-            self.screen.fill((255, 255, 255))
+            # Масштабируем фон c учетом текущего зума
+            scaled_width = int(self.width * self.zoom_level)
+            scaled_height = int(self.height * self.zoom_level)
+            scaled_background = pygame.transform.scale(self.background_image, (scaled_width, scaled_height))
+
+            # Учет смещения
+            display_rect = scaled_background.get_rect()
+            display_rect.topleft = (self.offset_x, self.offset_y)
+
+            # Избегаем белых полей
+            display_rect.left = max(min(display_rect.left, 0), self.width - display_rect.width)
+            display_rect.top = max(min(display_rect.top, 0), self.height - display_rect.height)
+
+        self.screen.fill((0, 0, 0))  # Устанавливаем черный фон вместо белого
+        self.screen.blit(scaled_background, display_rect)
 
     def run(self):
         running = True

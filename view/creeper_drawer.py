@@ -1,3 +1,4 @@
+import pygame
 from creepers import CreeperState, Field
 
 
@@ -34,14 +35,22 @@ class CreeperDrawer:
     def draw_step(self, drawer):
         self.update_position()
 
+        screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
+        screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
+        size = int(20 * drawer.zoom_level)  # Базовый размер = 20, умножаем на зум
+
         if self.state in {CreeperState.Walk, CreeperState.Explodes}:
-            drawer.screen.blit(drawer.images.creeper_image_walk, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_walk, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
         elif self.state == CreeperState.Born:
-            drawer.screen.blit(drawer.images.creeper_image_born, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_born, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
         elif self.state == CreeperState.Sleep:
-            drawer.screen.blit(drawer.images.creeper_image_sleep, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_sleep, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
         elif self.state == CreeperState.Hissing:
-            drawer.screen.blit(drawer.images.creeper_image_hiss, (self.cur_x, self.cur_y))
+            image = pygame.transform.scale(drawer.images.creeper_image_hiss, (size, size))
+            drawer.screen.blit(image, (screen_x, screen_y))
 
 
 class CreepersManager:
