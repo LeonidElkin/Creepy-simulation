@@ -114,7 +114,20 @@ class CMakeBuild(build_ext):
         if not build_temp.exists():
             build_temp.mkdir(parents=True)
 
-        subprocess.run(["cmake", ext.sourcedir + "/model", *cmake_args], cwd=build_temp, check=True)
+        model_dir = "model"
+        poetry_shell = "poetry", "run"
+
+        # conan
+        conan_output = Path(build_temp).joinpath("conan")
+        subprocess.run([*poetry_shell, "conan", "profile", "detect", "--force"], cwd=build_temp, check=True)
+        subprocess.run(
+            [*poetry_shell, "conan", "install", "model", f"--output-folder={conan_output}", "--build=missing"],
+            check=True,
+        )
+        cmake_args += [f"-DCMAKE_TOOLCHAIN_FILE={conan_output.joinpath("conan_toolchain.cmake")}"]
+
+        # cmake
+        subprocess.run(["cmake", Path(ext.sourcedir).joinpath(model_dir), *cmake_args], cwd=build_temp, check=True)
         subprocess.run(["cmake", "--build", ".", *build_args], cwd=build_temp, check=True)
 
 

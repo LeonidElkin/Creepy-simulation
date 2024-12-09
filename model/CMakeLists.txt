@@ -11,10 +11,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/dist" CACHE PATH "default install path" FORCE )
-endif()
-
 # Compiler check up
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14.0)
@@ -51,6 +47,8 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(fmt)
 
+find_package(glog REQUIRED)
+
 # Subdirectories
 add_subdirectory(creeper-simulation-library)
 add_subdirectory(pybind-interface)
@@ -64,15 +62,6 @@ endif ()
 
 # Testing
 if (BUILD_TESTING)
-    FetchContent_Declare(
-            GTest
-            GIT_REPOSITORY https://github.com/google/googletest.git
-            GIT_TAG v1.15.2
-            OVERRIDE_FIND_PACKAGE
-    )
-
-    FetchContent_MakeAvailable(GTest)
-
     include(CTest)
     enable_testing()
     add_subdirectory(tests)

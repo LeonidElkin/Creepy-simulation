@@ -1,0 +1,7 @@
+[requires]
+glog/[>=0.7.1]
+gtest/[>=1.15.0]
+
+[generators]
+CMakeDeps
+CMakeToolchain
