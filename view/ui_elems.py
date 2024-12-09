@@ -39,6 +39,11 @@ class CreeperSlider(UiElement):
         self.app.creeper_count = int(event.value)
         self.label.set_text(f"Creepers: {self.app.creeper_count}")
 
+    # def handel(self, event):
+    #     value = int(event.value)
+    #     self.app.parameters["creeper_count"] = value
+    #     self.label.set_text(f"Creepers: {value}")
+
 
 class TaoSlider(UiElement):
     def __init__(self, app):
@@ -46,7 +51,7 @@ class TaoSlider(UiElement):
         self.event = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 60), (400, 40)),
             start_value=app.thao // 1000,
-            value_range=(0.1, 5),
+            value_range=(0.5, 5),
             manager=app.manager,
         )
         self.add_label(
@@ -61,6 +66,11 @@ class TaoSlider(UiElement):
         self.app.thao = int(event.value * 1000)
         self.label.set_text(f"Thao: {self.app.thao / 1000:.1f} s")
 
+    # def handel(self, event):
+    #     value = int(event.value * 1000)  # Преобразуем в миллисекунды
+    #     self.app.parameters["thao"] = value
+    #     self.label.set_text(f"Thao: {value / 1000:.1f} s")
+
 
 class RadiusSlider(UiElement):
     def __init__(self, app):
@@ -68,7 +78,7 @@ class RadiusSlider(UiElement):
         self.event = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 110), (400, 40)),
             start_value=app.radius,
-            value_range=(1, 100),
+            value_range=(20, 200),
             manager=app.manager,
         )
         self.add_label(
@@ -82,6 +92,11 @@ class RadiusSlider(UiElement):
     def handel(self, event):
         self.app.radius = int(event.value)
         self.label.set_text(f"Walk radius: {self.app.radius}")
+
+    # def handel(self, event):
+    #     value = int(event.value)
+    #     self.app.parameters["radius"] = value
+    #     self.label.set_text(f"Walk radius: {value}")
 
 
 class RadiusExplosionSlider(UiElement):
@@ -104,6 +119,11 @@ class RadiusExplosionSlider(UiElement):
     def handel(self, event):
         self.app.radius_explosion = int(event.value)
         self.label.set_text(f"Radius explosion: {self.app.radius_explosion}")
+
+    # def handel(self, event):
+    #     value = int(event.value)
+    #     self.app.parameters["radius_explosion"] = value
+    #     self.label.set_text(f"Radius explosion: {value}")
 
 
 class StartButton(UiElement):
