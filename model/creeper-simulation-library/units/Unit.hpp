@@ -6,10 +6,15 @@
 
 #include "utils.hpp"
 
-class UnitParams { // NOLINT: No need to change due to "Rule of five"
+class UnitParams {// NOLINT: No need to change due to "Rule of five"
+  Point leftDownBound_;
+  Point rightUpBound_;
  public:
   double moveRadius;
-  UnitParams(double moveRadius);
+  UnitParams(double moveRadius, const Point &leftDownBound,
+             const Point &rightUpBound);
+  [[nodiscard]] const auto &getLeftDownBound() {return leftDownBound_;};
+  [[nodiscard]] const auto &getRightUpBound() {return rightUpBound_;};
   virtual ~UnitParams() = default;
   virtual Point generatePos(std::optional<Point> initialPoint) = 0;
 };

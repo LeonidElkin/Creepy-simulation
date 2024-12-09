@@ -6,29 +6,29 @@
 
 constexpr auto sleep_probability = 0.1;
 
-Creeper::Creeper(size_t id, const std::shared_ptr<CreeperParams>& params)
+Creeper::Creeper(size_t id, const std::shared_ptr<CreeperParams> &params)
     : Unit(id, params), params_(params) {}
 
 void Creeper::walk() {
   static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
   switch (state_) {
-    case State::Explodes:
-      state_ = State::Born;
+    case CreeperParams::State::Explodes:
+      state_ = CreeperParams::State::Born;
       setCoord(params_->generatePos({}));
       break;
-    case State::Sleep:
+    case CreeperParams::State::Sleep:
       if (dist_sleep(getRandom())) {
-        state_ = State::Walk;
+        state_ = CreeperParams::State::Walk;
         break;
       }
       break;
-    case State::Walk:
+    case CreeperParams::State::Walk:
       if (dist_sleep(getRandom())) {
-        state_ = State::Sleep;
+        state_ = CreeperParams::State::Sleep;
         break;
       }
     default:
-      state_ = State::Walk;
+      state_ = CreeperParams::State::Walk;
       setCoord(params_->generatePos(getCoord()));
   }
 }
@@ -38,51 +38,52 @@ void Creeper::updateState(
     const std::function<double(Point, Point)> &distanceFun) {
   if (&another == this) return;
 
-  if (state_ == State::Born) {
+  if (state_ == CreeperParams::State::Born) {
     return;
   }
 
-  if (state_ == State::Explodes) {
+  if (state_ == CreeperParams::State::Explodes) {
     return;
   }
 
   auto distance = distanceFun(getCoord(), another.getCoord());
   if (distance <= params_->explodeRadius) {
-    state_ = State::Explodes;
+    state_ = CreeperParams::State::Explodes;
     return;
   }
 
-  if (state_ == State::Hissing) return;
+  if (state_ == CreeperParams::State::Hissing) return;
 
   auto distHissing = std::bernoulli_distribution(1. / (distance));
 
   if (distHissing(getRandom())) {
-    state_ = State::Hissing;
-  } else if (state_ != State::Sleep) {
-    state_ = State::Walk;
+    state_ = CreeperParams::State::Hissing;
+  } else if (state_ != CreeperParams::State::Sleep) {
+    state_ = CreeperParams::State::Walk;
   }
 }
 
 CreeperParams::CreeperParams(double moveRadius, double explodeRadius,
-                             Point leftDownBound, Point rightUpBound)
-    : UnitParams(moveRadius),
-      explodeRadius(explodeRadius),
-      leftDownBound_(leftDownBound),
-      rightUpBound_(rightUpBound) {}
+                             const Point &leftDownBound,
+                             const Point &rightUpBound)
+    : UnitParams(moveRadius, leftDownBound, rightUpBound),
+      explodeRadius(explodeRadius) {}
 
 Point CreeperParams::generatePos(std::optional<Point> initialPoint) {
+  const auto &leftDownBound = getLeftDownBound();
+  const auto &rightUpBound = getRightUpBound();
   auto xDist =
       initialPoint
           ? std::uniform_real_distribution(
-                std::max(leftDownBound_.x, initialPoint->x - moveRadius),
-                std::min(rightUpBound_.x, initialPoint->x + moveRadius))
-          : std::uniform_real_distribution(leftDownBound_.x, rightUpBound_.x);
+                std::max(leftDownBound.x, initialPoint->x - moveRadius),
+                std::min(rightUpBound.x, initialPoint->x + moveRadius))
+          : std::uniform_real_distribution(leftDownBound.x, rightUpBound.x);
   auto yDist =
       initialPoint
           ? std::uniform_real_distribution(
-                std::max(leftDownBound_.y, initialPoint->y - moveRadius),
-                std::min(rightUpBound_.y, initialPoint->y + moveRadius))
-          : std::uniform_real_distribution(leftDownBound_.y, rightUpBound_.y);
+                std::max(leftDownBound.y, initialPoint->y - moveRadius),
+                std::min(rightUpBound.y, initialPoint->y + moveRadius))
+          : std::uniform_real_distribution(leftDownBound.y, rightUpBound.y);
 
   return Point(xDist(getRandom()), yDist(getRandom()));
 }

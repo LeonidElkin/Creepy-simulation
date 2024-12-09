@@ -11,28 +11,28 @@
 #include "utils.hpp"
 
 class CreeperParams : public UnitParams {
-  Point leftDownBound_;
-  Point rightUpBound_;
  public:
+  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes, Sleep };
   double explodeRadius;
-  CreeperParams(double moveRadius, double explodeRadius, Point leftDownBound, Point rightUpBound);
+  CreeperParams(double moveRadius, double explodeRadius,
+                const Point &leftDownBound, const Point &rightUpBound);
   Point generatePos(std::optional<Point> initialPoint) override;
 };
 
 class Creeper : public Unit {
- public:
-  enum class State : std::uint8_t { Born, Walk, Hissing, Explodes, Sleep };
-
- private:
   std::shared_ptr<CreeperParams> params_;
-  State state_{State::Born};
+  CreeperParams::State state_{CreeperParams::State::Born};
 
  public:
-  Creeper(size_t id, const std::shared_ptr<CreeperParams>& params);
+  Creeper(size_t id, const std::shared_ptr<CreeperParams> &params);
+
+  virtual ~Creeper() = default;
 
   void walk() override;
 
-  void updateState( const Unit &another, const std::function<double(Point, Point)> &distanceFun) override;
+  void updateState(
+      const Unit &another,
+      const std::function<double(Point, Point)> &distanceFun) override;
 };
 
 #endif  // CREEPY_SIMULATION_CREEPER_HPP
