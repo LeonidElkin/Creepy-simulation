@@ -11,10 +11,7 @@
 class Field {
   Point leftDownBound_;
   Point rightUpBound_;
-  double r_0_;
-  double moveRadius_;
 
-  std::function<Point(std::optional<Point>)> generatePosition_;
   std::function<double(Point p1, Point p2)> distanceFunc_;
 
   std::vector<Creeper> creepers_;

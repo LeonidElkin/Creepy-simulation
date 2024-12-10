@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
-#include "Creeper.hpp"
-#include "utils.hpp"
+#include "units/Creeper.hpp"
+#include "utils/utils.hpp"
 
 TEST(Creeper, InitTest) {
   auto point = Point(3, 3);
