@@ -124,7 +124,7 @@ class CMakeBuild(build_ext):
             [*poetry_shell, "conan", "install", "model", f"--output-folder={conan_output}", "--build=missing"],
             check=True,
         )
-        cmake_args += [f"-DCMAKE_TOOLCHAIN_FILE={conan_output.joinpath("conan_toolchain.cmake")}"]
+        cmake_args += [f"-DCMAKE_TOOLCHAIN_FILE={conan_output.joinpath('conan_toolchain.cmake')}"]
 
         # cmake
         subprocess.run(["cmake", Path(ext.sourcedir).joinpath(model_dir), *cmake_args], cwd=build_temp, check=True)
