@@ -28,17 +28,6 @@ else ()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang, MSVC and GCC.")
 endif ()
 
-# Dependencies
-include(FetchContent)
-
-FetchContent_Declare(
-        fmt
-        GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-        GIT_TAG 11.0.2
-        OVERRIDE_FIND_PACKAGE
-)
-FetchContent_MakeAvailable(fmt)
-
 find_package(glog REQUIRED)
 
 # Subdirectories
