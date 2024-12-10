@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-option(BUILD_TESTING "enable test" OFF) # TODO: Make it ON
+option(BUILD_TESTING "enable test" ON)
 
 project(Creepy-simulation LANGUAGES CXX VERSION 1.0)
 
@@ -53,7 +53,7 @@ FetchContent_MakeAvailable(fmt)
 
 # Subdirectories
 add_subdirectory(creeper-simulation-library)
-#add_subdirectory(pybind-interface) TODO: uncomment and fix this. Do in the last moment
+add_subdirectory(pybind-interface)
 
 # Sanitizers for Debug build
 include(cmake/sanitizers.cmake)
