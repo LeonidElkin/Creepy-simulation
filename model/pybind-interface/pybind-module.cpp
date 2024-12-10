@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "Field.hpp"
-#include "utils/utils.hpp"
+#include "utils.hpp"
 
 namespace py = pybind11;
 using namespace pybind11::literals;

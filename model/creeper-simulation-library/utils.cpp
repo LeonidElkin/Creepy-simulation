@@ -1,5 +1,7 @@
 #include "utils.hpp"
 
+#include <fmt/color.h>
+
 #include <cmath>
 #include <stdexcept>
 
@@ -49,4 +51,9 @@ std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType) {
       return &polarDistanceSquared;
   }
   throw std::runtime_error("unknown distance function enum was given");
+}
+
+// Logging
+void logInfo(const std::string& msg) {
+  fmt::print("{}{}\n", fmt::format(fmt::fg(fmt::color::green), "INFO: "), msg);
 }
