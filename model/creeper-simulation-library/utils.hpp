@@ -17,6 +17,5 @@ double euclideanDistanceSquared(const Point& p1, const Point& p2);
 double polarDistanceSquared(const Point& p1, const Point& p2);
 double manhattanDistanceSquared(const Point& p1, const Point& p2);
 std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType);
-void logInfo(const std::string& msg);
 
 #endif  // CREEPY_SIMULATION_UTILS_HPP
