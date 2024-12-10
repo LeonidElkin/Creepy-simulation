@@ -32,14 +32,6 @@ endif ()
 include(FetchContent)
 
 FetchContent_Declare(
-        pybind11
-        GIT_REPOSITORY https://github.com/pybind/pybind11.git
-        GIT_TAG v2.13.6
-        OVERRIDE_FIND_PACKAGE
-)
-FetchContent_MakeAvailable(pybind11)
-
-FetchContent_Declare(
         fmt
         GIT_REPOSITORY https://github.com/fmtlib/fmt.git
         GIT_TAG 11.0.2
