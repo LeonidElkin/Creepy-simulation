@@ -1,9 +1,9 @@
 name: CPP tests
 
-on: [push, pull_request]
+on: [ push, pull_request ]
 
 env:
-  BUILD_TYPE: Debug
+  BUILD_TYPE: RelWithDebInfo
 
 jobs:
   build:
@@ -21,8 +21,14 @@ jobs:
           sudo update-alternatives --set gcc /usr/bin/gcc-14
           sudo update-alternatives --set g++ /usr/bin/g++-14
 
+      - name: Conan
+        run: |
+          pip install conan
+          conan profile detect --force
+          conan install ${{github.workspace}}/model --output-folder=${{github.workspace}}/model/build/conan --build=missing --settings=build_type=${{env.BUILD_TYPE}}
+
       - name: Configure CMake
-        run: cmake ${{github.workspace}}/model -B ${{github.workspace}}/model/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        run: cmake ${{github.workspace}}/model -B ${{github.workspace}}/model/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/model/build/conan/conan_toolchain.cmake
 
       - name: Build
         run: cmake --build ${{github.workspace}}/model/build --config ${{env.BUILD_TYPE}}
