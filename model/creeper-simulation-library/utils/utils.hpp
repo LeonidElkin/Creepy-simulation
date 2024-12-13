@@ -1,5 +1,4 @@
-#ifndef CREEPY_SIMULATION_UTILS_HPP
-#define CREEPY_SIMULATION_UTILS_HPP
+#pragma once
 
 #include <functional>
 #include <random>
@@ -9,13 +8,13 @@ struct Point {
   double y;
 };
 
-enum class FuncType : std::uint8_t { Euclid, Polar, Manhattan };
 
 std::mt19937& getRandom();
 
-double euclideanDistanceSquared(const Point& p1, const Point& p2);
-double polarDistanceSquared(const Point& p1, const Point& p2);
-double manhattanDistanceSquared(const Point& p1, const Point& p2);
-std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType);
-
-#endif  // CREEPY_SIMULATION_UTILS_HPP
+namespace DistanceFunc {
+enum class Type : std::uint8_t { Euclid, Polar, Manhattan };
+double euclideanSquared(const Point& p1, const Point& p2);
+double polarSquared(const Point& p1, const Point& p2);
+double manhattanSquared(const Point& p1, const Point& p2);
+std::function<double(Point p1, Point p2)> funcToType(Type funcType);
+}  // namespace DistanceFunc

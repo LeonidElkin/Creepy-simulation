@@ -1,25 +1,24 @@
-#ifndef CREEPY_SIMULATION_STEVE_HPP
-#define CREEPY_SIMULATION_STEVE_HPP
+#pragma once
 
 #include "Unit.hpp"
 
-class SteveParams : public UnitParams {
+class StevesParams final : public UnitsParams {
  public:
   enum class State : std::uint8_t { Born };
-  SteveParams(double moveRadius, const Point& leftDownBound,
-              const Point& rightUpBound);
-  Point generatePos(std::optional<Point> initialPoint) override;
+
+  StevesParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount);
 };
 
-class Steve : public Unit {
-  std::shared_ptr<SteveParams> params_;
-  SteveParams::State state_{SteveParams::State::Born};
+class Steve final : public Unit {
+  std::shared_ptr<StevesParams> params_;
+  StevesParams::State state_{StevesParams::State::Born};
+
  public:
-  ~Steve() override = default;
-  void updateState(
-      const Unit& another,
-      const std::function<double(Point, Point)>& distanceFun) override;
-  void walk() override;
-};
+  Steve(const size_t id, const std::shared_ptr<StevesParams> &params) : Unit(id, params) {}
 
-#endif  // CREEPY_SIMULATION_STEVE_HPP
+  void updateState(const Unit &another) override;
+
+  void walk() override;
+
+  decltype(state_) getState() { return state_; }
+};
