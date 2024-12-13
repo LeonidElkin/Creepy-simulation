@@ -1,46 +1,60 @@
-#ifndef CREEPY_SIMULATION_UNIT_HPP
-#define CREEPY_SIMULATION_UNIT_HPP
+#pragma once
 
 #include <memory>
 #include <optional>
 
+#include "FieldParams.hpp"
 #include "utils.hpp"
 
-class UnitParams {// NOLINT: No need to change due to "Rule of five"
-  Point leftDownBound_;
-  Point rightUpBound_;
+class UnitsParams {
+  std::shared_ptr<FieldParams> fieldParams_;
+  double moveRadius_;
+
  public:
-  double moveRadius;
-  UnitParams(double moveRadius, const Point &leftDownBound,
-             const Point &rightUpBound);
-  [[nodiscard]] const auto &getLeftDownBound() {return leftDownBound_;};
-  [[nodiscard]] const auto &getRightUpBound() {return rightUpBound_;};
-  virtual ~UnitParams() = default;
-  virtual Point generatePos(std::optional<Point> initialPoint) = 0;
+  UnitsParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams);
+
+  [[nodiscard]] auto getMoveRadius() const { return moveRadius_; }
+  [[nodiscard]] auto getLeftDownBound() const { return fieldParams_->leftDownBound; }
+  [[nodiscard]] auto getRightUpBound() const { return fieldParams_->rightUpBound; }
+
+  virtual Point generatePos(std::optional<Point> initialPoint);
+
+  virtual ~UnitsParams() = default;
+
+  UnitsParams(const UnitsParams &) = delete;
+
+  void operator=(const UnitsParams &) = delete;
+
+  UnitsParams(UnitsParams &&) = delete;
+
+  void operator=(UnitsParams &&) = delete;
 };
 
-class Unit {  // NOLINT: No need to change due to "Rule of five"
+class Unit {
   Point coord_;
   size_t id_;
 
  protected:
-  void setID(size_t id) { id_ = id; }
-  void setCoord(Point coord) { coord_ = coord; }
+  void setID(const size_t id) { id_ = id; }
+  void setCoord(const Point coord) { coord_ = coord; }
 
  public:
+  explicit Unit(size_t id, const std::shared_ptr<UnitsParams> &params);
 
-  [[nodiscard]] auto getID() const { return id_; }
   [[nodiscard]] auto getCoord() const { return coord_; }
+  [[nodiscard]] auto getID() const { return id_; }
 
-  explicit Unit(size_t id, const std::shared_ptr<UnitParams>& params);
+  virtual void updateState(const Unit &another, const std::function<double(Point, Point)> &distanceFun) = 0;
+
+  virtual void walk() = 0;
 
   virtual ~Unit() = default;
 
-  virtual void updateState(
-      const Unit &another,
-      const std::function<double(Point, Point)> &distanceFun) = 0;
+  Unit(const Unit &other) = delete;
 
-  virtual void walk() = 0;
+  Unit &operator=(const Unit &other) = delete;
+
+  Unit(Unit &&other) = delete;
+
+  Unit &operator=(Unit &&other) = delete;
 };
-
-#endif  // CREEPY_SIMULATION_UNIT_HPP

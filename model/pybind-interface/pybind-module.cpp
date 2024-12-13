@@ -11,7 +11,7 @@ namespace py = pybind11;
 using namespace pybind11::literals;
 
 class FieldProvider {
-  Field field_;
+  Simulation field_;
   std::optional<std::future<void>> future_;
 
 public:
@@ -35,7 +35,7 @@ public:
 
 PYBIND11_MODULE(creepers, handle) {
   handle.doc() =
-      "pybind module to provide Field from creeper-simulation-library";
+      "pybind module to provide field from creeper-simulation-library";
   py::class_<Creeper>(handle, "Creeper")
       .def("get_coord",
            [](const Creeper& creeper) {
@@ -49,7 +49,7 @@ PYBIND11_MODULE(creepers, handle) {
       .value("Hissing", Creeper::State::Hissing)
       .value("Explodes", Creeper::State::Explodes)
       .value("Sleep", Creeper::State::Sleep);
-  py::class_<FieldProvider>(handle, "Field")
+  py::class_<FieldProvider>(handle, "field")
       .def(py::init<const py::tuple&, double, size_t, double, FuncType>(),
            "size_of_field"_a, "explosion_radius"_a, "creepers_num"_a,
            "move_radius"_a, "dist_func"_a)
