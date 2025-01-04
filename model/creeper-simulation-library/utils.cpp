@@ -52,8 +52,3 @@ std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType) {
   }
   throw std::runtime_error("unknown distance function enum was given");
 }
-
-// Logging
-void logInfo(const std::string& msg) {
-//  fmt::print("{}{}\n", fmt::format(fmt::fg(fmt::color::green), "INFO: "), msg);
-}
