@@ -6,10 +6,10 @@ import pygame
 import pygame_gui
 from creepers import DistFunc
 
-from view import creeper_drawer as drw
 from view import image_provider, ui_elems
 from view.block import Block
-from view.ocelot import OcelotDrawer
+from view.units import creeper_drawer as drw
+from view.units.ocelot_drawer import OcelotDrawer
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -207,7 +207,6 @@ class Simulation:
         grid_x = int(world_x // block_size) * block_size
         grid_y = int(world_y // block_size) * block_size
 
-        # Добавляем блок
         self.blocks.append(Block(grid_x, grid_y, block_size))
 
     def _handle_ui_event(self, event):

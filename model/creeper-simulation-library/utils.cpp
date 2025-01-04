@@ -55,5 +55,5 @@ std::function<double(Point p1, Point p2)> getFuncFromEnum(FuncType funcType) {
 
 // Logging
 void logInfo(const std::string& msg) {
-  fmt::print("{}{}\n", fmt::format(fmt::fg(fmt::color::green), "INFO: "), msg);
+//  fmt::print("{}{}\n", fmt::format(fmt::fg(fmt::color::green), "INFO: "), msg);
 }
