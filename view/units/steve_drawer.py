@@ -1,7 +1,7 @@
 import pygame
 
 
-class OcelotDrawer:
+class SteveDrawer:
     def __init__(self, position: tuple[float, float]):
         self.cur_x, self.cur_y = position
         self.target_x, self.target_y = position
@@ -33,7 +33,7 @@ class OcelotDrawer:
 
         size = int(20 * drawer.zoom_level)
 
-        # Проверяем, находится ли Оцелот в пределах экрана
+        # Проверяем, находится ли Стив в пределах экрана
         if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
             return  # Оцелот вне видимой области
 
@@ -41,18 +41,17 @@ class OcelotDrawer:
         drawer.screen.blit(image, (screen_x, screen_y))
 
 
-class OcelotManager:
+class SteveManager:
     def __init__(self, app, position_shift):
         self.shift = position_shift
-        # Инициализация оцелотов случайными координатами
-        self.ocelots = [
-            OcelotDrawer((app.width // 2 + i * 50, app.height // 2 + i * 50))
-            for i in range(app.creeper_count // 10)  # Допустим, один оцелот на 10 криперов
+        # Инициализация Стивов случайными координатами
+        self.steve = [
+            SteveDrawer((app.width // 2 + i * 50, app.height // 2 + i * 50))
+            for i in range(app.creeper_count // 10)  # Допустим, один Стив на 10 криперов
         ]
 
     def update_ocelots(self, steps, drawer):
-        for ocelot in self.ocelots:
-            # Пример простого случайного перемещения
+        for ocelot in self.steve:
             new_x = ocelot.cur_x + (steps % 10 - 5)
             new_y = ocelot.cur_y + (steps % 10 - 5)
             ocelot.update((new_x, new_y), steps, drawer)
@@ -66,6 +65,6 @@ class OcelotManager:
         right_bound = left_bound + scaled_width
         bottom_bound = top_bound + scaled_height
 
-        for ocelot in self.ocelots:
-            if left_bound <= ocelot.cur_x <= right_bound and top_bound <= ocelot.cur_y <= bottom_bound:
-                ocelot.draw_step(drawer)
+        for steve in self.steve:
+            if left_bound <= steve.cur_x <= right_bound and top_bound <= steve.cur_y <= bottom_bound:
+                steve.draw_step(drawer)
