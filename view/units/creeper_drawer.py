@@ -1,7 +1,6 @@
 import pygame
 from creepers import CreeperState, Field
-
-from view.units.Entity import EntityDrawer, entity_within_bounds
+from units.Entity import EntityDrawer, entity_within_bounds
 
 
 class CreeperDrawer(EntityDrawer):

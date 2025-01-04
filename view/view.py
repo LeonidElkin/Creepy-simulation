@@ -4,13 +4,11 @@ from copy import copy
 
 import pygame
 import pygame_gui
+from block import Block
 from creepers import DistFunc
-
-from view import image_provider, ui_elems
-from view.block import Block
-from view.units import creeper_drawer as drw
-from view.units.ocelot_drawer import OcelotDrawer
-from view.units.steve_drawer import SteveDrawer
+from units import creeper_drawer as drw
+from units.ocelot_drawer import OcelotDrawer
+from units.steve_drawer import SteveDrawer
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -82,6 +80,9 @@ class DrawSparkle:
 
 class Simulation:
     def __init__(self, width=1920, height=1080):
+        import image_provider
+        import ui_elems
+
         pygame.init()
         self.width = width
         self.height = height
