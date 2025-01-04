@@ -29,6 +29,7 @@ class ImageProvider:
             pygame.image.load("view/image/bonk.png").convert_alpha(), (20, 20)
         )
         self.ocelot = pygame.transform.scale(pygame.image.load("view/image/ocelot.png").convert_alpha(), (20, 20))
+        self.steve = pygame.transform.scale(pygame.image.load("view/image/steve.png").convert_alpha(), (20, 20))
         self.bedrock = pygame.transform.scale(pygame.image.load("view/image/bedrock.png").convert_alpha(), (20, 20))
         self.background_image = pygame.image.load("view/image/background.jpg").convert()
 
@@ -47,6 +48,11 @@ class ImageProvider:
         self.creeper_image_born = pygame.transform.scale(
             pygame.image.load("view/image/born.png").convert_alpha(), (size, size)
         )
+        self.creeper_image_bonk = pygame.transform.scale(
+            pygame.image.load("view/image/bonk.png").convert_alpha(), (size, size)
+        )
+        self.ocelot = pygame.transform.scale(pygame.image.load("view/image/ocelot.png").convert_alpha(), (size, size))
+        self.steve = pygame.transform.scale(pygame.image.load("view/image/steve.png").convert_alpha(), (size, size))
         self.explosion_frames = [pygame.transform.scale(frame, (size, size)) for frame in self.explosion_frames]
         self.sparkle_frames = [pygame.transform.scale(frame, (size, size)) for frame in self.sparkle_frames]
 

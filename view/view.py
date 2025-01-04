@@ -10,6 +10,7 @@ from view import image_provider, ui_elems
 from view.block import Block
 from view.units import creeper_drawer as drw
 from view.units.ocelot_drawer import OcelotDrawer
+from view.units.steve_drawer import SteveDrawer
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -96,7 +97,11 @@ class Simulation:
         self.blocks = []
         # TODO: Раскоментить когда появится логика для оцелота
         # self.ocelot_manager = OcelotManager(self, (self.center_x, self.center_y))
-        self.ocelot = OcelotDrawer((self.center_x, self.center_y))  # TODO: Удалить
+        self.ocelot = OcelotDrawer((self.center_x, self.center_y), self.images.ocelot)  # TODO: Удалить
+
+        # TODO: Раскоментить когда появится логика для Стива
+        # self.steve_manager = SteveManager(self, (self.center_x, self.center_y))
+        self.steve = SteveDrawer((self.center_x // 2, self.center_y // 2), self.images.steve)  # TODO: Удалить
 
         try:
             self.background_image = pygame.transform.scale(self.images.background_image, (self.width, self.height))
@@ -137,6 +142,10 @@ class Simulation:
             "radius_explosion": self.radius_explosion,
             "thao": self.thao,
         }
+
+    def draw_entities(self):
+        self.ocelot.draw_step(self)
+        self.steve.draw_step(self)
 
     def _handle_mouse_button_down(self, event):
         right_button = 3
@@ -294,7 +303,11 @@ class Simulation:
             # if self.ocelot_manager: # TODO: Раскоментить когда появится логика оцелота
             #     self.ocelot_manager.update_ocelots(steps=1, drawer=self)
             #     self.ocelot_manager.draw_ocelots(self)
-            self.ocelot.draw_step(self)  # TODO: УДАЛИТЬ
+
+            # if self.steve_manager: # TODO: Раскоментить когда появится логика Стива
+            #     self.steve_manager.update_steves(steps=1, drawer=self)
+            #     self.steve_manager.draw_steves(self)
+            self.draw_entities()
 
             self.manager.draw_ui(self.screen)
 
