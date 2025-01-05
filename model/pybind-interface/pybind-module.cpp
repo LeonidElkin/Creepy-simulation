@@ -28,6 +28,30 @@ class SimulationProvider {
   auto getSteves() const { return field_.getSteves(); }
 };
 
+class SimulationParamsProvider {
+  SimulationParams params_;
+
+ public:
+  SimulationParamsProvider() = default;
+
+  SimulationParamsProvider& setFieldParams(const py::tuple& leftDownBound, const py::tuple& rightUpBound,
+                                           const DistanceFunc::Type distanceFunc) {
+    params_.setFieldParams({leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
+                           {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}, funcToType(distanceFunc));
+    return *this;
+  }
+
+  SimulationParamsProvider& setCreeperParams(double moveRadius, double explodeRadius, uint32_t count) {
+    params_.setCreeperParams(moveRadius, explodeRadius, count);
+    return *this;
+  }
+
+  SimulationParamsProvider& setSteveParams(double moveRadius, uint32_t count) {
+    params_.setSteveParams(moveRadius, count);
+    return *this;
+  }
+};
+
 PYBIND11_MODULE(creepers, handle) {
   handle.doc() = "pybind module to provide field from creeper-simulation-library";
   py::class_<Creeper>(handle, "Creeper")
@@ -51,11 +75,13 @@ PYBIND11_MODULE(creepers, handle) {
       .value("Hissing", CreepersParams::State::Hissing)
       .value("Explodes", CreepersParams::State::Explodes)
       .value("Sleep", CreepersParams::State::Sleep);
-  py::class_<SimulationParams>(handle, "SimulationParams")
+  py::class_<SimulationParamsProvider>(handle, "SimulationParams")
       .def(py::init<>())
-      .def("set_field_params", &SimulationParams::setFieldParams)
-      .def("set_creeper_params", &SimulationParams::setCreeperParams)
-      .def("set_steve_params", &SimulationParams::setSteveParams);
+      .def("set_field_params", &SimulationParamsProvider::setFieldParams, "left_down_bound"_a, "right_up_bound"_a,
+           "distance_func"_a)
+      .def("set_creeper_params", &SimulationParamsProvider::setCreeperParams, "move_radius"_a, "explode_radius"_a,
+           "count"_a)
+      .def("set_steve_params", &SimulationParamsProvider::setSteveParams, "move_radius"_a, "count"_a);
   py::class_<SimulationProvider>(handle, "Simulation")
       .def(py::init<const SimulationParams&>(), "simulation_params"_a)
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
