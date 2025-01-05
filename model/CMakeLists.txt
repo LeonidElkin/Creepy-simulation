@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-option(BUILD_TESTING "enable test" ON)
+option(BUILD_TESTING "enable test" OFF)
 
 project(Creepy-simulation LANGUAGES CXX VERSION 1.0)
 
@@ -39,7 +39,6 @@ include(cmake/sanitizers.cmake)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_sanitizers()
 endif ()
-
 
 # Testing
 if (BUILD_TESTING)
