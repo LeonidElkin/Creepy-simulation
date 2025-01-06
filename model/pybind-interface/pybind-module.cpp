@@ -11,13 +11,13 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
+class SimulationProvider;
+
 class SimulationParamsProvider {
   SimulationParams params_;
 
  public:
   SimulationParamsProvider() = default;
-
-  SimulationParams& getOrigParams() {return params_;}
 
   SimulationParamsProvider& setFieldParams(const py::tuple& leftDownBound, const py::tuple& rightUpBound,
                                            const DistanceFunc::Type distanceFunc) {
@@ -35,6 +35,8 @@ class SimulationParamsProvider {
     params_.setSteveParams(moveRadius, count);
     return *this;
   }
+
+  friend SimulationProvider;
 };
 
 class SimulationProvider {
@@ -42,7 +44,7 @@ class SimulationProvider {
   std::optional<std::future<void>> future_;
 
  public:
-  SimulationProvider(SimulationParamsProvider& simulationParams) : field_(simulationParams.getOrigParams()) {}
+  explicit SimulationProvider(SimulationParamsProvider& simulationParams) : field_(simulationParams.params_) {}
 
   auto runUpdateSimulation() {
     future_ = std::async(std::launch::async, [this] { field_.updateField(); });
