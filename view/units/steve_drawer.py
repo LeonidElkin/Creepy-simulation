@@ -1,3 +1,4 @@
+from view.logger import logger
 from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
@@ -21,13 +22,28 @@ class SteveManager:
         def shift_coord(coord):
             return coord[0] + self.shift[0], coord[1] + self.shift[1]
 
+        data = list((shift_coord(steve.get_coord()), steve.get_state()) for steve in steves)
+        logger.info(f"Processed steve data: {data}")
         return ((shift_coord(steve.get_coord()), steve.get_state()) for steve in steves)
 
     def update_steves(self, steps, drawer):
         self.app.simulation.wait_update_field()
-        for steve_obj, (coord, _) in zip(self.steves, self._steves2data(self.app.simulation.get_steves())):
-            steve_obj.update(coord, steps)
+        logger.debug(f"Updating steves: total={len(self.steves)}")
+
+        data = list(self._steves2data(self.app.simulation.get_steves()))
+        if len(self.steves) != len(data):
+            logger.error(f"Mismatch in steve counts: {len(self.steves)} vs {len(data)}")
+            return
+
+        for steve_obj, (coord, _) in zip(self.steves, data):
+            try:
+                steve_obj.update(coord, steps)
+            except Exception as e:
+                logger.exception(f"Error updating steve: {e}")
+                raise
+
         self.app.simulation.run_update_field()
+        logger.info("Steves updated.")
 
     def draw_steves(self, drawer):
         for steve in self.steves:

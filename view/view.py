@@ -254,7 +254,8 @@ class SimulationView:
         )
         logger.info(f"Field params set: width={self.width}, height={self.height}, dist_func={self.dist_func}")
         self.params.set_creeper_params(self.radius, self.radius_explosion, self.creeper_count)
-        # self.params.set_steve_params(self.radius, self.creeper_count//10)
+        self.params.set_steve_params(self.radius, 10)
+
         self.simulation = Simulation(self.params)
         logger.info(
             f"Creeper params set: radius={self.radius}, explosion_radius={self.radius_explosion}, "
