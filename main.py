@@ -1,4 +1,8 @@
-from view.view import Simulation
+import faulthandler
+
+from view.view import SimulationView
+
+faulthandler.enable()
 
 if __name__ == "__main__":
-    Simulation().run()
+    SimulationView().run()

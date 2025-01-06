@@ -1,46 +1,34 @@
 import pygame
-from creepers import CreeperState, Field
-from units.Entity import EntityDrawer, entity_within_bounds
+from creepers import CreeperState
+
+from view.logger import logger
+from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
 class CreeperDrawer(EntityDrawer):
     def __init__(self, position: tuple[float, float], state: CreeperState):
-        super().__init__(position, None, state)  # Используем None для image, будет установлено позже
+        super().__init__(position, None, state)
         self.dx = self.dy = 0
         self.state = state
 
     def update(self, new_position: tuple[float, float], steps, state=None):
         self.state = state
         if state == CreeperState.Born:
-            # Для состояния Born просто устанавливаем текущую позицию и сбрасываем цель
             self.cur_x, self.cur_y = new_position
             self.target_x, self.target_y = new_position
             self.steps_left = 0
         else:
-            # Для остальных состояний выполняем обычное обновление
             self.target_x, self.target_y = new_position
             self._set_target(steps)
 
     def draw_step(self, drawer):
         self.update_position()
-
         screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
         screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
-
         size = int(20 * drawer.zoom_level)
 
         if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
             return  # Крипер вне видимой области
-
-        # TODO: когда появится  статус BONK, раскомментировать
-
-        # if self.state == CreeperState.BONK:
-        #     image = pygame.transform.scale(drawer.images.creeper_image_bonk, (size, size))
-        #     drawer.screen.blit(image, (screen_x, screen_y))
-        #     # Рисуем Sparkle над крипером
-        #     sparkle_frame_index = (pygame.time.get_ticks() // 100) % len(drawer.images.sparkle_frames)
-        #     sparkle_image = pygame.transform.scale(drawer.images.sparkle_frames[sparkle_frame_index], (size, size))
-        #     drawer.screen.blit(sparkle_image, (screen_x, screen_y - size))  # Анимация над крипером
 
         if self.state == CreeperState.Walk:
             image = drawer.images.creeper_image_walk
@@ -61,16 +49,12 @@ class CreeperDrawer(EntityDrawer):
 
 class CreepersManager:
     def __init__(self, app, position_shift):
-        self.field = Field(
-            (app.width, app.height),
-            creepers_num=app.creeper_count,
-            explosion_radius=app.radius_explosion,
-            move_radius=app.radius,
-            dist_func=app.dist_func,
-        )
+        self.app = app
         self.shift = position_shift
-        self.creepers = [CreeperDrawer(coord, state) for coord, state in self._creepers2data(self.field.get_creepers())]
-        self.field.run_update_field()
+        self.creepers = [
+            CreeperDrawer(coord, state) for coord, state in self._creepers2data(app.simulation.get_creepers())
+        ]
+        app.simulation.run_update_field()
 
     def _creepers2data(self, creepers):
         def shift_coord(coord):
@@ -79,17 +63,23 @@ class CreepersManager:
         return ((shift_coord(creeper.get_coord()), creeper.get_state()) for creeper in creepers)
 
     def update_creepers(self, steps, drawer):
-        self.field.wait_update_field()
-        for drawers, (coord, state) in zip(self.creepers, self._creepers2data(self.field.get_creepers())):
-            # if state == CreeperState.BONK: TODO: Раскоментить когда будет BONK
-            # drawers.state = CreeperState.BONK TODO: Раскоментить когда будет BONK
-            # else:
-            drawers.update(coord, steps, state)
-        self.field.run_update_field()
+        self.app.simulation.wait_update_field()
+        logger.debug(f"Updating creepers: total={len(self.creepers)}")
+        data = list(self._creepers2data(self.app.simulation.get_creepers()))
+        if len(self.creepers) != len(data):
+            logger.error(f"Mismatch in creeper counts: {len(self.creepers)} vs {len(data)}")
+            return
+        for drawer_obj, (coord, state) in zip(self.creepers, data):
+            drawer_obj.update(coord, steps, state)
+        self.app.simulation.run_update_field()
+        logger.info("Creepers updated.")
 
     def draw_creepers(self, drawer):
-        # Вычисляем границы видимой области
-
-        for creeper in self.creepers:
+        for index, creeper in enumerate(self.creepers):
             if entity_within_bounds(creeper, drawer):
-                creeper.draw_step(drawer)
+                try:
+                    logger.debug(f"Drawing creeper {index}: position=({creeper.cur_x}, {creeper.cur_y})")
+                    creeper.draw_step(drawer)
+                except Exception as e:
+                    logger.error(f"Error drawing creeper {index}: {e}")
+                    raise

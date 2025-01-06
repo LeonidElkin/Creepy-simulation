@@ -1,6 +1,4 @@
-from units.Entity import EntityDrawer
-
-from view.units.Entity import entity_within_bounds
+from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
 class OcelotDrawer(EntityDrawer):
