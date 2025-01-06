@@ -11,22 +11,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
-class SimulationProvider {
-  Simulation field_;
-  std::optional<std::future<void>> future_;
-
- public:
-  explicit SimulationProvider(const SimulationParams& simulationParams) : field_(simulationParams) {}
-
-  auto runUpdateSimulation() {
-    future_ = std::async(std::launch::async, [this] { field_.updateField(); });
-  }
-
-  void waitUpdateSimulation() const { future_->wait(); }
-
-  auto getCreepers() const { return field_.getCreepers(); }
-  auto getSteves() const { return field_.getSteves(); }
-};
+class SimulationProvider;
 
 class SimulationParamsProvider {
   SimulationParams params_;
@@ -50,6 +35,25 @@ class SimulationParamsProvider {
     params_.setSteveParams(moveRadius, count);
     return *this;
   }
+
+  friend SimulationProvider;
+};
+
+class SimulationProvider {
+  Simulation field_;
+  std::optional<std::future<void>> future_;
+
+ public:
+  explicit SimulationProvider(SimulationParamsProvider& simulationParams) : field_(simulationParams.params_) {}
+
+  auto runUpdateSimulation() {
+    future_ = std::async(std::launch::async, [this] { field_.updateField(); });
+  }
+
+  void waitUpdateSimulation() const { future_->wait(); }
+
+  auto getCreepers() const { return field_.getCreepers(); }
+  auto getSteves() const { return field_.getSteves(); }
 };
 
 PYBIND11_MODULE(creepers, handle) {
@@ -83,7 +87,7 @@ PYBIND11_MODULE(creepers, handle) {
            "count"_a)
       .def("set_steve_params", &SimulationParamsProvider::setSteveParams, "move_radius"_a, "count"_a);
   py::class_<SimulationProvider>(handle, "Simulation")
-      .def(py::init<const SimulationParams&>(), "simulation_params"_a)
+      .def(py::init<SimulationParamsProvider&>(), "simulation_params"_a)
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
       .def("wait_update_field", &SimulationProvider::waitUpdateSimulation)
       .def("get_creepers", &SimulationProvider::getCreepers)
