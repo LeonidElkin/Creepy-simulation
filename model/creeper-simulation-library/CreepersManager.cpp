@@ -25,7 +25,7 @@ void CreepersManager::walk() {
   }
 }
 void CreepersManager::refreshActives() {
-  auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size());
+  auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size()-1);
   actives_ =
       std::views::repeat(dist) | std::views::take(std::min(params_->creepers_num_changing_state, creepers_.size())) |
       std::views::transform([this](auto d) { return creepers_[d(getRandom())]; }) | std::ranges::to<std::vector>();
