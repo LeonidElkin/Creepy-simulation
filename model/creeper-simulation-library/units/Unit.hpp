@@ -47,9 +47,11 @@ class Unit {
   [[nodiscard]] auto getCoord() const { return coord_; }
   [[nodiscard]] auto getID() const { return id_; }
 
-  virtual void updateState(const Unit &another) = 0;
+  virtual void updateState(const std::shared_ptr<Unit> &another) = 0;
 
   virtual void walk() = 0;
+
+  virtual void die() = 0;
 
   virtual ~Unit() = default;
 

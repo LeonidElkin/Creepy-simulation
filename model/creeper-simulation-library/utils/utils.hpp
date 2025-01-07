@@ -8,7 +8,6 @@ struct Point {
   double y;
 };
 
-
 std::mt19937& getRandom();
 
 namespace DistanceFunc {
