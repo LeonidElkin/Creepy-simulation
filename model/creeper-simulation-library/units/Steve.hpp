@@ -9,7 +9,7 @@ class StevesParams final : public UnitsParams {
   StevesParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount);
 };
 
-class Steve final : public Unit {
+class Steve final : public Unit, std::enable_shared_from_this<Steve> {
   std::shared_ptr<StevesParams> params_;
   StevesParams::State state_{StevesParams::State::Born};
 
