@@ -7,31 +7,16 @@
 #include <random>
 #include <ranges>
 
-constexpr size_t creepers_num_changing_state = 250;
+Simulation::Simulation(const std::shared_ptr<FieldParams> &fieldParams,
+                       const std::shared_ptr<CreepersParams> &creepersParams,
+                       const std::shared_ptr<StevesParams> &stevesParams)
+    : fieldParams(fieldParams), creepersManager_(creepersParams), stevesManager_(stevesParams) {}
 
 void Simulation::updateField() {
-#pragma omp parallel for
-  for (auto &creeper : creepers_) {
-    creeper.walk();
-  }
-  auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size());
-
-  const auto creepersChangingState =
-      std::views::repeat(dist) | std::views::take(std::min(creepers_num_changing_state, creepers_.size())) |
-      std::views::transform([](auto d) { return d(getRandom()); }) | std::ranges::to<std::vector>();
-
-#pragma omp parallel for
-  for (auto idx : creepersChangingState) {
-    for (const auto &creeper2 : creepers_) {
-      if (&creepers_[idx] != &creeper2) {
-        creepers_[idx].updateState(creeper2);
-      }
-    }
-  }
+  creepersManager_.beginAndFindSteves(stevesManager_.getSteves());
+  creepersManager_.walk();
+  stevesManager_.walk();
+  creepersManager_.refreshActives();
+  creepersManager_.interactWith(creepersManager_.creepers_);
+  creepersManager_.interactWith(stevesManager_.steves_);
 }
-
-Simulation::Simulation(const SimulationParams &simulationParams)
-    : simulationParams_(simulationParams),
-      creepers_(std::views::iota(0LU, simulationParams_.getCreepersParams_()->getUnitsCount()) |
-                std::views::transform([&](auto i) { return Creeper(i, simulationParams_.getCreepersParams_()); }) |
-                std::ranges::to<std::vector>()) {}
