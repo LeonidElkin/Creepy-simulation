@@ -52,7 +52,8 @@ class CreepersManager:
         self.app = app
         self.shift = position_shift
         self.creepers = [
-            CreeperDrawer(coord, state) for coord, state in self._creepers2data(app.simulation.get_creepers())
+            CreeperDrawer(coord, state)
+            for coord, state in self._creepers2data(app.simulation.get_creepers_manager().get_creepers())
         ]
         app.simulation.run_update_field()
 

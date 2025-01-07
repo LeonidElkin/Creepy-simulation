@@ -15,7 +15,8 @@ class SteveManager:
         self.app = app
         self.shift = position_shift
         self.steves = [
-            SteveDrawer(coord, app.images.steve) for coord, _ in self._steves2data(app.simulation.get_steves())
+            SteveDrawer(coord, app.images.steve)
+            for coord, _ in self._steves2data(app.simulation.get_steves_manager().get_steves())
         ]
 
     def _steves2data(self, steves):
