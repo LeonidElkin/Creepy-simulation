@@ -69,7 +69,7 @@ PYBIND11_MODULE(creepers, handle) {
              return py::make_tuple(p.x, p.y);
            })
       .def("get_state", &Steve::getState);
-  py::class_<StevesManager>(handle, "Steve").def("get_steves", &StevesManager::getSteves);
+  py::class_<StevesManager>(handle, "SteveManager").def("get_steves", &StevesManager::getSteves);
 
   py::enum_<CreepersParams::State>(handle, "CreeperState")
       .value("Born", CreepersParams::State::Born)
