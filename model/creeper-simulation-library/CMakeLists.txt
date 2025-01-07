@@ -4,7 +4,7 @@ add_subdirectory(utils)
 add_subdirectory(field)
 add_subdirectory(units)
 
-add_library(creeper-simulation-library Simulation.cpp CreepersManager.cpp)
+add_library(creeper-simulation-library Simulation.cpp CreepersManager.cpp StevesManager.cpp)
 
 target_include_directories(creeper-simulation-library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
