@@ -17,7 +17,7 @@ class CreepersParams final : public UnitsParams {
                  uint32_t unitsCount);
 };
 
-class Creeper final : public Unit {
+class Creeper final : public Unit, public std::enable_shared_from_this<Creeper> {
   std::shared_ptr<CreepersParams> params_;
   CreepersParams::State state_{CreepersParams::State::Born};
   std::shared_ptr<Steve> target_;
