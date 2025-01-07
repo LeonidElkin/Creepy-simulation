@@ -4,17 +4,18 @@
 
 #include "Creeper.hpp"
 #include "FieldParams.hpp"
+#include "Simulation.hpp"
 #include "Steve.hpp"
 
-class SimulationParams {
+class SimulationFabric {
   std::shared_ptr<FieldParams> fieldParams_;
   std::shared_ptr<CreepersParams> CreepersParams_;
   std::shared_ptr<StevesParams> StevesParams_;
 
  public:
-  SimulationParams() = default;
-  SimulationParams& setFieldParams(const Point &leftDownBound, const Point &rightUpBound,
-                      const std::function<double(Point p1, Point p2)> &distanceFunc) {
+  SimulationFabric() = default;
+  SimulationFabric& setFieldParams(const Point& leftDownBound, const Point& rightUpBound,
+                                   const std::function<double(Point p1, Point p2)>& distanceFunc) {
     fieldParams_ = std::make_shared<FieldParams>(leftDownBound, rightUpBound, distanceFunc);
     return *this;
   }
@@ -22,7 +23,7 @@ class SimulationParams {
     if (!fieldParams_) throw std::invalid_argument("FieldParams_ is not set");
     return fieldParams_;
   }
-  SimulationParams& setCreeperParams(double moveRadius, double explodeRadius, uint32_t count) {
+  SimulationFabric& setCreeperParams(double moveRadius = 10, double explodeRadius = 10, uint32_t count = 0) {
     if (!fieldParams_) {
       throw std::invalid_argument("fieldParams_ is not set");
     }
@@ -34,7 +35,7 @@ class SimulationParams {
     return CreepersParams_;
   }
 
-  SimulationParams& setSteveParams(double moveRadius, uint32_t count) {
+  SimulationFabric& setSteveParams(double moveRadius = 10, uint32_t count = 0) {
     if (!fieldParams_) {
       throw std::invalid_argument("fieldParams_ is not set");
     }
@@ -44,5 +45,11 @@ class SimulationParams {
   decltype(StevesParams_) getStevesParams_() {
     if (!StevesParams_) throw std::invalid_argument("StevesParams_ is not set");
     return StevesParams_;
+  }
+
+  Simulation build() {
+    if (!CreepersParams_) setCreeperParams();
+    if (!StevesParams_) setSteveParams();
+    return Simulation(fieldParams_, CreepersParams_, StevesParams_);
   }
 };

@@ -1,22 +1,21 @@
 #pragma once
 
-#include <functional>
-#include <optional>
 #include <vector>
 
 #include "Creeper.hpp"
-#include "SimulationParams.hpp"
+#include "CreepersManager.hpp"
 #include "Steve.hpp"
-#include "utils.hpp"
+#include "StevesManager.hpp"
 
 class Simulation {
-  SimulationParams simulationParams_;
-  std::vector<Creeper> creepers_;
-  std::vector<Steve> steves_;
+  std::shared_ptr<FieldParams> fieldParams;
+  CreepersManager creepersManager_;
+  StevesManager stevesManager_;
 
  public:
-  explicit Simulation(const SimulationParams& simulationParams);
+  Simulation(const std::shared_ptr<FieldParams>& fieldParams, const std::shared_ptr<CreepersParams>& creepersParams,
+             const std::shared_ptr<StevesParams>& stevesParams);
   void updateField();
-  const std::vector<Creeper>& getCreepers() const { return creepers_; }
-  const std::vector<Steve>& getSteves() const { return steves_; }
+  CreepersManager& getCreepersManager() { return creepersManager_; }
+  StevesManager& getStevesManager() { return stevesManager_; }
 };
