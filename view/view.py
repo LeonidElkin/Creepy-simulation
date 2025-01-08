@@ -261,7 +261,7 @@ class SimulationView:
             f"count={self.creeper_count}"
         )
 
-        # self.creepers_provider = drw.CreepersManager(self, (self.center_x, self.center_y))
+        # self.creepers_provider = CreepersManager(self, (self.center_x, self.center_y))
         self.steve_manager = SteveManager(self, (self.center_x, self.center_y))
         logger.info("Game initialized successfully.")
 

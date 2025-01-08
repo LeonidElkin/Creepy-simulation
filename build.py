@@ -121,14 +121,26 @@ class CMakeBuild(build_ext):
         conan_output = Path(build_temp).joinpath("conan")
         subprocess.run([*poetry_shell, "conan", "profile", "detect", "--force"], cwd=build_temp, check=True)
         subprocess.run(
-            [*poetry_shell, "conan", "install", "model", f"--output-folder={conan_output}", "--build=missing"],
+            [
+                *poetry_shell,
+                "conan",
+                "install",
+                "model",
+                f"--output-folder={conan_output}",
+                "--build=missing",
+                f"--settings=build_type={cfg}",
+            ],
             check=True,
         )
         cmake_args += [f"-DCMAKE_TOOLCHAIN_FILE={conan_output.joinpath('conan_toolchain.cmake')}"]
 
         # cmake
-        subprocess.run(["cmake", Path(ext.sourcedir).joinpath(model_dir), *cmake_args], cwd=build_temp, check=True)
-        subprocess.run(["cmake", "--build", ".", *build_args], cwd=build_temp, check=True)
+        print(
+            subprocess.run(
+                ["cmake", Path(ext.sourcedir).joinpath(model_dir), *cmake_args], cwd=build_temp, check=True
+            ).args
+        )
+        print(subprocess.run(["cmake", "--build", ".", *build_args], cwd=build_temp, check=True).args)
 
 
 def build(setup_kwargs):

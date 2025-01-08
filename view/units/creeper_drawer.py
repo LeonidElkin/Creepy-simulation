@@ -66,7 +66,7 @@ class CreepersManager:
     def update_creepers(self, steps, drawer):
         self.app.simulation.wait_update_field()
         logger.debug(f"Updating creepers: total={len(self.creepers)}")
-        data = list(self._creepers2data(self.app.simulation.get_creepers()))
+        data = list(self._creepers2data(self.app.simulation.get_creepers_manager().get_creepers()))
         if len(self.creepers) != len(data):
             logger.error(f"Mismatch in creeper counts: {len(self.creepers)} vs {len(data)}")
             return
