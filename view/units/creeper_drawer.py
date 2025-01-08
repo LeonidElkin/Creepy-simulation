@@ -55,16 +55,16 @@ class CreepersManager:
             CreeperDrawer(coord, state)
             for coord, state in self._creepers2data(app.simulation.get_creepers_manager().get_creepers())
         ]
-        app.simulation.run_update_field()
 
     def _creepers2data(self, creepers):
         def shift_coord(coord):
             return coord[0] + self.shift[0], coord[1] + self.shift[1]
 
+        data = [(shift_coord(steve.get_coord()), steve.get_state()) for steve in creepers]
+        logger.info(f"Processed steves data: {data}")
         return ((shift_coord(creeper.get_coord()), creeper.get_state()) for creeper in creepers)
 
     def update_creepers(self, steps, drawer):
-        self.app.simulation.wait_update_field()
         logger.debug(f"Updating creepers: total={len(self.creepers)}")
         data = list(self._creepers2data(self.app.simulation.get_creepers_manager().get_creepers()))
         if len(self.creepers) != len(data):
@@ -72,14 +72,13 @@ class CreepersManager:
             return
         for drawer_obj, (coord, state) in zip(self.creepers, data):
             drawer_obj.update(coord, steps, state)
-        self.app.simulation.run_update_field()
         logger.info("Creepers updated.")
 
     def draw_creepers(self, drawer):
         for index, creeper in enumerate(self.creepers):
             if entity_within_bounds(creeper, drawer):
                 try:
-                    logger.debug(f"Drawing creeper {index}: position=({creeper.cur_x}, {creeper.cur_y})")
+                    # logger.debug(f"Drawing creeper {index}: position=({creeper.cur_x}, {creeper.cur_y})")
                     creeper.draw_step(drawer)
                 except Exception as e:
                     logger.error(f"Error drawing creeper {index}: {e}")

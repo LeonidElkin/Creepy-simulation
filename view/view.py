@@ -1,6 +1,5 @@
 import os
 import sys
-from copy import copy
 
 import pygame
 import pygame_gui
@@ -266,7 +265,7 @@ class SimulationView:
         logger.info("Game initialized successfully.")
 
     def draw_background(self):
-        if self.zoom_level < 1.0:  # Убедимся, что фон всегда покрывает весь экран
+        if self.zoom_level < 1.0:  # фон всегда покрывает весь экран
             # Масштабируем фон до размеров экрана
             scaled_background = pygame.transform.scale(self.background_image, (self.width, self.height))
             display_rect = scaled_background.get_rect()
@@ -303,32 +302,33 @@ class SimulationView:
             for block in self.blocks:
                 block.draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
 
-            if self.creepers_provider:
+            # if self.creepers_provider:
+            #     current_time = pygame.time.get_ticks()
+            #     # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==--=-=-=-=-
+            #     # TODO:ЗАМЕНИТЬ на закомментированный ниже
+            #     if current_time - self.last_update_time >= self.thao:
+            #         self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+            #         self.will_explodes = set()
+            #         self.simulation.run_update_field()
+            #         self.simulation.wait_update_field()
+            #         self.steve_manager.update_steves(max(1, self.thao // 16))
+            #         # self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
+            #         # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=--=-=-=--=
+            #         self.last_update_time = pygame.time.get_ticks()
+            #     self.creepers_provider.draw_creepers(self)
+            #     if self.explodes_drawer:
+            #         self.explodes_drawer(self)
+            if self.steve_manager:
                 current_time = pygame.time.get_ticks()
-                # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==--=-=-=-=-
-                # TODO:ЗАМЕНИТЬ на закомментированный ниже
                 if current_time - self.last_update_time >= self.thao:
-                    self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
-                    self.will_explodes = set()
-                    self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
-                    # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=--=-=-=--=
-                    #                     if current_time - self.last_update_time >= self.parameters["thao"]:
-                    #                         self.run_update_field()
-                    #                         self.last_update_time = pygame.time.get_ticks()
-                    #                         self.creepers_provider.update_creepers(
-                    #                             max(1, self.parameters["thao"] // 16), self
-                    #                         )
+                    self.simulation.run_update_field()
+                    self.simulation.wait_update_field()
+                    self.steve_manager.update_steves(max(1, self.thao // 16))
                     self.last_update_time = pygame.time.get_ticks()
-                self.creepers_provider.draw_creepers(self)
-                if self.explodes_drawer:
-                    self.explodes_drawer(self)
+                self.steve_manager.draw_steves(self)
             # if self.ocelot_manager: # TODO: Раскоментить когда появится логика оцелота
             #     self.ocelot_manager.update_ocelots(steps=1, drawer=self)
             #     self.ocelot_manager.draw_ocelots(self)
-
-            # if self.steve_manager: # TODO: Раскоментить когда появится логика Стива
-            #     self.steve_manager.update_steves(steps=1, drawer=self)
-            #     self.steve_manager.draw_steves(self)
             # self.draw_entities()
 
             self.manager.draw_ui(self.screen)
