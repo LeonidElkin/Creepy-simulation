@@ -5,7 +5,6 @@
 #include <omp.h>
 
 #include <algorithm>
-#include <iostream>
 #include <memory>
 #include <random>
 #include <ranges>
