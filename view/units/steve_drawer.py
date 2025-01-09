@@ -6,8 +6,20 @@ from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
 class SteveDrawer(EntityDrawer):
-    def __init__(self, position: tuple[float, float], image):
-        super().__init__(position, image)
+    def __init__(self, position: tuple[float, float], state: SteveState):
+        super().__init__(position, None, state)
+        self.dx = self.dy = 0
+        self.state = state
+
+    def update(self, new_position: tuple[float, float], steps, state=None):
+        self.state = state
+        # if state == SteveState.Born:
+        #     self.cur_x, self.cur_y = new_position
+        #     self.target_x, self.target_y = new_position
+        #     self.steps_left = 0
+        # else:
+        self.target_x, self.target_y = new_position
+        self._set_target(steps)
 
     def draw_step(self, drawer):
         self.update_position()
@@ -34,7 +46,10 @@ class SteveManager:
         steves_data = app.simulation.get_steves_manager().get_steves()
         if not steves_data:
             logger.error("No steve data received from simulation!")
-        self.steves = [SteveDrawer(coord, app.images.steve) for coord, _ in self._steves2data(steves_data)]
+        self.steves = [
+            SteveDrawer(coord, state)
+            for coord, state in self._steves2data(app.simulation.get_steves_manager().get_steves())
+        ]
 
     def _steves2data(self, steves):
         def shift_coord(coord):
@@ -45,30 +60,25 @@ class SteveManager:
         return ((shift_coord(steve.get_coord()), steve.get_state()) for steve in steves)
 
     def update_steves(self, steps):
-        # self.app.simulation.wait_update_field()
-        logger.info(f"Updating steves: total={len(self.steves)}")
-
         data = list(self._steves2data(self.app.simulation.get_steves_manager().get_steves()))
         if len(self.steves) != len(data):
             logger.error(f"Mismatch in steve counts: {len(self.steves)} vs {len(data)}")
             return
 
-        for steve_obj, (coord, _) in zip(self.steves, data):
-            logger.info(f"Updating steve: {steve_obj}, coord: {coord}")
+        for steve_obj, (coord, state) in zip(self.steves, data):
             try:
-                steve_obj.update(coord, steps)
+                steve_obj.update(coord, steps, state)
             except Exception as e:
                 logger.exception(f"Error updating steve: {e}")
                 raise
 
-        # self.app.simulation.run_update_field()
         logger.info("Steves updated.")
 
     def draw_steves(self, drawer):
         for index, steve in enumerate(self.steves):
             if entity_within_bounds(steve, drawer):
                 try:
-                    logger.debug(f"Drawing steve {index}: position=({steve.cur_x}, {steve.cur_y})")
+                    # logger.debug(f"Drawing steve {index}: position=({steve.cur_x}, {steve.cur_y})")
                     steve.draw_step(drawer)
                 except Exception as e:
                     logger.error(f"Error drawing steve {index}: {e}")

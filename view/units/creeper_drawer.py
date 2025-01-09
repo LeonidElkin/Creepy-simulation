@@ -39,7 +39,9 @@ class CreeperDrawer(EntityDrawer):
         elif self.state == CreeperState.Hissing:
             image = drawer.images.creeper_image_hiss
         elif self.state == CreeperState.Explodes:
-            image = drawer.images.creeper_image_walk  # Замените на нужное изображение
+            print("Я ЧМО")
+            drawer.will_explodes.add((self.cur_x, self.cur_y))
+            return
         else:
             return
 
@@ -60,8 +62,8 @@ class CreepersManager:
         def shift_coord(coord):
             return coord[0] + self.shift[0], coord[1] + self.shift[1]
 
-        data = [(shift_coord(steve.get_coord()), steve.get_state()) for steve in creepers]
-        logger.info(f"Processed steves data: {data}")
+        # data = [(shift_coord(steve.get_coord()), steve.get_state()) for steve in creepers]
+        # logger.info(f"Processed creeper data: {data}")
         return ((shift_coord(creeper.get_coord()), creeper.get_state()) for creeper in creepers)
 
     def update_creepers(self, steps, drawer):

@@ -1,5 +1,6 @@
 import os
 import sys
+from copy import copy
 
 import pygame
 import pygame_gui
@@ -7,6 +8,7 @@ from creepers import DistFunc, SimulationFabric
 
 from view.block import Block
 from view.logger import logger
+from view.units.creeper_drawer import CreepersManager
 from view.units.steve_drawer import SteveManager
 
 package_path = os.path.dirname(os.path.abspath(__file__))
@@ -138,18 +140,6 @@ class SimulationView:
         self.params = None
         self.simulation = None
 
-        # TODO: Раскоментить когда появится логика для оцелота
-        # self.ocelot_manager = OcelotManager(self, (self.center_x, self.center_y))
-        # self.ocelot = OcelotDrawer((self.center_x, self.center_y), self.images.ocelot)  # TODO: Удалить
-
-        # TODO: Раскоментить когда появится логика для Стива
-        # self.steve = SteveDrawer((self.center_x // 2, self.center_y // 2), self.images.steve)  # TODO: Удалить
-
-    #
-    # def draw_entities(self):
-    # selff.ocelot.draw_step(self)
-    # self.steve.draw_step(self)
-
     def _handle_mouse_button_down(self, event):
         right_button = 3
         if event.button == 1 and self.zoom_level > 1.0:  # Dragging только при zoom_level > 1.0
@@ -251,8 +241,8 @@ class SimulationView:
             (-self.width // 2, -self.height // 2), (self.width // 2, self.height // 2), self.dist_func
         )
         logger.info(f"Field params set: width={self.width}, height={self.height}, dist_func={self.dist_func}")
-        # self.params.set_creeper_params(self.radius, self.radius_explosion, self.creeper_count)
-        self.params.set_steve_params(self.radius, 10)
+        self.params.set_creeper_params(self.radius, self.radius_explosion, self.creeper_count)
+        self.params.set_steve_params(self.radius, 1)
 
         self.simulation = self.params.build()
         logger.info(
@@ -260,7 +250,7 @@ class SimulationView:
             f"count={self.creeper_count}"
         )
 
-        # self.creepers_provider = CreepersManager(self, (self.center_x, self.center_y))
+        self.creepers_provider = CreepersManager(self, (self.center_x, self.center_y))
         self.steve_manager = SteveManager(self, (self.center_x, self.center_y))
         logger.info("Game initialized successfully.")
 
@@ -302,34 +292,22 @@ class SimulationView:
             for block in self.blocks:
                 block.draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
 
-            # if self.creepers_provider:
-            #     current_time = pygame.time.get_ticks()
-            #     # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==--=-=-=-=-
-            #     # TODO:ЗАМЕНИТЬ на закомментированный ниже
-            #     if current_time - self.last_update_time >= self.thao:
-            #         self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
-            #         self.will_explodes = set()
-            #         self.simulation.run_update_field()
-            #         self.simulation.wait_update_field()
-            #         self.steve_manager.update_steves(max(1, self.thao // 16))
-            #         # self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
-            #         # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=--=-=-=--=
-            #         self.last_update_time = pygame.time.get_ticks()
-            #     self.creepers_provider.draw_creepers(self)
-            #     if self.explodes_drawer:
-            #         self.explodes_drawer(self)
-            if self.steve_manager:
+            if self.creepers_provider:
                 current_time = pygame.time.get_ticks()
                 if current_time - self.last_update_time >= self.thao:
+                    self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+                    self.will_explodes = set()
                     self.simulation.run_update_field()
                     self.simulation.wait_update_field()
-                    self.steve_manager.update_steves(max(1, self.thao // 16))
+                    if self.steve_manager:
+                        self.steve_manager.update_steves(max(1, self.thao // 16))
+                    self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
                     self.last_update_time = pygame.time.get_ticks()
+                self.creepers_provider.draw_creepers(self)
                 self.steve_manager.draw_steves(self)
-            # if self.ocelot_manager: # TODO: Раскоментить когда появится логика оцелота
-            #     self.ocelot_manager.update_ocelots(steps=1, drawer=self)
-            #     self.ocelot_manager.draw_ocelots(self)
-            # self.draw_entities()
+
+                if self.explodes_drawer:
+                    self.explodes_drawer(self)
 
             self.manager.draw_ui(self.screen)
 
