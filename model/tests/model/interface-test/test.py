@@ -18,14 +18,13 @@ def test_simulation_fabric_build():
 def test_simulation_creepers():
     fabric = SimulationFabric()
     fabric.set_field_params((-50, -50), (50, 50), DistFunc.Polar)
-    count = 10
-    fabric.set_creeper_params(move_radius=10, explode_radius=5, count=count)
+    fabric.set_creeper_params(move_radius=10, explode_radius=5, count=10)
     simulation = fabric.build()
 
     creepers_manager = simulation.get_creepers_manager()
     creepers = creepers_manager.get_creepers()
 
-    assert len(creepers) == count, "Incorrect number of creepers"
+    assert len(creepers) == 10, "Incorrect number of creepers"
 
     for creeper in creepers:
         coord = creeper.get_coord()
@@ -35,14 +34,13 @@ def test_simulation_creepers():
 def test_simulation_steves():
     fabric = SimulationFabric()
     fabric.set_field_params((-100, -100), (100, 100), DistFunc.Manhattan)
-    count = 5
-    fabric.set_steve_params(move_radius=20, count=count)
+    fabric.set_steve_params(move_radius=20, count=5)
     simulation = fabric.build()
 
     steves_manager = simulation.get_steves_manager()
     steves = steves_manager.get_steves()
 
-    assert len(steves) == count, "Incorrect number of Steves"
+    assert len(steves) == 5, "Incorrect number of Steves"
 
     for steve in steves:
         coord = steve.get_coord()
