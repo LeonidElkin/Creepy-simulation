@@ -48,7 +48,7 @@ class SteveManager:
         # self.app.simulation.wait_update_field()
         logger.info(f"Updating steves: total={len(self.steves)}")
 
-        data = list(self._steves2data(self.app.simulation.get_steves()))
+        data = list(self._steves2data(self.app.simulation.get_steves_manager().get_steves()))
         if len(self.steves) != len(data):
             logger.error(f"Mismatch in steve counts: {len(self.steves)} vs {len(data)}")
             return
