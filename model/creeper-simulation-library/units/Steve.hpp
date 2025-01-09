@@ -14,7 +14,7 @@ class Steve final : public Unit, std::enable_shared_from_this<Steve> {
   StevesParams::State state_{StevesParams::State::Born};
 
  public:
-  Steve(const size_t id, const std::shared_ptr<StevesParams> &params) : Unit(id, params) {}
+  Steve(const size_t id, const std::shared_ptr<StevesParams> &params) : Unit(id, params), params_(params) {}
 
   void updateState(const std::shared_ptr<Unit> &another) override;
 
