@@ -242,7 +242,7 @@ class SimulationView:
         )
         logger.info(f"Field params set: width={self.width}, height={self.height}, dist_func={self.dist_func}")
         self.params.set_creeper_params(self.radius, self.radius_explosion, self.creeper_count)
-        self.params.set_steve_params(self.radius, 1)
+        self.params.set_steve_params(self.radius, 10)
 
         self.simulation = self.params.build()
         logger.info(
@@ -280,6 +280,7 @@ class SimulationView:
     def run(self):
         running = True
         update_time = 60
+        font = pygame.font.SysFont(None, 30)
         while running:
             time_delta = self.clock.tick(update_time) / 1000.0
             for event in pygame.event.get():
@@ -310,6 +311,10 @@ class SimulationView:
                     self.explodes_drawer(self)
 
             self.manager.draw_ui(self.screen)
+
+            fps = self.clock.get_fps()
+            fps_text = font.render(f"FPS: {fps:.1f}", True, (255, 255, 255))
+            self.screen.blit(fps_text, (1820, 10))
 
             pygame.display.flip()
 
