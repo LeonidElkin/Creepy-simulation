@@ -76,8 +76,8 @@ def test_creeper_explodes_state():
 
     simulation.run_update_field()
     simulation.wait_update_field()
-    # simulation.run_update_field()
-    # simulation.wait_update_field()
+    simulation.run_update_field()
+    simulation.wait_update_field()
 
     creepers_manager = simulation.get_creepers_manager()
     creepers = creepers_manager.get_creepers()

@@ -62,8 +62,10 @@ PYBIND11_MODULE(creepers_lib, handle) {
   handle.doc() = "pybind module to provide field from creeper-simulation-library";
 
   if (!google::IsGoogleLoggingInitialized()) {
-    google::InitGoogleLogging("cpplogs");
-#if defined DEBUG
+    google::InitGoogleLogging("creepers_lib");
+    FLAGS_logtostderr = 1;  // Вывод логов в stderr
+    FLAGS_stderrthreshold = google::INFO;  // Уровень логирования для stderr
+#ifdef DEBUG
     google::SetStderrLogging(google::INFO);
 #endif
   }

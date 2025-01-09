@@ -18,3 +18,10 @@ def run_conan_build(debug):
 
 def clean():
     shutil.rmtree(Path(build_dir).joinpath("build"))
+
+
+def develop_install():
+    build_mode = "Debug"
+    print(f"Build mode: {build_mode}, building path: {build_dir}")
+    subprocess.run(["conan", "install", ".", f"--settings=build_type={build_mode}"], check=True, cwd=build_dir)
+    print("Conan build completed.")

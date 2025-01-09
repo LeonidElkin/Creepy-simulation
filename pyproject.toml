@@ -48,4 +48,5 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry.scripts]
 build = "model.conan_scripts:run_conan_build"
 clean = "model.conan_scripts:clean"
+develop = "model.conan_scripts:develop_install"
 main = "view.view:run"
