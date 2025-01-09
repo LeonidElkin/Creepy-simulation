@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "creepy_simulation"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Lesh79, Kuarni, FerventReaper"]
 license = "MIT"
@@ -42,9 +42,10 @@ ignore = ["PLR0913", "PLR2004"]
 
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "setuptools", "wheel", "conan"]
+requires = ["poetry>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.build]
-script = "build.py"
-generate-setup-file = true
+[tool.poetry.scripts]
+build = "model.conan_scripts:run_conan_build"
+clean = "model.conan_scripts:clean"
+main = "view.view:run"

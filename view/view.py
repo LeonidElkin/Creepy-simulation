@@ -4,7 +4,7 @@ from copy import copy
 
 import pygame
 import pygame_gui
-from creepers import DistFunc, SimulationFabric
+from creepers_lib import DistFunc, SimulationFabric
 
 from view.block import Block
 from view.logger import logger
@@ -321,5 +321,9 @@ class SimulationView:
         pygame.quit()
 
 
-if __name__ == "__main__":
+def run():
     SimulationView().run()
+
+
+if __name__ == "__main__":
+    run()

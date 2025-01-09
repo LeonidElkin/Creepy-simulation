@@ -58,7 +58,7 @@ class SimulationFabricProvider {
   SimulationProvider build() { return SimulationProvider(original_.build()); }
 };
 
-PYBIND11_MODULE(creepers, handle) {
+PYBIND11_MODULE(creepers_lib, handle) {
   handle.doc() = "pybind module to provide field from creeper-simulation-library";
 
   if (!google::IsGoogleLoggingInitialized()) {

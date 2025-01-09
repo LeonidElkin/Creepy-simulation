@@ -1,5 +1,5 @@
 import pygame
-from creepers import SteveState
+from creepers_lib import SteveState
 
 from view.logger import logger
 from view.units.Entity import EntityDrawer, entity_within_bounds

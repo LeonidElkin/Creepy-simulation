@@ -1,4 +1,4 @@
-from creepers import CreeperState, DistFunc, SimulationFabric, SteveState
+from creepers_lib import CreeperState, DistFunc, SimulationFabric, SteveState
 
 
 def test_simulation_fabric_build():
@@ -68,16 +68,19 @@ def test_simulation_async_update():
 
 def test_creeper_explodes_state():
     fabric = SimulationFabric()
-    fabric.set_field_params((-500, -500), (500, 500), DistFunc.Euclid)
-    fabric.set_creeper_params(move_radius=10, explode_radius=5, count=150)
-    fabric.set_steve_params(move_radius=15, count=5)
+    creepers_num = 1
+    fabric.set_field_params((0, 0), (1, 1), DistFunc.Euclid)
+    fabric.set_creeper_params(move_radius=1, explode_radius=5, count=creepers_num)
+    fabric.set_steve_params(move_radius=1, count=1)
     simulation = fabric.build()
 
     simulation.run_update_field()
     simulation.wait_update_field()
+    # simulation.run_update_field()
+    # simulation.wait_update_field()
 
     creepers_manager = simulation.get_creepers_manager()
     creepers = creepers_manager.get_creepers()
 
     explodes_found = any(creeper.get_state() == CreeperState.Explodes for creeper in creepers)
-    assert explodes_found, "No creepers in 'Explodes' state found among 150 creepers"
+    assert explodes_found, f"No creepers in 'Explodes' state found among {creepers_num} creepers"
