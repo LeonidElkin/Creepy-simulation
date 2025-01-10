@@ -4,7 +4,7 @@
 
 class StevesParams final : public UnitsParams {
  public:
-  enum class State : std::uint8_t { Born, Walk, Die };
+  enum class State : std::uint8_t { Born, Walk, Dead };
 
   StevesParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount);
 };

@@ -1,5 +1,6 @@
 #include "CreepersManager.hpp"
 
+#include <list>
 #include <ranges>
 
 CreepersManager::CreepersManager(std::shared_ptr<CreepersParams> params) : params_(std::move(params)) {
@@ -8,7 +9,7 @@ CreepersManager::CreepersManager(std::shared_ptr<CreepersParams> params) : param
               std::ranges::to<std::vector>();
 }
 
-void CreepersManager::beginAndFindSteves(const std::vector<std::shared_ptr<Steve>>& steves) {
+void CreepersManager::beginAndFindSteves(const std::list<std::shared_ptr<Steve>>& steves) {
 #pragma omp parallel for
   for (const auto& creeper : creepers_) {
     creeper->begin();
@@ -25,7 +26,7 @@ void CreepersManager::walk() {
   }
 }
 void CreepersManager::refreshActives() {
-  auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size()-1);
+  auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size() - 1);
   actives_ =
       std::views::repeat(dist) | std::views::take(std::min(params_->creepers_num_changing_state, creepers_.size())) |
       std::views::transform([this](auto d) { return creepers_[d(getRandom())]; }) | std::ranges::to<std::vector>();

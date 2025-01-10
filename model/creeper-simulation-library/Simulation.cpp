@@ -1,10 +1,10 @@
 #include "Simulation.hpp"
 
 #include <glog/logging.h>
-#include <iostream>
 #include <omp.h>
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <ranges>

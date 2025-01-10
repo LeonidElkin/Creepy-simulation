@@ -18,7 +18,7 @@ void Creeper::begin() {
       state_ = CreepersParams::State::Born;
       break;
     case CreepersParams::State::GoToSteve:
-      if (target_ && target_->getState() != StevesParams::State::Die) {
+      if (target_ && target_->getState() != StevesParams::State::Dead) {
         target_ = nullptr;
         state_ = CreepersParams::State::Walk;
       }
@@ -34,17 +34,19 @@ void Creeper::steveSearch(const std::shared_ptr<Steve> &steve) {
   if (state_ == CreepersParams::State::Born) {
     return;
   }
-  const auto distance = params_->getDistanceFunc()(getCoord(), steve->getCoord());
-  auto distSteve = std::bernoulli_distribution(std::min(3. / distance, 1.));
+  const auto distance = std::sqrt(params_->getDistanceFunc()(getCoord(), steve->getCoord()));
+  auto distSteve = std::bernoulli_distribution(std::min(10. / distance, 1.));
   if (distSteve(getRandom())) {
+    DLOG(INFO) << "Creeper " << getID() << " find Steve " << steve->getID();
     target_ = steve;
     state_ = CreepersParams::State::GoToSteve;
   }
 }
 
 Point Creeper::moveTo(const Point to) const {
-  const auto t = params_->getMoveRadius() / std::sqrt(params_->getDistanceFunc()(getCoord(), to));
-  return {getCoord().x + (t * getCoord().x), getCoord().y + t * getCoord().y};
+  const auto position = getCoord();
+  const auto t = std::min(1., params_->getMoveRadius() / std::sqrt(params_->getDistanceFunc()(position, to)));
+  return {position.x + t * (to.x - position.x), position.y + t * (to.y - position.y)};
 }
 
 void Creeper::walk() {
@@ -52,7 +54,7 @@ void Creeper::walk() {
   static auto dist_wake_up = std::bernoulli_distribution(wake_up_probability);
   switch (state_) {
     case CreepersParams::State::GoToSteve:
-      setCoord(moveTo(getCoord()));
+      setCoord(moveTo(target_->getCoord()));
       break;
     case CreepersParams::State::Born:
       setCoord(params_->generatePos({}));
@@ -86,8 +88,8 @@ void Creeper::die() {
 void Creeper::updateState(const std::shared_ptr<Unit> &another) {
   if (another.get() == this) return;
 
-  const auto distance = params_->getDistanceFunc()(getCoord(), another->getCoord());
-  if (distance <= params_->explodeRadiusSquare) {
+  const auto distanceSquare = params_->getDistanceFunc()(getCoord(), another->getCoord());
+  if (distanceSquare <= params_->explodeRadiusSquare) {
     state_ = CreepersParams::State::Explodes;
     another->die();
     return;
@@ -102,7 +104,7 @@ void Creeper::updateState(const std::shared_ptr<Unit> &another) {
       break;
   }
 
-  auto distHissing = std::bernoulli_distribution(std::min(1. / (distance), 1.));
+  auto distHissing = std::bernoulli_distribution(std::min(1. / (distanceSquare), 1.));
 
   if (distHissing(getRandom())) {
     state_ = CreepersParams::State::Hissing;

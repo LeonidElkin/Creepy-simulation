@@ -70,12 +70,10 @@ def test_creeper_explodes_state():
     fabric = SimulationFabric()
     creepers_num = 1
     fabric.set_field_params((0, 0), (1, 1), DistFunc.Euclid)
-    fabric.set_creeper_params(move_radius=1, explode_radius=5, count=creepers_num)
+    fabric.set_creeper_params(move_radius=1, explode_radius=10, count=creepers_num)
     fabric.set_steve_params(move_radius=1, count=1)
     simulation = fabric.build()
 
-    simulation.run_update_field()
-    simulation.wait_update_field()
     simulation.run_update_field()
     simulation.wait_update_field()
 

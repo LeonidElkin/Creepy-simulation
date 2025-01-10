@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include "Creeper.hpp"
 #include "Steve.hpp"
 
@@ -13,9 +15,9 @@ class CreepersManager {
  public:
   CreepersManager(std::shared_ptr<CreepersParams> params);
 
-  void beginAndFindSteves(const std::vector<std::shared_ptr<Steve>>& steves);
+  void beginAndFindSteves(const std::list<std::shared_ptr<Steve>>& steves);
 
-  const decltype(creepers_)& getCreepers() const { return creepers_; }
+  [[nodiscard]] const decltype(creepers_)& getCreepers() const { return creepers_; }
 
   void walk();
 

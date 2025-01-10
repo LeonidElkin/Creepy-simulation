@@ -63,7 +63,7 @@ PYBIND11_MODULE(creepers_lib, handle) {
 
   if (!google::IsGoogleLoggingInitialized()) {
     google::InitGoogleLogging("creepers_lib");
-    FLAGS_logtostderr = 1;  // Вывод логов в stderr
+    FLAGS_logtostderr = 1;                 // Вывод логов в stderr
     FLAGS_stderrthreshold = google::INFO;  // Уровень логирования для stderr
 #ifdef DEBUG
     google::SetStderrLogging(google::INFO);
@@ -73,7 +73,7 @@ PYBIND11_MODULE(creepers_lib, handle) {
   py::enum_<StevesParams::State>(handle, "SteveState")
       .value("Born", StevesParams::State::Born)
       .value("Walk", StevesParams::State::Walk)
-      .value("Dead", StevesParams::State::Die);
+      .value("Dead", StevesParams::State::Dead);
   py::class_<Steve, std::shared_ptr<Steve>>(handle, "Steve")
       .def("get_coord",
            [](const Steve& steve) {
