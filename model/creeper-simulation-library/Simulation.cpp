@@ -22,7 +22,7 @@ void Simulation::updateField() {
   stevesManager_.walk();
   DLOG(INFO) << "end walking, start interacting";
   creepersManager_.refreshActives();
-  creepersManager_.interactWith(creepersManager_.creepers_);
-  creepersManager_.interactWith(stevesManager_.steves_);
+  creepersManager_.interactWith(creepersManager_.getCreepersRef());
+  creepersManager_.interactWith(stevesManager_.getStevesRef());
   DLOG(INFO) << "end interacting";
 }

@@ -127,6 +127,7 @@ class SimulationView:
         }
         self.dist_func = self.func_type_map["Polar"]
 
+        self.game_running = False
         self.creepers_provider = None
         # UI elements
         self.ui = ui_elems.UiManager(self)
@@ -136,7 +137,7 @@ class SimulationView:
             "radius_explosion": self.radius_explosion,
             "thao": self.thao,
         }
-        self.steve_manager = None
+        self.steve_provider = None
         self.params = None
         self.simulation = None
 
@@ -251,7 +252,7 @@ class SimulationView:
         )
 
         self.creepers_provider = CreepersManager(self, (self.center_x, self.center_y))
-        self.steve_manager = SteveManager(self, (self.center_x, self.center_y))
+        self.steve_provider = SteveManager(self, (self.center_x, self.center_y))
         logger.info("Game initialized successfully.")
 
     def draw_background(self):
@@ -300,12 +301,12 @@ class SimulationView:
                     self.will_explodes = set()
                     self.simulation.run_update_field()
                     self.simulation.wait_update_field()
-                    if self.steve_manager:
-                        self.steve_manager.update_steves(max(1, self.thao // 16))
+                    if self.steve_provider:
+                        self.steve_provider.update_steves(max(1, self.thao // 16))
                     self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
                     self.last_update_time = pygame.time.get_ticks()
                 self.creepers_provider.draw_creepers(self)
-                self.steve_manager.draw_steves(self)
+                self.steve_provider.draw_steves(self)
 
                 if self.explodes_drawer:
                     self.explodes_drawer(self)

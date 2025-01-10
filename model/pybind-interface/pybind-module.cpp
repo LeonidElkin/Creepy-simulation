@@ -64,9 +64,9 @@ PYBIND11_MODULE(creepers_lib, handle) {
   if (!google::IsGoogleLoggingInitialized()) {
     google::InitGoogleLogging("creepers_lib");
     FLAGS_logtostderr = 1;                 // Вывод логов в stderr
-    FLAGS_stderrthreshold = google::INFO;  // Уровень логирования для stderr
+    FLAGS_stderrthreshold = google::LogSeverity::GLOG_INFO;  // Уровень логирования для stderr
 #ifdef DEBUG
-    google::SetStderrLogging(google::INFO);
+    google::SetStderrLogging(google::LogSeverity::GLOG_INFO);
 #endif
   }
 

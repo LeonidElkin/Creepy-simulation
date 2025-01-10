@@ -11,20 +11,21 @@ CreepersManager::CreepersManager(std::shared_ptr<CreepersParams> params) : param
 
 void CreepersManager::beginAndFindSteves(const std::list<std::shared_ptr<Steve>>& steves) {
 #pragma omp parallel for
-  for (const auto& creeper : creepers_) {
-    creeper->begin();
+  for (auto i = 0; i < creepers_.size(); ++i) {
+    creepers_[i]->begin();
     for (const auto& steve : steves) {
-      creeper->steveSearch(steve);
+      creepers_[i]->steveSearch(steve);
     }
   }
 }
 
 void CreepersManager::walk() {
 #pragma omp parallel for
-  for (const auto& creeper : creepers_) {
-    creeper->walk();
+  for (auto i = 0; i < creepers_.size(); i++) {
+    creepers_[i]->walk();
   }
 }
+
 void CreepersManager::refreshActives() {
   auto dist = std::uniform_int_distribution<size_t>(0, creepers_.size() - 1);
   actives_ =
