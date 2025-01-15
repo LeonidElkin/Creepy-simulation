@@ -1,8 +1,10 @@
 #include "Simulation.hpp"
 
+#include <glog/logging.h>
 #include <omp.h>
 
 #include <algorithm>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <ranges>
@@ -13,10 +15,14 @@ Simulation::Simulation(const std::shared_ptr<FieldParams> &fieldParams,
     : fieldParams(fieldParams), creepersManager_(creepersParams), stevesManager_(stevesParams) {}
 
 void Simulation::updateField() {
+  DLOG(INFO) << "start updating field";
   creepersManager_.beginAndFindSteves(stevesManager_.getSteves());
+  DLOG(INFO) << "start walking";
   creepersManager_.walk();
   stevesManager_.walk();
+  DLOG(INFO) << "end walking, start interacting";
   creepersManager_.refreshActives();
-  creepersManager_.interactWith(creepersManager_.creepers_);
-  creepersManager_.interactWith(stevesManager_.steves_);
+  creepersManager_.interactWith(creepersManager_.getCreepersRef());
+  creepersManager_.interactWith(stevesManager_.getStevesRef());
+  DLOG(INFO) << "end interacting";
 }

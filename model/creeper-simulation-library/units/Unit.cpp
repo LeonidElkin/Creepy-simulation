@@ -1,5 +1,7 @@
 #include "Unit.hpp"
 
+#include <glog/logging.h>
+
 UnitsParams::UnitsParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount)
     : fieldParams_(fieldParams), moveRadius_(moveRadius), unitsCount_(unitsCount) {}
 
@@ -16,4 +18,6 @@ Point UnitsParams::generatePos(const std::optional<Point> initialPoint) {
   return Point(xDist(getRandom()), yDist(getRandom()));
 }
 
-Unit::Unit(const size_t id, const std::shared_ptr<UnitsParams> &params) : coord_(params->generatePos({})), id_(id) {}
+Unit::Unit(const size_t id, const std::shared_ptr<UnitsParams> &params) : coord_(params->generatePos({})), id_(id) {
+  DLOG(INFO) << "spawn on (" << coord_.x << ", " << coord_.y << ")";
+}

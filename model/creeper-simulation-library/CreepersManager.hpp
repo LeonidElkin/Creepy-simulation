@@ -1,5 +1,7 @@
 #pragma once
 
+#include <list>
+
 #include "Creeper.hpp"
 #include "Steve.hpp"
 
@@ -10,24 +12,27 @@ class CreepersManager {
   std::vector<std::shared_ptr<Creeper>> creepers_;
   std::vector<std::shared_ptr<Creeper>> actives_;
 
+ protected:
+  [[nodiscard]] decltype(creepers_)& getCreepersRef() { return creepers_; }
+
  public:
   CreepersManager(std::shared_ptr<CreepersParams> params);
 
-  void beginAndFindSteves(const std::vector<std::shared_ptr<Steve>>& steves);
+  void beginAndFindSteves(const std::list<std::shared_ptr<Steve>>& steves);
 
-  const decltype(creepers_)& getCreepers() const { return creepers_; }
+  [[nodiscard]] const decltype(creepers_)& getCreepers() const { return creepers_; }
 
   void walk();
 
   void refreshActives();
 
-  template <class Units>
+  template <typename Units>
   void interactWith(Units units) {
 #pragma omp parallel for
-    for (const auto& activeCreeper : actives_) {
+    for (auto i = 0; i < actives_.size(); ++i) {
       for (const auto& unit : units) {
-        if (static_cast<void*>(activeCreeper.get()) != static_cast<void*>(unit.get())) {
-          activeCreeper->updateState(unit);
+        if (static_cast<Unit*>(actives_[i].get()) != static_cast<Unit*>(unit.get())) {
+          actives_[i]->updateState(unit);
         }
       }
     }

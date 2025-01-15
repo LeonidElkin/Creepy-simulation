@@ -1,7 +1,10 @@
+#include <glog/logging.h>
+#include <glog/types.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 
 #include <future>
+#include <iostream>
 #include <vector>
 
 #include "Simulation.hpp"
@@ -55,14 +58,23 @@ class SimulationFabricProvider {
   SimulationProvider build() { return SimulationProvider(original_.build()); }
 };
 
-PYBIND11_MODULE(creepers, handle) {
+PYBIND11_MODULE(creepers_lib, handle) {
   handle.doc() = "pybind module to provide field from creeper-simulation-library";
+
+  if (!google::IsGoogleLoggingInitialized()) {
+    google::InitGoogleLogging("creepers_lib");
+    FLAGS_logtostderr = 1;                 // Вывод логов в stderr
+    FLAGS_stderrthreshold = google::LogSeverity::GLOG_INFO;  // Уровень логирования для stderr
+#ifdef DEBUG
+    google::SetStderrLogging(google::LogSeverity::GLOG_INFO);
+#endif
+  }
 
   py::enum_<StevesParams::State>(handle, "SteveState")
       .value("Born", StevesParams::State::Born)
       .value("Walk", StevesParams::State::Walk)
-      .value("Dead", StevesParams::State::Die);
-  py::class_<Steve>(handle, "Steve")
+      .value("Dead", StevesParams::State::Dead);
+  py::class_<Steve, std::shared_ptr<Steve>>(handle, "Steve")
       .def("get_coord",
            [](const Steve& steve) {
              auto p = steve.getCoord();
@@ -78,7 +90,7 @@ PYBIND11_MODULE(creepers, handle) {
       .value("Explodes", CreepersParams::State::Explodes)
       .value("Dead", CreepersParams::State::Dead)
       .value("Sleep", CreepersParams::State::Sleep);
-  py::class_<Creeper>(handle, "Creeper")
+  py::class_<Creeper, std::shared_ptr<Creeper>>(handle, "Creeper")
       .def("get_coord",
            [](const Creeper& creeper) {
              auto p = creeper.getCoord();
