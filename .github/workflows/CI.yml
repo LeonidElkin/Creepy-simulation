@@ -28,7 +28,7 @@ jobs:
           conan install ${{github.workspace}}/model --output-folder=${{github.workspace}}/model/build/conan --build=missing --settings=build_type=${{env.BUILD_TYPE}}
 
       - name: Configure CMake
-        run: cmake ${{github.workspace}}/model -B ${{github.workspace}}/model/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/model/build/conan/conan_toolchain.cmake
+        run: cmake -G Ninja ${{github.workspace}}/model -B ${{github.workspace}}/model/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/model/build/conan/conan_toolchain.cmake
 
       - name: Build
         run: cmake --build ${{github.workspace}}/model/build --config ${{env.BUILD_TYPE}}
