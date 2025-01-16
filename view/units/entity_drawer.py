@@ -34,7 +34,7 @@ class EntityDrawer:
         screen_x = self.cur_x * self.drawer.zoom_level + self.drawer.offset_x
         screen_y = self.cur_y * self.drawer.zoom_level + self.drawer.offset_y
 
-        size = int(20 * self.drawer.zoom_level)
+        size = int(self.image.get_size()[0] * self.drawer.zoom_level)
 
         # Проверяем, находится ли объект в пределах экрана
         if not (0 - size < screen_x < self.drawer.width and 0 - size < screen_y < self.drawer.height):

@@ -22,7 +22,7 @@ class SteveDrawer(EntityDrawer):
 
     def set_img(self):
         if self.dead:
-            self.image = self.drawer.image_provider.bedrock
+            self.image = self.drawer.image_provider.steve_image_grave
         elif self.state in (SteveState.Walk, SteveState.Born, SteveState.Dead):
             self.image = self.drawer.image_provider.steve
         else:
