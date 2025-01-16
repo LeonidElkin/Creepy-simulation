@@ -1,6 +1,7 @@
 #pragma once
 
 #include <list>
+#include <optional>
 
 #include "utils.hpp"
 
@@ -21,7 +22,7 @@ class FieldParams {
   FieldParams(const Rectangle& bounds, const std::function<double(Point p1, Point p2)>& distanceFunc)
       : bounds_(bounds), distanceFunc(distanceFunc) {};
 
-  void setBedrock(const Rectangle& bedrock) { bedrocks_.insert(bedrocks_.cbegin(), bedrock); }
+  void setBedrock(const Rectangle& bedrock) { bedrocks_.push_front(bedrock); }
 
   void deleteBedrock(const Rectangle& bedrock) { bedrocks_.remove(bedrock); }
 };
