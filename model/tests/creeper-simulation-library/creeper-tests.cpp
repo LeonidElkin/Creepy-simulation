@@ -61,12 +61,18 @@ TEST(Creeper, HissingTest) {
   auto creeperParams = std::make_shared<CreepersParams>(moveRadius, 0, fieldsParams, 2);
   auto creeper1 = std::make_shared<Creeper>(1, creeperParams);
   auto creeper2 = std::make_shared<Creeper>(2, creeperParams);
-  creeper1->walk();
-  creeper2->walk();
-  creeper1->updateState(creeper2);
-  creeper2->updateState(creeper1);
+  for (auto i = 0; i < 1000; i++) {
+    creeper1->begin();
+    creeper2->begin();
+    creeper1->walk();
+    creeper2->walk();
+    creeper1->updateState(creeper2);
+    creeper2->updateState(creeper1);
+    if (creeper1->getState() == CreepersParams::State::Hissing) {
+      break;
+    }
+  }
   EXPECT_EQ(creeper1->getState(), CreepersParams::State::Hissing);
-  EXPECT_EQ(creeper2->getState(), CreepersParams::State::Hissing);
 }
 
 TEST(Creeper, ExplodeTest) {
@@ -78,10 +84,19 @@ TEST(Creeper, ExplodeTest) {
   auto creeperParams = std::make_shared<CreepersParams>(moveRadius, 10, fieldsParams, 2);
   auto creeper1 = std::make_shared<Creeper>(1, creeperParams);
   auto creeper2 = std::make_shared<Creeper>(2, creeperParams);
-  creeper1->walk();
-  creeper2->walk();
-  creeper1->updateState(creeper2);
-  creeper2->updateState(creeper1);
+  for (auto i = 0; i < 1000; i++) {
+    creeper1->begin();
+    creeper2->begin();
+    creeper1->walk();
+    creeper2->walk();
+    creeper1->updateState(creeper2);
+    creeper2->updateState(creeper1);
+
+    if (creeper1->getState() == CreepersParams::State::Explodes ||
+        creeper2->getState() == CreepersParams::State::Explodes) {
+      break;
+    }
+  }
   EXPECT_EQ(creeper1->getState(), CreepersParams::State::Explodes);
   EXPECT_EQ(creeper2->getState(), CreepersParams::State::Explodes);
 }

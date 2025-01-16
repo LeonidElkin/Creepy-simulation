@@ -81,16 +81,19 @@ void Creeper::die() {
     case CreepersParams::State::Explodes:
       break;
     default:
-      state_ = CreepersParams::State::Dead;
+      state_ = CreepersParams::State::Explodes;
   }
 }
 
 void Creeper::updateState(const std::shared_ptr<Unit> &another) {
   if (another.get() == this) return;
+  if (getState() == CreepersParams::State::Born) {
+    return;
+  }
 
   const auto distanceSquare = params_->getDistanceFunc()(getCoord(), another->getCoord());
   if (distanceSquare <= params_->explodeRadiusSquare) {
-    DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(another).name() << " " << another->getID();
+    DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(*another).name() << " " << another->getID();
     state_ = CreepersParams::State::Explodes;
     another->die();
     return;
