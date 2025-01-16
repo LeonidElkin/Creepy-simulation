@@ -89,7 +89,8 @@ PYBIND11_MODULE(creepers_lib, handle) {
       .value("Hissing", CreepersParams::State::Hissing)
       .value("Explodes", CreepersParams::State::Explodes)
       .value("Dead", CreepersParams::State::Dead)
-      .value("Sleep", CreepersParams::State::Sleep);
+      .value("Sleep", CreepersParams::State::Sleep)
+      .value("GoToSteve", CreepersParams::State::GoToSteve);
   py::class_<Creeper, std::shared_ptr<Creeper>>(handle, "Creeper")
       .def("get_coord",
            [](const Creeper& creeper) {

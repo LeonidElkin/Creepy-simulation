@@ -18,7 +18,7 @@ void Creeper::begin() {
       state_ = CreepersParams::State::Born;
       break;
     case CreepersParams::State::GoToSteve:
-      if (target_ && target_->getState() != StevesParams::State::Dead) {
+      if (target_ && target_->getState() == StevesParams::State::Dead) {
         target_ = nullptr;
         state_ = CreepersParams::State::Walk;
       }
@@ -90,6 +90,7 @@ void Creeper::updateState(const std::shared_ptr<Unit> &another) {
 
   const auto distanceSquare = params_->getDistanceFunc()(getCoord(), another->getCoord());
   if (distanceSquare <= params_->explodeRadiusSquare) {
+    DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(another).name() << " " << another->getID();
     state_ = CreepersParams::State::Explodes;
     another->die();
     return;
