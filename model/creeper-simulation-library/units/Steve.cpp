@@ -6,7 +6,7 @@ void Steve::walk() {
   if (state_ == StevesParams::State::Dead) {
     return;
   }
-  setCoord(params_->generatePos(getCoord()));
+  setCoord(params_->getFieldParams()->checkIntersections(getCoord(), params_->generatePos(getCoord())));
 }
 
 void Steve::updateState(const std::shared_ptr<Unit> &another) {}

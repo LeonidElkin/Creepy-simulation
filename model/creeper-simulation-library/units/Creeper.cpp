@@ -34,7 +34,7 @@ void Creeper::steveSearch(const std::shared_ptr<Steve> &steve) {
   if (state_ == CreepersParams::State::Born || steve->getState() == StevesParams::State::Dead) {
     return;
   }
-  const auto distance = std::sqrt(params_->getDistanceFunc()(getCoord(), steve->getCoord()));
+  const auto distance = std::sqrt(params_->getFieldParams()->getDistanceFunc()(getCoord(), steve->getCoord()));
   auto distSteve = std::bernoulli_distribution(std::min(10. / distance, 1.));
   if (distSteve(getRandom())) {
     DLOG(INFO) << "Creeper " << getID() << " find Steve " << steve->getID();
@@ -45,8 +45,10 @@ void Creeper::steveSearch(const std::shared_ptr<Steve> &steve) {
 
 Point Creeper::moveTo(const Point to) const {
   const auto position = getCoord();
-  const auto t = std::min(1., params_->getMoveRadius() / std::sqrt(params_->getDistanceFunc()(position, to)));
-  return {position.x + t * (to.x - position.x), position.y + t * (to.y - position.y)};
+  const auto t =
+      std::min(1., params_->getMoveRadius() / std::sqrt(params_->getFieldParams()->getDistanceFunc()(position, to)));
+  Point newPosition = {position.x + t * (to.x - position.x), position.y + t * (to.y - position.y)};
+  return params_->getFieldParams()->checkIntersections(position, newPosition);
 }
 
 void Creeper::walk() {
@@ -69,7 +71,7 @@ void Creeper::walk() {
         state_ = CreepersParams::State::Sleep;
         break;
       }
-      setCoord(params_->generatePos(getCoord()));
+      setCoord(params_->getFieldParams()->checkIntersections(getCoord(), params_->generatePos(getCoord())));
       break;
     default:
       DLOG(WARNING) << "Invalid creeper state when walking: " << static_cast<int>(state_);
@@ -84,7 +86,7 @@ void Creeper::updateState(const std::shared_ptr<Unit> &another) {
     return;
   }
 
-  const auto distanceSquare = params_->getDistanceFunc()(getCoord(), another->getCoord());
+  const auto distanceSquare = params_->getFieldParams()->getDistanceFunc()(getCoord(), another->getCoord());
   if (distanceSquare <= params_->explodeRadiusSquare) {
     DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(*another).name() << " " << another->getID();
     state_ = CreepersParams::State::Explodes;

@@ -34,14 +34,27 @@ class SimulationProvider {
 class SimulationFabricProvider {
   SimulationFabric original_;
 
+  [[nodiscard]] Rectangle boundsToRectangle(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    return {{leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
+            {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}};
+  }
+
  public:
   SimulationFabricProvider() = default;
 
   SimulationFabricProvider& setFieldParams(const py::tuple& leftDownBound, const py::tuple& rightUpBound,
                                            const DistanceFunc::Type distanceFunc) {
-    original_.setFieldParams({leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
-                             {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()},
-                             funcToType(distanceFunc));
+    original_.setFieldParams(boundsToRectangle(leftDownBound, rightUpBound), funcToType(distanceFunc));
+    return *this;
+  }
+
+  SimulationFabricProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+    return *this;
+  }
+
+  SimulationFabricProvider& deleteBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.deleteBedrock(boundsToRectangle(leftDownBound, rightUpBound));
     return *this;
   }
 
@@ -63,7 +76,7 @@ PYBIND11_MODULE(creepers_lib, handle) {
 
   if (!google::IsGoogleLoggingInitialized()) {
     google::InitGoogleLogging("creepers_lib");
-    FLAGS_logtostderr = 1;                 // Вывод логов в stderr
+    FLAGS_logtostderr = 1;                                   // Вывод логов в stderr
     FLAGS_stderrthreshold = google::LogSeverity::GLOG_INFO;  // Уровень логирования для stderr
 #ifdef DEBUG
     google::SetStderrLogging(google::LogSeverity::GLOG_INFO);
@@ -106,6 +119,8 @@ PYBIND11_MODULE(creepers_lib, handle) {
            "distance_func"_a)
       .def("set_creeper_params", &SimulationFabricProvider::setCreeperParams, "move_radius"_a, "explode_radius"_a,
            "count"_a)
+      .def("set_bedrock", &SimulationFabricProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)
+      .def("delete_bedrock", &SimulationFabricProvider::deleteBedrock, "left_down_bound"_a, "right_up_bound"_a)
       .def("set_steve_params", &SimulationFabricProvider::setSteveParams, "move_radius"_a, "count"_a)
       .def("build", &SimulationFabricProvider::build);
   py::class_<SimulationProvider>(handle, "Simulation")
