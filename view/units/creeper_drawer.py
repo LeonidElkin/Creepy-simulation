@@ -1,4 +1,3 @@
-import logging
 from dataclasses import dataclass
 
 from creepers_lib import CreeperState
@@ -55,7 +54,6 @@ class CreeperDrawer(EntityDrawer):
             self._set_target(steps)
 
         self.set_img(prev)
-        logging.info(f"go from {self.cur_x}, {self.cur_y} to {new_position}")
 
 
 class CreepersManager:

@@ -1,5 +1,6 @@
 #include "StevesManager.hpp"
 
+#include <algorithm>
 #include <ranges>
 
 StevesManager::StevesManager(std::shared_ptr<StevesParams> params) : params_(std::move(params)) {
