@@ -8,8 +8,8 @@ from creepers_lib import DistFunc, SimulationFabric
 
 from view.block import Block
 from view.logger import logger
-from view.units.creeper_drawer import CreepersManager
-from view.units.steve_drawer import SteveManager
+from view.running_game import RunningGame
+from view.units.creeper_drawer import CreeperParams
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -85,6 +85,7 @@ class SimulationView:
         import ui_elems
 
         pygame.init()
+        self.running_game = None
         self.width = width
         self.height = height
         self.center_x = self.width // 2
@@ -113,10 +114,11 @@ class SimulationView:
         self.last_mouse_pos = None
 
         # Params
+        self.creepers_params = CreeperParams()
         self.creeper_count = 10
         self.thao = 2000
         self.radius = 20
-        self.radius_explosion = 1
+        self.radius_explosion = 10
         self.last_update_time = 0
         self.will_explodes = set()
 
@@ -127,8 +129,6 @@ class SimulationView:
         }
         self.dist_func = self.func_type_map["Polar"]
 
-        self.game_running = False
-        self.creepers_provider = None
         # UI elements
         self.ui = ui_elems.UiManager(self)
         self.parameters = {
@@ -137,7 +137,6 @@ class SimulationView:
             "radius_explosion": self.radius_explosion,
             "thao": self.thao,
         }
-        self.steve_provider = None
         self.params = None
         self.simulation = None
 
@@ -251,8 +250,7 @@ class SimulationView:
             f"count={self.creeper_count}"
         )
 
-        self.creepers_provider = CreepersManager(self, (self.center_x, self.center_y))
-        self.steve_provider = SteveManager(self, (self.center_x, self.center_y))
+        self.running_game = RunningGame(self, (self.center_x, self.center_y))
         logger.info("Game initialized successfully.")
 
     def draw_background(self):
@@ -294,19 +292,19 @@ class SimulationView:
             for block in self.blocks:
                 block.draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
 
-            if self.creepers_provider:
+            if self.running_game:
                 current_time = pygame.time.get_ticks()
                 if current_time - self.last_update_time >= self.thao:
                     self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
                     self.will_explodes = set()
                     self.simulation.run_update_field()
                     self.simulation.wait_update_field()
-                    if self.steve_provider:
-                        self.steve_provider.update_steves(max(1, self.thao // 16))
-                    self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
+                    if self.running_game.steve_manager:
+                        self.running_game.steve_manager.update_steves(max(1, self.thao // 16))
+                    self.running_game.creepers_manager.update_creepers(max(1, self.thao // 16), self)
                     self.last_update_time = pygame.time.get_ticks()
-                self.creepers_provider.draw_creepers(self)
-                self.steve_provider.draw_steves(self)
+                self.running_game.creepers_manager.draw_creepers(self)
+                self.running_game.steve_manager.draw_steves(self)
 
                 if self.explodes_drawer:
                     self.explodes_drawer(self)

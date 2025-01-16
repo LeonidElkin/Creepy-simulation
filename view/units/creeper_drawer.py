@@ -5,6 +5,12 @@ from view.logger import logger
 from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
+class CreeperParams:
+    radius = 10
+    radius_explosion = 10
+    creeper_count = 10
+
+
 class CreeperDrawer(EntityDrawer):
     def __init__(self, position: tuple[float, float], state: CreeperState):
         super().__init__(position, None, state)
