@@ -19,22 +19,6 @@ class SimulationFabric {
     return *this;
   }
 
-  SimulationFabric& setBedrock(const Rectangle& bedrock) {
-    if (!fieldParams_) {
-      throw std::invalid_argument("fieldParams_ is not set");
-    }
-    fieldParams_->setBedrock(bedrock);
-    return *this;
-  }
-
-  SimulationFabric& deleteBedrock(const Rectangle& bedrock) {
-    if (!fieldParams_) {
-      throw std::invalid_argument("fieldParams_ is not set");
-    }
-    fieldParams_->deleteBedrock(bedrock);
-    return *this;
-  }
-
   decltype(fieldParams_) getFieldParams() {
     if (!fieldParams_) throw std::invalid_argument("FieldParams_ is not set");
     return fieldParams_;

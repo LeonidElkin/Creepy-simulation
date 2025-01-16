@@ -9,7 +9,7 @@
 TEST(Simulation, InitTest) {
   constexpr auto creeps_num = 10;
   auto simulationParams = SimulationFabric();
-  simulationParams.setFieldParams({0, 0}, {1, 1}, DistanceFunc::euclideanSquared);
+  simulationParams.setFieldParams({{0, 0}, {1, 1}}, DistanceFunc::euclideanSquared);
   simulationParams.setCreeperParams(1, 1, creeps_num);
   auto simulation = simulationParams.build();
   auto creepers = simulation.getCreepersManager().getCreepers();
@@ -20,7 +20,7 @@ TEST(Simulation, LetsWalk) {
   // may be false positive
   constexpr auto creeps_num = 10;
   auto simulationParams = SimulationFabric();
-  simulationParams.setFieldParams({0, 0}, {1000, 1000}, DistanceFunc::euclideanSquared);
+  simulationParams.setFieldParams({{0, 0}, {1000, 1000}}, DistanceFunc::euclideanSquared);
   simulationParams.setCreeperParams(100, 1, creeps_num);
   auto simulation = simulationParams.build();
   simulation.updateField();
@@ -39,7 +39,7 @@ TEST(Simulation, CreeperAggresion) {
   // may be false positive
   constexpr auto creeps_num = 1;
   auto simulationParams = SimulationFabric();
-  simulationParams.setFieldParams({0, 0}, {100, 100}, DistanceFunc::euclideanSquared);
+  simulationParams.setFieldParams({{0, 0}, {100, 100}}, DistanceFunc::euclideanSquared);
   simulationParams.setCreeperParams(100, 1, creeps_num);
   simulationParams.setSteveParams(1, 1);
   auto simulation = simulationParams.build();
@@ -63,7 +63,7 @@ TEST(Simulation, CreeperAggresion) {
 TEST(Simulation, AndTwoWillExplode) {
   constexpr auto creeps_num = 2;
   auto simulationParams = SimulationFabric();
-  simulationParams.setFieldParams({0, 0}, {1, 1}, DistanceFunc::euclideanSquared);
+  simulationParams.setFieldParams({{0, 0}, {1, 1}}, DistanceFunc::euclideanSquared);
   simulationParams.setCreeperParams(1, 100, creeps_num);
   auto simulation = simulationParams.build();
   auto creepers = simulation.getCreepersManager().getCreepers();

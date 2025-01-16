@@ -14,6 +14,12 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
+static [[nodiscard]] Rectangle boundsToRectangle(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+  return {{leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
+          {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}};
+}
+
+
 class SimulationProvider {
   Simulation original_;
   std::optional<std::future<void>> future_;
@@ -29,15 +35,20 @@ class SimulationProvider {
 
   CreepersManager& getCreepersManager() { return original_.getCreepersManager(); }
   StevesManager& getStevesManager() { return original_.getStevesManager(); }
+
+  SimulationProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+    return *this;
+  }
+
+  SimulationProvider& deleteBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.deleteBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+    return *this;
+  }
 };
 
 class SimulationFabricProvider {
   SimulationFabric original_;
-
-  [[nodiscard]] Rectangle boundsToRectangle(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
-    return {{leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
-            {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}};
-  }
 
  public:
   SimulationFabricProvider() = default;
@@ -45,16 +56,6 @@ class SimulationFabricProvider {
   SimulationFabricProvider& setFieldParams(const py::tuple& leftDownBound, const py::tuple& rightUpBound,
                                            const DistanceFunc::Type distanceFunc) {
     original_.setFieldParams(boundsToRectangle(leftDownBound, rightUpBound), funcToType(distanceFunc));
-    return *this;
-  }
-
-  SimulationFabricProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
-    original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
-    return *this;
-  }
-
-  SimulationFabricProvider& deleteBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
-    original_.deleteBedrock(boundsToRectangle(leftDownBound, rightUpBound));
     return *this;
   }
 
@@ -119,15 +120,15 @@ PYBIND11_MODULE(creepers_lib, handle) {
            "distance_func"_a)
       .def("set_creeper_params", &SimulationFabricProvider::setCreeperParams, "move_radius"_a, "explode_radius"_a,
            "count"_a)
-      .def("set_bedrock", &SimulationFabricProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)
-      .def("delete_bedrock", &SimulationFabricProvider::deleteBedrock, "left_down_bound"_a, "right_up_bound"_a)
       .def("set_steve_params", &SimulationFabricProvider::setSteveParams, "move_radius"_a, "count"_a)
       .def("build", &SimulationFabricProvider::build);
   py::class_<SimulationProvider>(handle, "Simulation")
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
       .def("wait_update_field", &SimulationProvider::waitUpdateSimulation)
       .def("get_creepers_manager", &SimulationProvider::getCreepersManager)
-      .def("get_steves_manager", &SimulationProvider::getStevesManager);
+      .def("get_steves_manager", &SimulationProvider::getStevesManager)
+      .def("set_bedrock", &SimulationProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)
+      .def("delete_bedrock", &SimulationProvider::deleteBedrock, "left_down_bound"_a, "right_up_bound"_a);
   py::enum_<DistanceFunc::Type>(handle, "DistFunc")
       .value("Polar", DistanceFunc::Type::Polar)
       .value("Euclid", DistanceFunc::Type::Euclid)

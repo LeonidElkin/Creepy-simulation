@@ -8,7 +8,7 @@
 #include "StevesManager.hpp"
 
 class Simulation {
-  std::shared_ptr<FieldParams> fieldParams;
+  std::shared_ptr<FieldParams> fieldParams_;
   CreepersManager creepersManager_;
   StevesManager stevesManager_;
 
@@ -18,4 +18,20 @@ class Simulation {
   void updateField();
   CreepersManager& getCreepersManager() { return creepersManager_; }
   StevesManager& getStevesManager() { return stevesManager_; }
+
+  Simulation& setBedrock(const Rectangle& bedrock) {
+    if (!fieldParams_) {
+      throw std::invalid_argument("fieldParams_ is not set");
+    }
+    fieldParams_->setBedrock(bedrock);
+    return *this;
+  }
+
+  Simulation& deleteBedrock(const Rectangle& bedrock) {
+    if (!fieldParams_) {
+      throw std::invalid_argument("fieldParams_ is not set");
+    }
+    fieldParams_->deleteBedrock(bedrock);
+    return *this;
+  }
 };
