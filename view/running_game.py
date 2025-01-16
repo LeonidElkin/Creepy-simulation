@@ -26,6 +26,7 @@ class RunningGame:
         logger.info(f"Field params set: width={width}, height={height}, dist_func={dist_func}")
         simulationFabric.set_creeper_params(*astuple(self.app.creepers_params))
         simulationFabric.set_steve_params(*astuple(self.app.steve_params))
+        print(self.app.creepers_params)
 
         return simulationFabric.build()
 

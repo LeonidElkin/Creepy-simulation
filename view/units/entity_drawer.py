@@ -1,18 +1,13 @@
-import pygame
-
-
 class EntityDrawer:
-    def __init__(self, position: tuple[float, float], image, drawer, state=None):
+    def __init__(self, position: tuple[float, float], image, drawer):
         self.drawer = drawer
         self.cur_x, self.cur_y = position
         self.target_x, self.target_y = position
         self.steps_left = 0
         self.image = image
-        self.state = state
 
     def update(self, new_position: tuple[float, float], steps, state=None):
         self.target_x, self.target_y = new_position
-        self.state = state
         self._set_target(steps)
 
     def _set_target(self, steps):
@@ -33,16 +28,18 @@ class EntityDrawer:
     def draw_step(self):
         self.update_position()
 
-        screen_x = self.cur_x * self.drawer.zoom_level + self.drawer.offset_x
-        screen_y = self.cur_y * self.drawer.zoom_level + self.drawer.offset_y
+        # screen_x = self.cur_x * self.drawer.zoom_level + self.drawer.offset_x
+        # screen_y = self.cur_y * self.drawer.zoom_level + self.drawer.offset_y
+        #
+        # size = int(20 * self.drawer.zoom_level)
+        #
+        # # Проверяем, находится ли объект в пределах экрана
+        # if not (0 - size < screen_x < self.drawer.width and 0 - size < screen_y < self.drawer.height):
+        #     return  # Объект вне видимой области
 
-        size = int(20 * self.drawer.zoom_level)
-
-        # Проверяем, находится ли объект в пределах экрана
-        if not (0 - size < screen_x < self.drawer.width and 0 - size < screen_y < self.drawer.height):
-            return  # Объект вне видимой области
-
-        scaled_image = pygame.transform.scale(self.image, (size, size))
+        # scaled_image = pygame.transform.scale(self.image, (size, size))
+        screen_x, screen_y = self.cur_x, self.cur_y
+        scaled_image = self.image
         self.drawer.screen.blit(scaled_image, (screen_x, screen_y))
 
 

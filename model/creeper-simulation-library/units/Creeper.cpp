@@ -18,7 +18,7 @@ void Creeper::begin() {
       state_ = CreepersParams::State::Born;
       break;
     case CreepersParams::State::GoToSteve:
-      if (target_ && target_->getState() != StevesParams::State::Dead) {
+      if (target_ && target_->getState() == StevesParams::State::Dead) {
         target_ = nullptr;
         state_ = CreepersParams::State::Walk;
       }

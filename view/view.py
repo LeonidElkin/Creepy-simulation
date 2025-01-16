@@ -38,14 +38,16 @@ class DrawExplosion:
         if self._update_frame(len(drawer.image_provider.explosion_frames) - 1):
             return False
 
-        frame = drawer.image_provider.explosion_frames[self.explosion_frame_index]
-        scaled_size = int(frame.get_width() * drawer.zoom_level), int(frame.get_height() * drawer.zoom_level)
-        scaled_frame = pygame.transform.scale(frame, scaled_size)
-
-        for point in self.points:
-            screen_x = point[0] * drawer.zoom_level + drawer.offset_x
-            screen_y = point[1] * drawer.zoom_level + drawer.offset_y
-            drawer.screen.blit(scaled_frame, (screen_x, screen_y))
+        for i in self.points:
+            drawer.screen.blit(drawer.image_provider.explosion_frames[self.explosion_frame_index], i)
+        # frame = drawer.image_provider.explosion_frames[self.explosion_frame_index]
+        # scaled_size = int(frame.get_width() * drawer.zoom_level), int(frame.get_height() * drawer.zoom_level)
+        # scaled_frame = pygame.transform.scale(frame, scaled_size)
+        #
+        # for point in self.points:
+        #     screen_x = point[0] * drawer.zoom_level + drawer.offset_x
+        #     screen_y = point[1] * drawer.zoom_level + drawer.offset_y
+        #     drawer.screen.blit(scaled_frame, (screen_x, screen_y))
 
         return True
 

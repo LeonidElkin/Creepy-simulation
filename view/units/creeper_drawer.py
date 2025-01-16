@@ -1,9 +1,10 @@
+import logging
 from dataclasses import dataclass
 
 from creepers_lib import CreeperState
 
 from view.logger import logger
-from view.units.Entity import EntityDrawer, entity_within_bounds
+from view.units.entity_drawer import EntityDrawer, entity_within_bounds
 
 
 @dataclass
@@ -15,7 +16,7 @@ class CreeperParams:
 
 class CreeperDrawer(EntityDrawer):
     def __init__(self, position: tuple[float, float], state: CreeperState, drawer):
-        super().__init__(position, None, drawer, state)
+        super().__init__(position, None, drawer)
         self.dx = self.dy = 0
         self.state = state
         self.set_img()
@@ -46,6 +47,7 @@ class CreeperDrawer(EntityDrawer):
             self._set_target(steps)
 
         self.set_img()
+        logging.info(f"go from {self.cur_x}, {self.cur_y} to {new_position}")
 
 
 class CreepersManager:
