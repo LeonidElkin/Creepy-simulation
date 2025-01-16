@@ -12,7 +12,9 @@ build_dir = Path(__file__).parent
 def run_conan_build(debug):
     build_mode = "Debug" if debug else "Release"
     print(f"Build mode: {build_mode}, building path: {build_dir}")
-    subprocess.run(["conan", "build", ".", f"--settings=build_type={build_mode}"], check=True, cwd=build_dir)
+    subprocess.run(
+        ["conan", "build", ".", f"--settings=build_type={build_mode}", "--build=missing"], check=True, cwd=build_dir
+    )
     print("Conan build completed.")
 
 
@@ -23,5 +25,7 @@ def clean():
 def develop_install():
     build_mode = "Debug"
     print(f"Build mode: {build_mode}, building path: {build_dir}")
-    subprocess.run(["conan", "install", ".", f"--settings=build_type={build_mode}"], check=True, cwd=build_dir)
+    subprocess.run(
+        ["conan", "install", ".", f"--settings=build_type={build_mode}", "--build=missing"], check=True, cwd=build_dir
+    )
     print("Conan build completed.")
