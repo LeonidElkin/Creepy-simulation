@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import pygame
 from creepers_lib import CreeperState
 
@@ -5,10 +7,11 @@ from view.logger import logger
 from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
+@dataclass
 class CreeperParams:
-    radius = 10
-    radius_explosion = 10
-    creeper_count = 10
+    radius: float = 20
+    radius_explosion: float = 10
+    creeper_count: int = 10
 
 
 class CreeperDrawer(EntityDrawer):
@@ -45,7 +48,6 @@ class CreeperDrawer(EntityDrawer):
         elif self.state == CreeperState.Hissing:
             image = drawer.images.creeper_image_hiss
         elif self.state == CreeperState.Explodes:
-            print("Я ЧМО")
             drawer.will_explodes.add((self.cur_x, self.cur_y))
             return
         else:
@@ -56,13 +58,10 @@ class CreeperDrawer(EntityDrawer):
 
 
 class CreepersManager:
-    def __init__(self, app, position_shift):
-        self.app = app
+    def __init__(self, manager, position_shift):
+        self.manager = manager
         self.shift = position_shift
-        self.creepers = [
-            CreeperDrawer(coord, state)
-            for coord, state in self._creepers2data(app.simulation.get_creepers_manager().get_creepers())
-        ]
+        self.creepers = [CreeperDrawer(coord, state) for coord, state in self._creepers2data(manager.get_creepers())]
 
     def _creepers2data(self, creepers):
         def shift_coord(coord):
@@ -72,9 +71,9 @@ class CreepersManager:
         # logger.info(f"Processed creeper data: {data}")
         return ((shift_coord(creeper.get_coord()), creeper.get_state()) for creeper in creepers)
 
-    def update_creepers(self, steps, drawer):
+    def update_creepers(self, steps):
         logger.debug(f"Updating creepers: total={len(self.creepers)}")
-        data = list(self._creepers2data(self.app.simulation.get_creepers_manager().get_creepers()))
+        data = list(self._creepers2data(self.manager.get_creepers()))
         if len(self.creepers) != len(data):
             logger.error(f"Mismatch in creeper counts: {len(self.creepers)} vs {len(data)}")
             return

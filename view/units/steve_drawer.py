@@ -40,16 +40,13 @@ class SteveDrawer(EntityDrawer):
 
 
 class SteveManager:
-    def __init__(self, app, position_shift):
-        self.app = app
+    def __init__(self, manager, position_shift):
+        self.manager = manager
         self.shift = position_shift
-        steves_data = app.simulation.get_steves_manager().get_steves()
+        steves_data = self.manager.get_steves()
         if not steves_data:
             logger.error("No steve data received from simulation!")
-        self.steves = [
-            SteveDrawer(coord, state)
-            for coord, state in self._steves2data(app.simulation.get_steves_manager().get_steves())
-        ]
+        self.steves = [SteveDrawer(coord, state) for coord, state in self._steves2data(self.manager.get_steves())]
 
     def _steves2data(self, steves):
         def shift_coord(coord):
@@ -60,7 +57,7 @@ class SteveManager:
         return ((shift_coord(steve.get_coord()), steve.get_state()) for steve in steves)
 
     def update_steves(self, steps):
-        data = list(self._steves2data(self.app.simulation.get_steves_manager().get_steves()))
+        data = list(self._steves2data(self.manager.get_steves()))
         if len(self.steves) != len(data):
             logger.error(f"Mismatch in steve counts: {len(self.steves)} vs {len(data)}")
             return

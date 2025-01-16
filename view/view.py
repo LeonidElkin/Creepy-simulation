@@ -4,7 +4,7 @@ from copy import copy
 
 import pygame
 import pygame_gui
-from creepers_lib import DistFunc, SimulationFabric
+from creepers_lib import DistFunc
 
 from view.block import Block
 from view.logger import logger
@@ -236,20 +236,6 @@ class SimulationView:
     def start_game(self):
         logger.debug("Starting game...")
         # Инициализация поля и криперов, Steve
-        self.params = SimulationFabric()
-        self.params.set_field_params(
-            (-self.width // 2, -self.height // 2), (self.width // 2, self.height // 2), self.dist_func
-        )
-        logger.info(f"Field params set: width={self.width}, height={self.height}, dist_func={self.dist_func}")
-        self.params.set_creeper_params(self.radius, self.radius_explosion, self.creeper_count)
-        self.params.set_steve_params(self.radius, 10)
-
-        self.simulation = self.params.build()
-        logger.info(
-            f"Creeper params set: radius={self.radius}, explosion_radius={self.radius_explosion}, "
-            f"count={self.creeper_count}"
-        )
-
         self.running_game = RunningGame(self, (self.center_x, self.center_y))
         logger.info("Game initialized successfully.")
 
@@ -290,21 +276,16 @@ class SimulationView:
             self.draw_background()
 
             for block in self.blocks:
-                block.draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
+                block.step_draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
 
             if self.running_game:
+                self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+                self.will_explodes = set()
                 current_time = pygame.time.get_ticks()
                 if current_time - self.last_update_time >= self.thao:
-                    self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
-                    self.will_explodes = set()
-                    self.simulation.run_update_field()
-                    self.simulation.wait_update_field()
-                    if self.running_game.steve_manager:
-                        self.running_game.steve_manager.update_steves(max(1, self.thao // 16))
-                    self.running_game.creepers_manager.update_creepers(max(1, self.thao // 16), self)
+                    self.running_game.algo_update(self.thao)
                     self.last_update_time = pygame.time.get_ticks()
-                self.running_game.creepers_manager.draw_creepers(self)
-                self.running_game.steve_manager.draw_steves(self)
+                self.running_game.step_draw()
 
                 if self.explodes_drawer:
                     self.explodes_drawer(self)

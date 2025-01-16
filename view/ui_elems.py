@@ -26,21 +26,21 @@ class CreeperSlider(UiElement):
         super().__init__(app)
         self.event = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 10), slider_size),
-            start_value=app.creeper_count,
+            start_value=self.app.creepers_params.creeper_count,
             value_range=(1, 50000),
             manager=app.manager,
         )
         self.add_label(
             pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect((420, 10), slider_text_size),
-                text=f"Creepers: {app.creeper_count}",
+                text=f"Creepers: {self.app.creepers_params.creeper_count}",
                 manager=app.manager,
             )
         )
 
     def handel(self, event):
         self.app.creepers_params.creeper_count = int(event.value)
-        self.label.set_text(f"Creepers: {self.app.creeper_count}")
+        self.label.set_text(f"Creepers: {self.app.creepers_params.creeper_count}")
 
 
 class TaoSlider(UiElement):
@@ -70,21 +70,21 @@ class CreeperWalkRadius(UiElement):
         super().__init__(app)
         self.event = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 110), slider_size),
-            start_value=app.radius,
-            value_range=(20, 200),
+            start_value=self.app.creepers_params.radius,
+            value_range=(1, 200),
             manager=app.manager,
         )
         self.add_label(
             pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect((420, 110), slider_text_size),
-                text=f"Creeper walk radius: {app.radius}",
+                text=f"Creeper walk radius: {self.app.creepers_params.radius}",
                 manager=app.manager,
             )
         )
 
     def handel(self, event):
         self.app.creepers_params.radius = int(event.value)
-        self.label.set_text(f"Creeper walk radius: {self.app.radius}")
+        self.label.set_text(f"Creeper walk radius: {self.app.creepers_params.radius}")
 
 
 class CreeperRadiusExplosionSlider(UiElement):
@@ -92,21 +92,21 @@ class CreeperRadiusExplosionSlider(UiElement):
         super().__init__(app)
         self.event = pygame_gui.elements.UIHorizontalSlider(
             relative_rect=pygame.Rect((10, 160), slider_size),
-            start_value=app.radius_explosion,
+            start_value=self.app.creepers_params.radius_explosion,
             value_range=(1, 100),
             manager=app.manager,
         )
         self.add_label(
             pygame_gui.elements.UILabel(
                 relative_rect=pygame.Rect((420, 160), slider_text_size),
-                text=f"Creeper radius explosion: {app.radius_explosion}",
+                text=f"Creeper radius explosion: {self.app.creepers_params.radius_explosion}",
                 manager=app.manager,
             )
         )
 
     def handel(self, event):
         self.app.creepers_params.radius_explosion = int(event.value)
-        self.label.set_text(f"Creeper radius explosion: {self.app.radius_explosion}")
+        self.label.set_text(f"Creeper radius explosion: {self.app.creepers_params.radius_explosion}")
 
 
 class StartButton(UiElement):
