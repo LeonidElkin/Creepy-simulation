@@ -30,7 +30,7 @@ class CreeperDrawer(EntityDrawer):
         elif self.state == CreeperState.Hissing:
             self.image = self.drawer.image_provider.creeper_image_hiss
         else:
-            logger.error("Unknown creeper state, draw bonk:", self.state.value)
+            logger.error(f"Unknown creeper state, draw bonk: {self.state.name}")
             self.image = self.drawer.image_provider.creeper_image_bonk
 
     def update(self, new_position: tuple[float, float], steps, state=None):

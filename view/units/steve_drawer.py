@@ -1,7 +1,15 @@
+from dataclasses import dataclass
+
 from creepers_lib import SteveState
 
 from view.logger import logger
 from view.units.Entity import EntityDrawer, entity_within_bounds
+
+
+@dataclass
+class SteveParams:
+    radius: float = 20
+    count: int = 0
 
 
 class SteveDrawer(EntityDrawer):
@@ -15,7 +23,7 @@ class SteveDrawer(EntityDrawer):
         self.image = self.drawer.image_provider.steve
 
         if self.state not in (SteveState.Walk, SteveState.Born):
-            logger("invalid steve state")
+            logger.error(f"invalid steve state {self.state}")
 
     def update(self, new_position: tuple[float, float], steps, state=None):
         self.state = state

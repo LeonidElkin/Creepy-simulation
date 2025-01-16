@@ -11,6 +11,7 @@ from view.image_provider import ImageProvider
 from view.logger import logger
 from view.running_game import RunningGame
 from view.units.creeper_drawer import CreeperParams
+from view.units.steve_drawer import SteveParams
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -34,10 +35,10 @@ class DrawExplosion:
     def __call__(self, drawer):
         if not self.points:
             return False
-        if self._update_frame(len(drawer.images.explosion_frames) - 1):
+        if self._update_frame(len(drawer.image_provider.explosion_frames) - 1):
             return False
 
-        frame = drawer.images.explosion_frames[self.explosion_frame_index]
+        frame = drawer.image_provider.explosion_frames[self.explosion_frame_index]
         scaled_size = int(frame.get_width() * drawer.zoom_level), int(frame.get_height() * drawer.zoom_level)
         scaled_frame = pygame.transform.scale(frame, scaled_size)
 
@@ -117,10 +118,9 @@ class SimulationView:
 
         # Params
         self.creepers_params = CreeperParams()
-        self.creeper_count = 10
+        self.steve_params = SteveParams()
         self.thao = 2000
         self.radius = 20
-        self.radius_explosion = 10
         self.last_update_time = 0
         self.will_explodes = set()
 
@@ -134,9 +134,7 @@ class SimulationView:
         # UI elements
         self.ui = ui_elems.UiManager(self)
         self.parameters = {
-            "creeper_count": self.creeper_count,
             "radius": self.radius,
-            "radius_explosion": self.radius_explosion,
             "thao": self.thao,
         }
         self.params = None
@@ -278,13 +276,13 @@ class SimulationView:
             self.draw_background()
 
             for block in self.blocks:
-                block.step_draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
+                block.draw(self.screen, self.image_provider.bedrock, self.zoom_level, self.offset_x, self.offset_y)
 
             if self.running_game:
-                self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
-                self.will_explodes = set()
                 current_time = pygame.time.get_ticks()
                 if current_time - self.last_update_time >= self.thao:
+                    self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+                    self.will_explodes = set()
                     self.running_game.algo_update(self.thao)
                     self.last_update_time = pygame.time.get_ticks()
                 self.running_game.step_draw()
