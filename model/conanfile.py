@@ -8,7 +8,6 @@ class CreepersLib(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
     generators = "CMakeDeps"
     requires = "glog/[>=0.7.1]", "gtest/[>=1.15.0]", "pybind11/[>=1.13.0]"
-    build_policy = "missing"
     build_requires = "ninja/[>=1.11.1]"
 
     def layout(self):

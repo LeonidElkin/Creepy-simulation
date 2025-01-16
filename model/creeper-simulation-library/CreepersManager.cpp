@@ -9,7 +9,7 @@ CreepersManager::CreepersManager(std::shared_ptr<CreepersParams> params) : param
               std::ranges::to<std::vector>();
 }
 
-void CreepersManager::beginAndFindSteves(const std::list<std::shared_ptr<Steve>>& steves) {
+void CreepersManager::beginAndFindSteves(const std::vector<std::shared_ptr<Steve>>& steves) {
 #pragma omp parallel for
   for (auto i = 0; i < creepers_.size(); ++i) {
     creepers_[i]->begin();
