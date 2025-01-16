@@ -14,11 +14,27 @@ class SimulationFabric {
 
  public:
   SimulationFabric() = default;
-  SimulationFabric& setFieldParams(const Point& leftDownBound, const Point& rightUpBound,
-                                   const std::function<double(Point p1, Point p2)>& distanceFunc) {
-    fieldParams_ = std::make_shared<FieldParams>(leftDownBound, rightUpBound, distanceFunc);
+  SimulationFabric& setFieldParams(const Rectangle& bounds, const std::function<double(Point p1, Point p2)>& distanceFunc) {
+    fieldParams_ = std::make_shared<FieldParams>(bounds, distanceFunc);
     return *this;
   }
+
+  SimulationFabric& setBedrock(const Rectangle& bedrock) {
+    if (!fieldParams_) {
+      throw std::invalid_argument("fieldParams_ is not set");
+    }
+    fieldParams_->setBedrock(bedrock);
+    return *this;
+  }
+
+  SimulationFabric& deleteBedrock(const Rectangle& bedrock) {
+    if (!fieldParams_) {
+      throw std::invalid_argument("fieldParams_ is not set");
+    }
+    fieldParams_->deleteBedrock(bedrock);
+    return *this;
+  }
+
   decltype(fieldParams_) getFieldParams() {
     if (!fieldParams_) throw std::invalid_argument("FieldParams_ is not set");
     return fieldParams_;

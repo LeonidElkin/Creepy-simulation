@@ -6,6 +6,21 @@
 struct Point {
   double x;
   double y;
+
+  bool operator == (const Point& p2) const
+  {
+    return std::abs(x - p2.x) < 1e-9 && std::abs(y - p2.y) < 1e-9;
+  }
+};
+
+struct Rectangle {
+  Point leftDownBound;
+  Point rightUpBound;
+
+  bool operator == (const Rectangle& r2) const
+  {
+    return leftDownBound == r2.leftDownBound && rightUpBound == r2.rightUpBound;
+  }
 };
 
 std::mt19937& getRandom();

@@ -1,9 +1,27 @@
 #pragma once
 
+#include <list>
+
 #include "utils.hpp"
 
-struct FieldParams {
-  Point leftDownBound;
-  Point rightUpBound;
+class FieldParams {
+  std::list<Rectangle> bedrocks_;
+  Rectangle bounds_;
   std::function<double(Point p1, Point p2)> distanceFunc;
+
+  [[nodiscard]] const std::optional<Point> checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
+                                                             Point corner2) const;
+  [[nodiscard]] std::vector<Point> getCorners(Rectangle bedrock) const;
+
+ public:
+  [[nodiscard]] auto& getDistanceFunc() { return distanceFunc; }
+  [[nodiscard]] auto& getBounds() { return bounds_; }
+  [[nodiscard]] Point checkIntersections(Point unitsOldCoord, Point unitsNewCoord) const;
+
+  FieldParams(const Rectangle& bounds, const std::function<double(Point p1, Point p2)>& distanceFunc)
+      : bounds_(bounds), distanceFunc(distanceFunc) {};
+
+  void setBedrock(const Rectangle& bedrock) { bedrocks_.insert(bedrocks_.cbegin(), bedrock); }
+
+  void deleteBedrock(const Rectangle& bedrock) { bedrocks_.remove(bedrock); }
 };

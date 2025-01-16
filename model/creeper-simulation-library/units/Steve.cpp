@@ -4,7 +4,7 @@
 
 void Steve::walk() {
   DLOG_IF(WARNING, state_ == StevesParams::State::Dead) << "Dead Steve walking! Steve id: " << getID();
-  setCoord(params_->generatePos(getCoord()));
+  setCoord(params_->getFieldParams()->checkIntersections(getCoord(), params_->generatePos(getCoord())));
 }
 
 void Steve::updateState(const std::shared_ptr<Unit> &another) {}

@@ -6,8 +6,8 @@ UnitsParams::UnitsParams(double moveRadius, const std::shared_ptr<FieldParams> &
     : fieldParams_(fieldParams), moveRadius_(moveRadius), unitsCount_(unitsCount) {}
 
 Point UnitsParams::generatePos(const std::optional<Point> initialPoint) {
-  const auto &[ldx, ldy] = getLeftDownBound();
-  const auto &[rux, ruy] = getRightUpBound();
+  const auto &[ldx, ldy] = getFieldParams()->getBounds().leftDownBound;
+  const auto &[rux, ruy] = getFieldParams()->getBounds().rightUpBound;
   auto xDist = initialPoint ? std::uniform_real_distribution(std::max(ldx, initialPoint->x - getMoveRadius()),
                                                              std::min(rux, initialPoint->x + getMoveRadius()))
                             : std::uniform_real_distribution(ldx, rux);
