@@ -57,5 +57,22 @@ TEST(Simulation, CreeperAggresion) {
   simulation.updateField();
   state = simulation.getCreepersManager().getCreepers()[0]->getState();
   EXPECT_EQ(state, CreepersParams::State::Born);
-  EXPECT_EQ(simulation.getStevesManager().getSteves().size(), 0);
+  EXPECT_EQ(simulation.getStevesManager().getSteves()[0]->getState(), StevesParams::State::Dead);
+}
+
+TEST(Simulation, AndTwoWillExplode) {
+  constexpr auto creeps_num = 2;
+  auto simulationParams = SimulationFabric();
+  simulationParams.setFieldParams({0, 0}, {1, 1}, DistanceFunc::euclideanSquared);
+  simulationParams.setCreeperParams(1, 100, creeps_num);
+  auto simulation = simulationParams.build();
+  auto creepers = simulation.getCreepersManager().getCreepers();
+  for (auto i = 0; i < 100; i++) {
+    simulation.updateField();
+    if (creepers[0]->getState() == CreepersParams::State::Explodes || creepers[1]->getState() == CreepersParams::State::Explodes) {
+      break;
+    }
+  }
+  EXPECT_EQ(creepers[0]->getState(), CreepersParams::State::Explodes);
+  EXPECT_EQ(creepers[1]->getState(), CreepersParams::State::Explodes);
 }

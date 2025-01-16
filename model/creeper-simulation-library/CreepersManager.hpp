@@ -20,7 +20,7 @@ class CreepersManager {
  public:
   CreepersManager(std::shared_ptr<CreepersParams> params);
 
-  void beginAndFindSteves(const std::list<std::shared_ptr<Steve>>& steves);
+  void beginAndFindSteves(const std::vector<std::shared_ptr<Steve>>& steves);
 
   [[nodiscard]] const decltype(creepers_)& getCreepers() const { return creepers_; }
 

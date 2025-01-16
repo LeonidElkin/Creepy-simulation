@@ -31,7 +31,7 @@ void Creeper::begin() {
 }
 
 void Creeper::steveSearch(const std::shared_ptr<Steve> &steve) {
-  if (state_ == CreepersParams::State::Born) {
+  if (state_ == CreepersParams::State::Born || steve->getState() == StevesParams::State::Dead) {
     return;
   }
   const auto distance = std::sqrt(params_->getDistanceFunc()(getCoord(), steve->getCoord()));
@@ -76,27 +76,24 @@ void Creeper::walk() {
   }
 }
 
-void Creeper::die() {
-  switch (state_) {
-    case CreepersParams::State::Explodes:
-      break;
-    default:
-      state_ = CreepersParams::State::Dead;
-  }
-}
+void Creeper::die() { state_ = CreepersParams::State::Explodes; }
 
 void Creeper::updateState(const std::shared_ptr<Unit> &another) {
   if (another.get() == this) return;
+  if (getState() == CreepersParams::State::Born) {
+    return;
+  }
 
   const auto distanceSquare = params_->getDistanceFunc()(getCoord(), another->getCoord());
   if (distanceSquare <= params_->explodeRadiusSquare) {
-    DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(another).name() << " " << another->getID();
+    DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(*another).name() << " " << another->getID();
     state_ = CreepersParams::State::Explodes;
     another->die();
     return;
   }
 
   switch (state_) {
+    case CreepersParams::State::Explodes:
     case CreepersParams::State::Hissing:
     case CreepersParams::State::GoToSteve:
     case CreepersParams::State::Dead:

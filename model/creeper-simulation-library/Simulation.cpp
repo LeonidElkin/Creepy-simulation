@@ -22,7 +22,11 @@ void Simulation::updateField() {
   stevesManager_.walk();
   DLOG(INFO) << "end walking, start interacting";
   creepersManager_.refreshActives();
-  creepersManager_.interactWith(creepersManager_.getCreepersRef());
-  creepersManager_.interactWith(stevesManager_.getStevesRef());
+  creepersManager_.interactWith(creepersManager_.getCreepersRef() | std::views::filter([](auto &creeper) {
+                                  return creeper->getState() != CreepersParams::State::Born;
+                                }));
+  creepersManager_.interactWith(stevesManager_.getStevesRef() | std::views::filter([](auto &steve) {
+                                  return steve->getState() != StevesParams::State::Dead;
+                                }));
   DLOG(INFO) << "end interacting";
 }
