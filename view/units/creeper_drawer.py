@@ -19,10 +19,10 @@ class CreeperDrawer(EntityDrawer):
         super().__init__(position, None, drawer)
         self.dx = self.dy = 0
         self.state = state
-        self.set_img()
+        self.set_img(state)
 
-    def set_img(self):
-        if self.state in (CreeperState.Walk, CreeperState.Explodes, CreeperState.Dead):
+    def set_img(self, prev):
+        if self.state == CreeperState.Walk:
             self.image = self.drawer.image_provider.creeper_image_walk
         elif self.state == CreeperState.Born:
             self.image = self.drawer.image_provider.creeper_image_born
@@ -30,11 +30,19 @@ class CreeperDrawer(EntityDrawer):
             self.image = self.drawer.image_provider.creeper_image_sleep
         elif self.state == CreeperState.Hissing:
             self.image = self.drawer.image_provider.creeper_image_hiss
+        elif self.state == CreeperState.GoToSteve:
+            self.image = self.drawer.image_provider.creeper_image_bonk
+        elif self.state in (CreeperState.Explodes, CreeperState.Dead):
+            if prev == CreeperState.GoToSteve:
+                self.image = self.drawer.image_provider.creeper_image_bonk
+            else:
+                self.image = self.drawer.image_provider.creeper_image_walk
         else:
             logger.error(f"Unknown creeper state, draw bonk: {self.state.name}")
             self.image = self.drawer.image_provider.creeper_image_bonk
 
     def update(self, new_position: tuple[float, float], steps, state=None):
+        prev = self.state
         self.state = state
         if state == CreeperState.Born:
             self.cur_x, self.cur_y = new_position
@@ -42,11 +50,11 @@ class CreeperDrawer(EntityDrawer):
             self.steps_left = 0
         else:
             if state == CreeperState.Explodes:
-                self.drawer.will_explodes.add((self.cur_x, self.cur_y))
+                self.drawer.will_explodes.add(new_position)
             self.target_x, self.target_y = new_position
             self._set_target(steps)
 
-        self.set_img()
+        self.set_img(prev)
         logging.info(f"go from {self.cur_x}, {self.cur_y} to {new_position}")
 
 

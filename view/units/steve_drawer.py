@@ -17,16 +17,22 @@ class SteveDrawer(EntityDrawer):
         super().__init__(position, None, drawer)
         self.dx = self.dy = 0
         self.state = state
+        self.dead = False
         self.set_img()
 
     def set_img(self):
-        self.image = self.drawer.image_provider.steve
-
-        if self.state not in (SteveState.Walk, SteveState.Born):
+        if self.dead:
+            self.image = self.drawer.image_provider.bedrock
+        elif self.state in (SteveState.Walk, SteveState.Born, SteveState.Dead):
+            self.image = self.drawer.image_provider.steve
+        else:
             logger.error(f"invalid steve state {self.state}")
             self.image = self.drawer.image_provider.bedrock
 
     def update(self, new_position: tuple[float, float], steps, state=None):
+        if self.state == SteveState.Dead:
+            self.dead = True
+
         self.state = state
         self.target_x, self.target_y = new_position
         self._set_target(steps)
