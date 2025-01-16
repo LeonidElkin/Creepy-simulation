@@ -90,6 +90,7 @@ void Creeper::updateState(const std::shared_ptr<Unit> &another) {
 
   const auto distanceSquare = params_->getDistanceFunc()(getCoord(), another->getCoord());
   if (distanceSquare <= params_->explodeRadiusSquare) {
+    DLOG(INFO) << "Creeper " << getID() << " exploded and kill " << typeid(another).name() << " " << another->getID();
     state_ = CreepersParams::State::Explodes;
     another->die();
     return;
