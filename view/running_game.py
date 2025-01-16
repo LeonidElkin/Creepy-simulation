@@ -11,8 +11,8 @@ class RunningGame:
     def __init__(self, app, position_shift):
         self.app = app
         self.simulation: creepers_lib.Simulation = self.start_game()
-        self.creepers_manager = CreepersManager(self.simulation.get_creepers_manager(), position_shift)
-        self.steve_manager = SteveManager(self.simulation.get_steves_manager(), position_shift)
+        self.creepers_manager = CreepersManager(app, self.simulation.get_creepers_manager(), position_shift)
+        self.steve_manager = SteveManager(app, self.simulation.get_steves_manager(), position_shift)
         self.simulation.run_update_field()
         self.last_update_time = 0
 

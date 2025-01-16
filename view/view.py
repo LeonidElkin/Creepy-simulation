@@ -7,6 +7,7 @@ import pygame_gui
 from creepers_lib import DistFunc
 
 from view.block import Block
+from view.image_provider import ImageProvider
 from view.logger import logger
 from view.running_game import RunningGame
 from view.units.creeper_drawer import CreeperParams
@@ -81,7 +82,6 @@ class DrawSparkle:
 
 class SimulationView:
     def __init__(self, width=1920, height=1080):
-        import image_provider
         import ui_elems
 
         pygame.init()
@@ -94,13 +94,15 @@ class SimulationView:
         pygame.display.set_caption("Creepy Simulation")
         self.clock = pygame.time.Clock()
         self.manager = pygame_gui.UIManager((width, height))
-        self.images = image_provider.ImageProvider()
+        self.image_provider = ImageProvider()
         self.explodes_drawer = DrawExplosion(set())
         # Another objects
         self.blocks = []
 
         try:
-            self.background_image = pygame.transform.scale(self.images.background_image, (self.width, self.height))
+            self.background_image = pygame.transform.scale(
+                self.image_provider.background_image, (self.width, self.height)
+            )
         except pygame.error as e:
             print(f"Error loading background image: {e}")
             self.background_image.fill((0, 100, 200))

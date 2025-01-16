@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 
-import pygame
 from creepers_lib import CreeperState
 
 from view.logger import logger
@@ -15,10 +14,24 @@ class CreeperParams:
 
 
 class CreeperDrawer(EntityDrawer):
-    def __init__(self, position: tuple[float, float], state: CreeperState):
-        super().__init__(position, None, state)
+    def __init__(self, position: tuple[float, float], state: CreeperState, drawer):
+        super().__init__(position, None, drawer, state)
         self.dx = self.dy = 0
         self.state = state
+        self.set_img()
+
+    def set_img(self):
+        if self.state in (CreeperState.Walk, CreeperState.Explodes, CreeperState.Dead):
+            self.image = self.drawer.image_provider.creeper_image_walk
+        elif self.state == CreeperState.Born:
+            self.image = self.drawer.image_provider.creeper_image_born
+        elif self.state == CreeperState.Sleep:
+            self.image = self.drawer.image_provider.creeper_image_sleep
+        elif self.state == CreeperState.Hissing:
+            self.image = self.drawer.image_provider.creeper_image_hiss
+        else:
+            logger.error("Unknown creeper state, draw bonk:", self.state.value)
+            self.image = self.drawer.image_provider.creeper_image_bonk
 
     def update(self, new_position: tuple[float, float], steps, state=None):
         self.state = state
@@ -27,41 +40,21 @@ class CreeperDrawer(EntityDrawer):
             self.target_x, self.target_y = new_position
             self.steps_left = 0
         else:
+            if state == CreeperState.Explodes:
+                self.drawer.will_explodes.add((self.cur_x, self.cur_y))
             self.target_x, self.target_y = new_position
             self._set_target(steps)
 
-    def draw_step(self, drawer):
-        self.update_position()
-        screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
-        screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
-        size = int(20 * drawer.zoom_level)
-
-        if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
-            return  # Крипер вне видимой области
-
-        if self.state == CreeperState.Walk:
-            image = drawer.images.creeper_image_walk
-        elif self.state == CreeperState.Born:
-            image = drawer.images.creeper_image_born
-        elif self.state == CreeperState.Sleep:
-            image = drawer.images.creeper_image_sleep
-        elif self.state == CreeperState.Hissing:
-            image = drawer.images.creeper_image_hiss
-        elif self.state == CreeperState.Explodes:
-            drawer.will_explodes.add((self.cur_x, self.cur_y))
-            return
-        else:
-            return
-
-        scaled_image = pygame.transform.scale(image, (size, size))
-        drawer.screen.blit(scaled_image, (screen_x, screen_y))
+        self.set_img()
 
 
 class CreepersManager:
-    def __init__(self, manager, position_shift):
+    def __init__(self, app, manager, position_shift):
         self.manager = manager
         self.shift = position_shift
-        self.creepers = [CreeperDrawer(coord, state) for coord, state in self._creepers2data(manager.get_creepers())]
+        self.creepers = [
+            CreeperDrawer(coord, state, app) for coord, state in self._creepers2data(self.manager.get_creepers())
+        ]
 
     def _creepers2data(self, creepers):
         def shift_coord(coord):
@@ -86,7 +79,7 @@ class CreepersManager:
             if entity_within_bounds(creeper, drawer):
                 try:
                     # logger.debug(f"Drawing creeper {index}: position=({creeper.cur_x}, {creeper.cur_y})")
-                    creeper.draw_step(drawer)
+                    creeper.draw_step()
                 except Exception as e:
                     logger.error(f"Error drawing creeper {index}: {e}")
                     raise

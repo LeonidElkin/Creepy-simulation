@@ -1,4 +1,3 @@
-import pygame
 from creepers_lib import SteveState
 
 from view.logger import logger
@@ -6,47 +5,34 @@ from view.units.Entity import EntityDrawer, entity_within_bounds
 
 
 class SteveDrawer(EntityDrawer):
-    def __init__(self, position: tuple[float, float], state: SteveState):
-        super().__init__(position, None, state)
+    def __init__(self, position: tuple[float, float], state: SteveState, drawer):
+        super().__init__(position, None, drawer, state)
         self.dx = self.dy = 0
         self.state = state
+        self.set_img()
+
+    def set_img(self):
+        self.image = self.drawer.image_provider.steve
+
+        if self.state not in (SteveState.Walk, SteveState.Born):
+            logger("invalid steve state")
 
     def update(self, new_position: tuple[float, float], steps, state=None):
         self.state = state
-        # if state == SteveState.Born:
-        #     self.cur_x, self.cur_y = new_position
-        #     self.target_x, self.target_y = new_position
-        #     self.steps_left = 0
-        # else:
         self.target_x, self.target_y = new_position
         self._set_target(steps)
 
-    def draw_step(self, drawer):
-        self.update_position()
-        screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
-        screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
-        size = int(20 * drawer.zoom_level)
-
-        if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
-            return  # Крипер вне видимой области
-
-        if self.state in (SteveState.Walk, SteveState.Born):
-            image = drawer.images.steve
-        else:
-            return
-
-        scaled_image = pygame.transform.scale(image, (size, size))
-        drawer.screen.blit(scaled_image, (screen_x, screen_y))
+        self.set_img()
 
 
 class SteveManager:
-    def __init__(self, manager, position_shift):
+    def __init__(self, app, manager, position_shift):
         self.manager = manager
         self.shift = position_shift
         steves_data = self.manager.get_steves()
         if not steves_data:
             logger.error("No steve data received from simulation!")
-        self.steves = [SteveDrawer(coord, state) for coord, state in self._steves2data(self.manager.get_steves())]
+        self.steves = [SteveDrawer(coord, state, app) for coord, state in self._steves2data(self.manager.get_steves())]
 
     def _steves2data(self, steves):
         def shift_coord(coord):
@@ -76,7 +62,7 @@ class SteveManager:
             if entity_within_bounds(steve, drawer):
                 try:
                     # logger.debug(f"Drawing steve {index}: position=({steve.cur_x}, {steve.cur_y})")
-                    steve.draw_step(drawer)
+                    steve.draw_step()
                 except Exception as e:
                     logger.error(f"Error drawing steve {index}: {e}")
                     raise

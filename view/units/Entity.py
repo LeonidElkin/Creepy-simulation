@@ -2,7 +2,8 @@ import pygame
 
 
 class EntityDrawer:
-    def __init__(self, position: tuple[float, float], image, state=None):
+    def __init__(self, position: tuple[float, float], image, drawer, state=None):
+        self.drawer = drawer
         self.cur_x, self.cur_y = position
         self.target_x, self.target_y = position
         self.steps_left = 0
@@ -29,20 +30,20 @@ class EntityDrawer:
             self.steps_left -= 1
         return self.steps_left > 0
 
-    def draw_step(self, drawer):
+    def draw_step(self):
         self.update_position()
 
-        screen_x = self.cur_x * drawer.zoom_level + drawer.offset_x
-        screen_y = self.cur_y * drawer.zoom_level + drawer.offset_y
+        screen_x = self.cur_x * self.drawer.zoom_level + self.drawer.offset_x
+        screen_y = self.cur_y * self.drawer.zoom_level + self.drawer.offset_y
 
-        size = int(20 * drawer.zoom_level)
+        size = int(20 * self.drawer.zoom_level)
 
         # Проверяем, находится ли объект в пределах экрана
-        if not (0 - size < screen_x < drawer.width and 0 - size < screen_y < drawer.height):
+        if not (0 - size < screen_x < self.drawer.width and 0 - size < screen_y < self.drawer.height):
             return  # Объект вне видимой области
 
         scaled_image = pygame.transform.scale(self.image, (size, size))
-        drawer.screen.blit(scaled_image, (screen_x, screen_y))
+        self.drawer.screen.blit(scaled_image, (screen_x, screen_y))
 
 
 def entity_within_bounds(entity, drawer):
