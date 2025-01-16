@@ -3,7 +3,9 @@
 #include <glog/logging.h>
 
 void Steve::walk() {
-  DLOG_IF(WARNING, state_ == StevesParams::State::Dead) << "Dead Steve walking! Steve id: " << getID();
+  if (state_ == StevesParams::State::Dead) {
+    return;
+  }
   setCoord(params_->getFieldParams()->checkIntersections(getCoord(), params_->generatePos(getCoord())));
 }
 

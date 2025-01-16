@@ -9,7 +9,7 @@ class Simulation;
 
 class StevesManager {
   std::shared_ptr<StevesParams> params_;
-  std::list<std::shared_ptr<Steve>> steves_;
+  std::vector<std::shared_ptr<Steve>> steves_;
 
  protected:
   [[nodiscard]] decltype(steves_)& getStevesRef() { return steves_; }
@@ -17,7 +17,7 @@ class StevesManager {
  public:
   StevesManager(std::shared_ptr<StevesParams> params);
 
-  [[nodiscard]] const std::list<std::shared_ptr<Steve>>& getSteves() const { return steves_; }
+  [[nodiscard]] const decltype(steves_)& getSteves() const { return steves_; }
 
   void walk();
 
