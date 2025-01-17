@@ -19,6 +19,8 @@ class FieldParams {
   [[nodiscard]] auto& getBounds() { return bounds_; }
   [[nodiscard]] std::optional<Point> checkIntersections(Point unitsOldCoord, Point unitsNewCoord) const;
 
+  [[nodiscard]] bool checkInsideBlock(Point coord) const;
+
   FieldParams(const Rectangle& bounds, const std::function<double(Point p1, Point p2)>& distanceFunc)
       : bounds_(bounds), distanceFunc(distanceFunc) {};
 

@@ -6,6 +6,10 @@ void Steve::walk() {
   if (state_ == StevesParams::State::Dead) {
     return;
   }
+  if (params_->getFieldParams()->checkInsideBlock(getCoord())) {
+    die();
+    return;
+  }
   const auto newCoord = params_->generatePos(getCoord());
   setCoord(params_->getFieldParams()->checkIntersections(getCoord(), newCoord).value_or(newCoord));
 }

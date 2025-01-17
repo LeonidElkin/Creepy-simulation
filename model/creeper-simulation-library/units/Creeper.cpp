@@ -34,12 +34,12 @@ void Creeper::begin() {
 void Creeper::steveSearch(const std::shared_ptr<Steve> &steve) {
   switch (state_) {
     case CreepersParams::State::Born:
-      case CreepersParams::State::Bonk:
-    return;
+    case CreepersParams::State::Bonk:
+      return;
     default:
-        if (state_ == CreepersParams::State::Born || steve->getState() == StevesParams::State::Dead) {
-          return;
-        }
+      if (state_ == CreepersParams::State::Born || steve->getState() == StevesParams::State::Dead) {
+        return;
+      }
   }
   const auto distance = std::sqrt(params_->getFieldParams()->getDistanceFunc()(getCoord(), steve->getCoord()));
   auto distSteve = std::bernoulli_distribution(std::min(10. / distance, 1.));
@@ -70,14 +70,19 @@ Point Creeper::bonkedMove(const Point to) {
 void Creeper::walk() {
   static auto dist_sleep = std::bernoulli_distribution(sleep_probability);
   static auto dist_wake_up = std::bernoulli_distribution(wake_up_probability);
+
+  if (state_ != CreepersParams::State::Born && params_->getFieldParams()->checkInsideBlock(getCoord())) {
+    die();
+    return;
+  }
   switch (state_) {
+    case CreepersParams::State::Born:
+      setCoord(params_->generatePos({}));
+      break;
     case CreepersParams::State::Bonk:
       break;
     case CreepersParams::State::GoToSteve:
       setCoord(moveTo(target_->getCoord()));
-      break;
-    case CreepersParams::State::Born:
-      setCoord(params_->generatePos({}));
       break;
     case CreepersParams::State::Sleep:
       if (dist_wake_up(getRandom())) {

@@ -1,7 +1,10 @@
 #include "FieldParams.hpp"
 
+#include <functional>
 #include <optional>
 #include <ranges>
+
+static bool isBetween(double a, double b, double c) { return (c >= std::min(a, b) && c <= std::max(a, b)); }
 
 const std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
                                                           Point corner2) {
@@ -17,8 +20,6 @@ const std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, P
   double C2 = A2 * corner1.x + B2 * corner1.y;
 
   Point intersection = {(B2 * C1 - B1 * C2) / det, (A1 * C2 - A2 * C1) / det};
-
-  auto isBetween = [](double a, double b, double c) { return (c >= std::min(a, b) && c <= std::max(a, b)); };
 
   if (isBetween(corner1.x, corner2.x, intersection.x) && isBetween(corner1.y, corner2.y, intersection.y) &&
       isBetween(unitsOldCoord.x, unitsNewCoord.x, intersection.x) &&
@@ -38,14 +39,23 @@ std::vector<Point> FieldParams::getCorners(Rectangle bedrock) const {
 std::optional<Point> FieldParams::checkIntersections(const Point unitsOldCoord, const Point unitsNewCoord) const {
   auto range = std::vector<std::optional<Point>>(bedrocks_.size() * 4);
   if (range.empty()) return std::nullopt;
-  for (const auto &bedrock : bedrocks_) {
-      auto corners = getCorners(bedrock);
-      range.append_range(std::views::iota(0, 4) | std::views::transform([&](auto i) {
-               return checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]);
-             }));
+  for (const auto& bedrock : bedrocks_) {
+    auto corners = getCorners(bedrock);
+    range.append_range(std::views::iota(0, 4) | std::views::transform([&](auto i) {
+                         return checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]);
+                       }));
   }
   return std::ranges::min(range, std::ranges::less{}, [&](const std::optional<Point>& nearest) {
     return nearest ? std::abs(unitsOldCoord.x - nearest->x) + std::abs(unitsOldCoord.y - nearest->y)
                    : std::numeric_limits<double>::max();
+  });
+}
+
+bool FieldParams::checkInsideBlock(Point coord) const {
+  constexpr auto saveInterval = 10;
+  return std::ranges::any_of(bedrocks_, [&](const auto& bedrock) {
+    auto [leftDown, rightUp] = bedrock;
+    return isBetween(leftDown.x + saveInterval, rightUp.x - saveInterval, coord.x) &&
+           isBetween(leftDown.y + saveInterval, rightUp.y - saveInterval, coord.y);
   });
 }

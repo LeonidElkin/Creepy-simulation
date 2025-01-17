@@ -65,19 +65,21 @@ class DrawSparkle:
             self.sparkle_timer = pygame.time.get_ticks()
         return self.sparkle_frame_index > frame_count
 
-    def __call__(self, drawer):
+    def __call__(self, drawer, scale=2):
         if not self.points:
             return False
-        if self._update_frame(len(drawer.images.sparkle_frames) - 1):
+        if self._update_frame(len(drawer.image_provider.sparkle_frames) - 1):
             return False
 
-        frame = drawer.images.explosion_frames[self.sparkle_frame_index]
-        scaled_size = int(frame.get_width() * drawer.zoom_level), int(frame.get_height() * drawer.zoom_level)
+        frame = drawer.image_provider.sparkle_frames[self.sparkle_frame_index]
+        scaled_size = int(frame.get_width() * drawer.zoom_level * scale), int(
+            frame.get_height() * drawer.zoom_level * scale
+        )
         scaled_frame = pygame.transform.scale(frame, scaled_size)
 
         for point in self.points:
-            screen_x = point[0] * drawer.zoom_level + drawer.offset_x
-            screen_y = point[1] * drawer.zoom_level + drawer.offset_y
+            screen_x = point[0] * drawer.zoom_level - 10 + drawer.offset_x * scale
+            screen_y = point[1] * drawer.zoom_level - 10 + drawer.offset_y * scale
             drawer.screen.blit(scaled_frame, (screen_x, screen_y))
 
         return True
@@ -99,6 +101,7 @@ class SimulationView:
         self.manager = pygame_gui.UIManager((width, height))
         self.image_provider = ImageProvider()
         self.explodes_drawer = DrawExplosion(set())
+        self.sparkle_drawer = DrawSparkle(set())
         # Another objects
         self.waiting_blocks = []
         self.blocks = []
@@ -126,6 +129,7 @@ class SimulationView:
         self.radius = 20
         self.last_update_time = 0
         self.will_explodes = set()
+        self.will_sparkle = set()
 
         self.func_type_map = {
             "Polar": DistFunc.Polar,
@@ -290,14 +294,18 @@ class SimulationView:
                 current_time = pygame.time.get_ticks()
                 if current_time - self.last_update_time >= self.thao:
                     self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+                    self.sparkle_drawer = DrawSparkle(copy(self.will_sparkle))
                     self.will_explodes = set()
+                    self.will_sparkle = set()
 
                     self.running_game.algo_update(self.thao)
                     self.last_update_time = pygame.time.get_ticks()
-                if self.explodes_drawer:
-                    self.explodes_drawer(self, int(self.creepers_params.radius_explosion / 10))
 
                 self.running_game.step_draw()
+                if self.explodes_drawer:
+                    self.explodes_drawer(self, int(self.creepers_params.radius_explosion / 10))
+                if self.explodes_drawer:
+                    self.sparkle_drawer(self)
 
             self.manager.draw_ui(self.screen)
 
