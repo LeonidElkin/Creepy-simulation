@@ -14,7 +14,7 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
-static [[nodiscard]] Rectangle boundsToRectangle(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+[[nodiscard]] static Rectangle boundsToRectangle(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
   return {{leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
           {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}};
 }
