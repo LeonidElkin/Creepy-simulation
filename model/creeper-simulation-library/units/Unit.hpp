@@ -15,9 +15,7 @@ class UnitsParams {
   UnitsParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount);
 
   [[nodiscard]] auto getMoveRadius() const { return moveRadius_; }
-  [[nodiscard]] auto getLeftDownBound() const { return fieldParams_->leftDownBound; }
-  [[nodiscard]] auto getRightUpBound() const { return fieldParams_->rightUpBound; }
-  [[nodiscard]] auto getDistanceFunc() const { return fieldParams_->distanceFunc; }
+  [[nodiscard]] auto getFieldParams() const { return fieldParams_; }
   [[nodiscard]] auto getUnitsCount() const { return unitsCount_; }
 
   virtual Point generatePos(std::optional<Point> initialPoint);

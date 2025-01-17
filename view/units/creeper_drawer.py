@@ -30,30 +30,33 @@ class CreeperDrawer(EntityDrawer):
         elif self.state == CreeperState.Hissing:
             self.image = self.drawer.image_provider.creeper_image_hiss
         elif self.state == CreeperState.GoToSteve:
+            self.image = self.drawer.image_provider.creeper_image_gotosteve
+        elif self.state == CreeperState.Bonk:
             self.image = self.drawer.image_provider.creeper_image_bonk
         elif self.state in (CreeperState.Explodes, CreeperState.Dead):
-            if prev == CreeperState.GoToSteve:
-                self.image = self.drawer.image_provider.creeper_image_bonk
-            else:
-                self.image = self.drawer.image_provider.creeper_image_walk
+            self.image = prev
         else:
             logger.error(f"Unknown creeper state, draw bonk: {self.state.name}")
-            self.image = self.drawer.image_provider.creeper_image_bonk
+            self.image = self.drawer.image_provider.creeper_image_gotosteve
 
     def update(self, new_position: tuple[float, float], steps, state=None):
-        prev = self.state
+        prev = self.image
         self.state = state
         if state == CreeperState.Born:
             self.cur_x, self.cur_y = new_position
             self.target_x, self.target_y = new_position
             self.steps_left = 0
         else:
-            if state == CreeperState.Explodes:
-                self.drawer.will_explodes.add(new_position)
             self.target_x, self.target_y = new_position
             self._set_target(steps)
 
         self.set_img(prev)
+
+        if state == CreeperState.Explodes:
+            self.drawer.will_explodes.add(new_position)
+
+        if state == CreeperState.Bonk and prev != self.image:
+            self.drawer.will_sparkle.add(new_position)
 
 
 class CreepersManager:

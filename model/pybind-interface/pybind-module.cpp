@@ -14,6 +14,12 @@
 namespace py = pybind11;
 using namespace pybind11::literals;
 
+[[nodiscard]] static Rectangle boundsToRectangle(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+  return {{leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
+          {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}};
+}
+
+
 class SimulationProvider {
   Simulation original_;
   std::optional<std::future<void>> future_;
@@ -29,6 +35,16 @@ class SimulationProvider {
 
   CreepersManager& getCreepersManager() { return original_.getCreepersManager(); }
   StevesManager& getStevesManager() { return original_.getStevesManager(); }
+
+  SimulationProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+    return *this;
+  }
+
+  SimulationProvider& deleteBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.deleteBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+    return *this;
+  }
 };
 
 class SimulationFabricProvider {
@@ -39,9 +55,7 @@ class SimulationFabricProvider {
 
   SimulationFabricProvider& setFieldParams(const py::tuple& leftDownBound, const py::tuple& rightUpBound,
                                            const DistanceFunc::Type distanceFunc) {
-    original_.setFieldParams({leftDownBound[0].cast<double>(), leftDownBound[1].cast<double>()},
-                             {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()},
-                             funcToType(distanceFunc));
+    original_.setFieldParams(boundsToRectangle(leftDownBound, rightUpBound), funcToType(distanceFunc));
     return *this;
   }
 
@@ -63,7 +77,7 @@ PYBIND11_MODULE(creepers_lib, handle) {
 
   if (!google::IsGoogleLoggingInitialized()) {
     google::InitGoogleLogging("creepers_lib");
-    FLAGS_logtostderr = 1;                 // Вывод логов в stderr
+    FLAGS_logtostderr = 1;                                   // Вывод логов в stderr
     FLAGS_stderrthreshold = google::LogSeverity::GLOG_INFO;  // Уровень логирования для stderr
 #ifdef DEBUG
     google::SetStderrLogging(google::LogSeverity::GLOG_INFO);
@@ -90,7 +104,8 @@ PYBIND11_MODULE(creepers_lib, handle) {
       .value("Explodes", CreepersParams::State::Explodes)
       .value("Dead", CreepersParams::State::Dead)
       .value("Sleep", CreepersParams::State::Sleep)
-      .value("GoToSteve", CreepersParams::State::GoToSteve);
+      .value("GoToSteve", CreepersParams::State::GoToSteve)
+      .value("Bonk", CreepersParams::State::Bonk);
   py::class_<Creeper, std::shared_ptr<Creeper>>(handle, "Creeper")
       .def("get_coord",
            [](const Creeper& creeper) {
@@ -112,7 +127,9 @@ PYBIND11_MODULE(creepers_lib, handle) {
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
       .def("wait_update_field", &SimulationProvider::waitUpdateSimulation)
       .def("get_creepers_manager", &SimulationProvider::getCreepersManager)
-      .def("get_steves_manager", &SimulationProvider::getStevesManager);
+      .def("get_steves_manager", &SimulationProvider::getStevesManager)
+      .def("set_bedrock", &SimulationProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)
+      .def("delete_bedrock", &SimulationProvider::deleteBedrock, "left_down_bound"_a, "right_up_bound"_a);
   py::enum_<DistanceFunc::Type>(handle, "DistFunc")
       .value("Polar", DistanceFunc::Type::Polar)
       .value("Euclid", DistanceFunc::Type::Euclid)
