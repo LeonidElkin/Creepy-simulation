@@ -8,9 +8,12 @@ from view.units.steve_drawer import SteveManager
 
 
 class RunningGame:
+    simulation: creepers_lib.Simulation
+
     def __init__(self, app, position_shift):
         self.app = app
-        self.simulation: creepers_lib.Simulation = self.start_game()
+        self.offset = position_shift
+        self.start_game()
         self.creepers_manager = CreepersManager(app, self.simulation.get_creepers_manager(), position_shift)
         self.steve_manager = SteveManager(app, self.simulation.get_steves_manager(), position_shift)
         self.simulation.run_update_field()
@@ -28,10 +31,17 @@ class RunningGame:
         simulationFabric.set_steve_params(*astuple(self.app.steve_params))
         print(self.app.creepers_params)
 
-        return simulationFabric.build()
+        self.simulation = simulationFabric.build()
+        for block in self.app.blocks:
+            self.simulation.set_bedrock(*block.get_borders(self.offset))
 
     def algo_update(self, thao):
         self.simulation.wait_update_field()
+        for block in self.app.waiting_blocks:
+            self.simulation.set_bedrock(*block.get_borders(self.offset))
+        self.app.blocks.extend(self.app.waiting_blocks)
+        self.app.waiting_blocks = []
+
         self.steve_manager.update_steves(max(1, thao // 16))
         self.creepers_manager.update_creepers(max(1, thao // 16))
         self.simulation.run_update_field()

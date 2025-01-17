@@ -100,6 +100,7 @@ class SimulationView:
         self.image_provider = ImageProvider()
         self.explodes_drawer = DrawExplosion(set())
         # Another objects
+        self.waiting_blocks = []
         self.blocks = []
 
         try:
@@ -211,7 +212,7 @@ class SimulationView:
         grid_x = int(world_x // block_size) * block_size
         grid_y = int(world_y // block_size) * block_size
 
-        self.blocks.append(Block(grid_x, grid_y, block_size))
+        self.waiting_blocks.append(Block(grid_x, grid_y, block_size))
 
     def _handle_ui_event(self, event):
         if not self.ui.handle_event(event):
@@ -277,6 +278,11 @@ class SimulationView:
             self.manager.update(time_delta)
             self.draw_background()
 
+            for block in self.waiting_blocks:
+                block.draw(
+                    self.screen, self.image_provider.bedrock_spawn, self.zoom_level, self.offset_x, self.offset_y
+                )
+
             for block in self.blocks:
                 block.draw(self.screen, self.image_provider.bedrock, self.zoom_level, self.offset_x, self.offset_y)
 
@@ -285,10 +291,11 @@ class SimulationView:
                 if current_time - self.last_update_time >= self.thao:
                     self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
                     self.will_explodes = set()
+
                     self.running_game.algo_update(self.thao)
                     self.last_update_time = pygame.time.get_ticks()
                 if self.explodes_drawer:
-                    self.explodes_drawer(self, int(self.creepers_params.radius_explosion) / 10)
+                    self.explodes_drawer(self, int(self.creepers_params.radius_explosion / 10))
 
                 self.running_game.step_draw()
 

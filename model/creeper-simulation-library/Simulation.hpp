@@ -20,17 +20,17 @@ class Simulation {
   StevesManager& getStevesManager() { return stevesManager_; }
 
   Simulation& setBedrock(const Rectangle& bedrock) {
-    if (!fieldParams_) {
-      throw std::invalid_argument("fieldParams_ is not set");
+    const auto upBound = fieldParams_->getBounds().rightUpBound;
+    const auto downBound = fieldParams_->getBounds().leftDownBound;
+    if (bedrock.rightUpBound.x > upBound.x || bedrock.rightUpBound.y > upBound.y ||
+        bedrock.leftDownBound.x < downBound.x || bedrock.leftDownBound.y < downBound.y) {
+      LOG(WARNING) << "Bedrock is out of field bounds!";
     }
     fieldParams_->setBedrock(bedrock);
     return *this;
   }
 
   Simulation& deleteBedrock(const Rectangle& bedrock) {
-    if (!fieldParams_) {
-      throw std::invalid_argument("fieldParams_ is not set");
-    }
     fieldParams_->deleteBedrock(bedrock);
     return *this;
   }

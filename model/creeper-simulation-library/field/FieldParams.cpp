@@ -1,9 +1,10 @@
 #include "FieldParams.hpp"
 
 #include <optional>
+#include <ranges>
 
 const std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
-                                                          Point corner2) const {
+                                                          Point corner2) {
   double A1 = unitsNewCoord.y - unitsOldCoord.y;
   double B1 = unitsOldCoord.x - unitsNewCoord.x;
   double A2 = corner2.y - corner1.y;
@@ -17,15 +18,14 @@ const std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, P
 
   Point intersection = {(B2 * C1 - B1 * C2) / det, (A1 * C2 - A2 * C1) / det};
 
-  if (intersection.x < std::min(unitsOldCoord.x, unitsNewCoord.x) ||
-      intersection.x > std::max(unitsOldCoord.x, unitsNewCoord.x) ||
-      intersection.y < std::min(unitsOldCoord.y, unitsNewCoord.y) ||
-      intersection.y > std::max(unitsOldCoord.y, unitsNewCoord.y) || intersection.x < std::min(corner1.x, corner2.x) ||
-      intersection.x > std::max(corner1.x, corner2.x) || intersection.y < std::min(corner1.y, corner2.y) ||
-      intersection.y > std::max(corner1.y, corner2.y))
-    return std::nullopt;
+  auto isBetween = [](double a, double b, double c) { return (c >= std::min(a, b) && c <= std::max(a, b)); };
 
-  return intersection;
+  if (isBetween(corner1.x, corner2.x, intersection.x) && isBetween(corner1.y, corner2.y, intersection.y) &&
+      isBetween(unitsOldCoord.x, unitsNewCoord.x, intersection.x) &&
+      isBetween(unitsOldCoord.y, unitsNewCoord.y, intersection.y)) {
+    return intersection;
+  }
+  return std::nullopt;
 }
 
 std::vector<Point> FieldParams::getCorners(Rectangle bedrock) const {
@@ -35,14 +35,17 @@ std::vector<Point> FieldParams::getCorners(Rectangle bedrock) const {
           {bedrock.leftDownBound.x, bedrock.rightUpBound.y}};
 }
 
-Point FieldParams::checkIntersections(Point unitsOldCoord, Point unitsNewCoord) const {
-  for (auto bedrock : bedrocks_) {
-    std::vector<Point> corners = getCorners(bedrock);
-    for (int i = 0; i < corners.size(); ++i) {
-      auto intersection = checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]);
-      if (intersection.has_value()) return intersection.value();
-    }
+std::optional<Point> FieldParams::checkIntersections(const Point unitsOldCoord, const Point unitsNewCoord) const {
+  auto range = std::vector<std::optional<Point>>(bedrocks_.size() * 4);
+  if (range.empty()) return std::nullopt;
+  for (const auto &bedrock : bedrocks_) {
+      auto corners = getCorners(bedrock);
+      range.append_range(std::views::iota(0, 4) | std::views::transform([&](auto i) {
+               return checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]);
+             }));
   }
-
-  return unitsNewCoord;
+  return std::ranges::min(range, std::ranges::less{}, [&](const std::optional<Point>& nearest) {
+    return nearest ? std::abs(unitsOldCoord.x - nearest->x) + std::abs(unitsOldCoord.y - nearest->y)
+                   : std::numeric_limits<double>::max();
+  });
 }
