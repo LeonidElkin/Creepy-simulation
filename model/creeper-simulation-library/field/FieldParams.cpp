@@ -1,5 +1,6 @@
 #include "FieldParams.hpp"
 
+#include <algorithm>
 #include <functional>
 #include <optional>
 #include <ranges>
@@ -37,13 +38,14 @@ std::vector<Point> FieldParams::getCorners(Rectangle bedrock) const {
 }
 
 std::optional<Point> FieldParams::checkIntersections(const Point unitsOldCoord, const Point unitsNewCoord) const {
-  auto range = std::vector<std::optional<Point>>(bedrocks_.size() * 4);
+  auto range = std::vector<std::optional<Point>>();
+  range.reserve(4 * bedrocks_.size());
   if (range.empty()) return std::nullopt;
   for (const auto& bedrock : bedrocks_) {
     auto corners = getCorners(bedrock);
-    range.append_range(std::views::iota(0, 4) | std::views::transform([&](auto i) {
-                         return checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]);
-                       }));
+    for (const auto i : std::views::iota(0, 4)) {
+      range.push_back(checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]));
+    }
   }
   return std::ranges::min(range, std::ranges::less{}, [&](const std::optional<Point>& nearest) {
     return nearest ? std::abs(unitsOldCoord.x - nearest->x) + std::abs(unitsOldCoord.y - nearest->y)
