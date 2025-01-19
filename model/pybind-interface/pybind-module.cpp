@@ -69,6 +69,11 @@ class SimulationFabricProvider {
     return *this;
   }
 
+  SimulationFabricProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+    return *this;
+  }
+
   SimulationProvider build() { return SimulationProvider(original_.build()); }
 };
 
@@ -122,6 +127,7 @@ PYBIND11_MODULE(creepers_lib, handle) {
       .def("set_creeper_params", &SimulationFabricProvider::setCreeperParams, "move_radius"_a, "explode_radius"_a,
            "count"_a)
       .def("set_steve_params", &SimulationFabricProvider::setSteveParams, "move_radius"_a, "count"_a)
+      .def("set_bedrock", &SimulationFabricProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)
       .def("build", &SimulationFabricProvider::build);
   py::class_<SimulationProvider>(handle, "Simulation")
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)

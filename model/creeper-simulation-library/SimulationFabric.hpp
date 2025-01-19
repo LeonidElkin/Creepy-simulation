@@ -47,6 +47,17 @@ class SimulationFabric {
     return StevesParams_;
   }
 
+  SimulationFabric& setBedrock(const Rectangle& bedrock) {
+    const auto upBound = fieldParams_->getBounds().rightUpBound;
+    const auto downBound = fieldParams_->getBounds().leftDownBound;
+    if (bedrock.rightUpBound.x > upBound.x || bedrock.rightUpBound.y > upBound.y ||
+        bedrock.leftDownBound.x < downBound.x || bedrock.leftDownBound.y < downBound.y) {
+      LOG(WARNING) << "Bedrock is out of field bounds!";
+        }
+    fieldParams_->setBedrock(bedrock);
+    return *this;
+  }
+
   Simulation build() {
     if (!CreepersParams_) setCreeperParams();
     if (!StevesParams_) setSteveParams();

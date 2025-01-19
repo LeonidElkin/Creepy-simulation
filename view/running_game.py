@@ -29,11 +29,14 @@ class RunningGame:
         logger.info(f"Field params set: width={width}, height={height}, dist_func={dist_func}")
         simulationFabric.set_creeper_params(*astuple(self.app.creepers_params))
         simulationFabric.set_steve_params(*astuple(self.app.steve_params))
+
+        self.app.blocks.extend(self.app.waiting_blocks)
+        self.app.waiting_blocks = []
+        for block in self.app.blocks:
+            simulationFabric.set_bedrock(*block.get_borders(self.offset))
         print(self.app.creepers_params)
 
         self.simulation = simulationFabric.build()
-        for block in self.app.blocks:
-            self.simulation.set_bedrock(*block.get_borders(self.offset))
 
     def algo_update(self, thao):
         self.simulation.wait_update_field()
