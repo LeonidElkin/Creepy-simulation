@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "creepy_simulation"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Lesh79, Kuarni, FerventReaper"]
 license = "MIT"
@@ -17,6 +17,7 @@ black = "^24.10.0"
 ruff = "^0.7.4"
 pybind11 = "^2.13.6"
 conan = "^2.10.1"
+pytest = "^8.3.4"
 
 [tool.black]
 line-length = 120
@@ -37,13 +38,15 @@ line-ending = "auto"
 
 [tool.ruff.lint]
 select = ["A", "E", "F", "I", "PL", "RUF", "SIM", "UP", "W", "F405", "F403", "E402"]
-ignore = ["PLR0913"]
+ignore = ["PLR0913", "PLR2004"]
 
 
 [build-system]
-requires = ["poetry-core>=1.0.0", "setuptools", "wheel", "conan"]
+requires = ["poetry>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.poetry.build]
-script = "build.py"
-generate-setup-file = true
+[tool.poetry.scripts]
+build = "model.conan_scripts:run_conan_build"
+clean = "model.conan_scripts:clean"
+develop = "model.conan_scripts:develop_install"
+main = "view.view:run"

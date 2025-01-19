@@ -4,12 +4,14 @@ from copy import copy
 
 import pygame
 import pygame_gui
-from creepers import DistFunc
+from creepers_lib import DistFunc
 
-from view import creeper_drawer as drw
-from view import image_provider, ui_elems
 from view.block import Block
-from view.ocelot import OcelotDrawer
+from view.image_provider import ImageProvider
+from view.logger import logger
+from view.running_game import RunningGame
+from view.units.creeper_drawer import CreeperParams
+from view.units.steve_drawer import SteveParams
 
 package_path = os.path.dirname(os.path.abspath(__file__))
 h, _ = os.path.split(package_path)
@@ -30,19 +32,21 @@ class DrawExplosion:
             self.explosion_timer = pygame.time.get_ticks()
         return self.explosion_frame_index > frame_count
 
-    def __call__(self, drawer):
+    def __call__(self, drawer, scale=1):
         if not self.points:
             return False
-        if self._update_frame(len(drawer.images.explosion_frames) - 1):
+        if self._update_frame(len(drawer.image_provider.explosion_frames) - 1):
             return False
 
-        frame = drawer.images.explosion_frames[self.explosion_frame_index]
-        scaled_size = int(frame.get_width() * drawer.zoom_level), int(frame.get_height() * drawer.zoom_level)
+        frame = drawer.image_provider.explosion_frames[self.explosion_frame_index]
+        scaled_size = int(frame.get_width() * drawer.zoom_level * scale), int(
+            frame.get_height() * drawer.zoom_level * scale
+        )
         scaled_frame = pygame.transform.scale(frame, scaled_size)
 
         for point in self.points:
-            screen_x = point[0] * drawer.zoom_level + drawer.offset_x
-            screen_y = point[1] * drawer.zoom_level + drawer.offset_y
+            screen_x = point[0] * drawer.zoom_level + drawer.offset_x - 10 * scale
+            screen_y = point[1] * drawer.zoom_level + drawer.offset_y - 10 * scale
             drawer.screen.blit(scaled_frame, (screen_x, screen_y))
 
         return True
@@ -61,27 +65,32 @@ class DrawSparkle:
             self.sparkle_timer = pygame.time.get_ticks()
         return self.sparkle_frame_index > frame_count
 
-    def __call__(self, drawer):
+    def __call__(self, drawer, scale=2):
         if not self.points:
             return False
-        if self._update_frame(len(drawer.images.sparkle_frames) - 1):
+        if self._update_frame(len(drawer.image_provider.sparkle_frames) - 1):
             return False
 
-        frame = drawer.images.explosion_frames[self.sparkle_frame_index]
-        scaled_size = int(frame.get_width() * drawer.zoom_level), int(frame.get_height() * drawer.zoom_level)
+        frame = drawer.image_provider.sparkle_frames[self.sparkle_frame_index]
+        scaled_size = int(frame.get_width() * drawer.zoom_level * scale), int(
+            frame.get_height() * drawer.zoom_level * scale
+        )
         scaled_frame = pygame.transform.scale(frame, scaled_size)
 
         for point in self.points:
-            screen_x = point[0] * drawer.zoom_level + drawer.offset_x
-            screen_y = point[1] * drawer.zoom_level + drawer.offset_y
+            screen_x = point[0] * drawer.zoom_level - 10 + drawer.offset_x * scale
+            screen_y = point[1] * drawer.zoom_level - 10 + drawer.offset_y * scale
             drawer.screen.blit(scaled_frame, (screen_x, screen_y))
 
         return True
 
 
-class Simulation:
+class SimulationView:
     def __init__(self, width=1920, height=1080):
+        import ui_elems
+
         pygame.init()
+        self.running_game = None
         self.width = width
         self.height = height
         self.center_x = self.width // 2
@@ -90,16 +99,17 @@ class Simulation:
         pygame.display.set_caption("Creepy Simulation")
         self.clock = pygame.time.Clock()
         self.manager = pygame_gui.UIManager((width, height))
-        self.images = image_provider.ImageProvider()
-        self.explodes_drawer = None
+        self.image_provider = ImageProvider()
+        self.explodes_drawer = DrawExplosion(set())
+        self.sparkle_drawer = DrawSparkle(set())
         # Another objects
+        self.waiting_blocks = []
         self.blocks = []
-        # TODO: Раскоментить когда появится логика для оцелота
-        # self.ocelot_manager = OcelotManager(self, (self.center_x, self.center_y))
-        self.ocelot = OcelotDrawer((self.center_x, self.center_y))  # TODO: Удалить
 
         try:
-            self.background_image = pygame.transform.scale(self.images.background_image, (self.width, self.height))
+            self.background_image = pygame.transform.scale(
+                self.image_provider.background_image, (self.width, self.height)
+            )
         except pygame.error as e:
             print(f"Error loading background image: {e}")
             self.background_image.fill((0, 100, 200))
@@ -113,13 +123,13 @@ class Simulation:
         self.last_mouse_pos = None
 
         # Params
-        self.creeper_count = 10
+        self.creepers_params = CreeperParams()
+        self.steve_params = SteveParams()
         self.thao = 2000
         self.radius = 20
-        self.radius_explosion = 1
         self.last_update_time = 0
         self.will_explodes = set()
-        self.explode_drawer = DrawExplosion(set())
+        self.will_sparkle = set()
 
         self.func_type_map = {
             "Polar": DistFunc.Polar,
@@ -128,15 +138,14 @@ class Simulation:
         }
         self.dist_func = self.func_type_map["Polar"]
 
-        self.creepers_provider = None
         # UI elements
         self.ui = ui_elems.UiManager(self)
         self.parameters = {
-            "creeper_count": self.creeper_count,
             "radius": self.radius,
-            "radius_explosion": self.radius_explosion,
             "thao": self.thao,
         }
+        self.params = None
+        self.simulation = None
 
     def _handle_mouse_button_down(self, event):
         right_button = 3
@@ -207,8 +216,7 @@ class Simulation:
         grid_x = int(world_x // block_size) * block_size
         grid_y = int(world_y // block_size) * block_size
 
-        # Добавляем блок
-        self.blocks.append(Block(grid_x, grid_y, block_size))
+        self.waiting_blocks.append(Block(grid_x, grid_y, block_size))
 
     def _handle_ui_event(self, event):
         if not self.ui.handle_event(event):
@@ -233,11 +241,13 @@ class Simulation:
         return True
 
     def start_game(self):
-        # Инициализация поля и криперов
-        self.creepers_provider = drw.CreepersManager(self, (self.center_x, self.center_y))
+        logger.debug("Starting game...")
+        # Инициализация поля и криперов, Steve
+        self.running_game = RunningGame(self, (self.center_x, self.center_y))
+        logger.info("Game initialized successfully.")
 
     def draw_background(self):
-        if self.zoom_level < 1.0:  # Убедимся, что фон всегда покрывает весь экран
+        if self.zoom_level < 1.0:  # фон всегда покрывает весь экран
             # Масштабируем фон до размеров экрана
             scaled_background = pygame.transform.scale(self.background_image, (self.width, self.height))
             display_rect = scaled_background.get_rect()
@@ -262,6 +272,7 @@ class Simulation:
     def run(self):
         running = True
         update_time = 60
+        font = pygame.font.SysFont(None, 30)
         while running:
             time_delta = self.clock.tick(update_time) / 1000.0
             for event in pygame.event.get():
@@ -271,38 +282,45 @@ class Simulation:
             self.manager.update(time_delta)
             self.draw_background()
 
-            for block in self.blocks:
-                block.draw(self.screen, self.images.bedrock, self.zoom_level, self.offset_x, self.offset_y)
+            for block in self.waiting_blocks:
+                block.draw(
+                    self.screen, self.image_provider.bedrock_spawn, self.zoom_level, self.offset_x, self.offset_y
+                )
 
-            if self.creepers_provider:
+            for block in self.blocks:
+                block.draw(self.screen, self.image_provider.bedrock, self.zoom_level, self.offset_x, self.offset_y)
+
+            if self.running_game:
                 current_time = pygame.time.get_ticks()
-                # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==--=-=-=-=-
-                # TODO:ЗАМЕНИТЬ на закомментированный ниже
                 if current_time - self.last_update_time >= self.thao:
                     self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
+                    self.sparkle_drawer = DrawSparkle(copy(self.will_sparkle))
                     self.will_explodes = set()
-                    self.creepers_provider.update_creepers(max(1, self.thao // 16), self)
-                    # -=-==-=-=-=-=-==-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-==-=-=-=-=-=-=-=--=-=-=--=
-                    #                     if current_time - self.last_update_time >= self.parameters["thao"]:
-                    #                         self.run_update_field()
-                    #                         self.last_update_time = pygame.time.get_ticks()
-                    #                         self.creepers_provider.update_creepers(
-                    #                             max(1, self.parameters["thao"] // 16), self
-                    #                         )
+                    self.will_sparkle = set()
+
+                    self.running_game.algo_update(self.thao)
                     self.last_update_time = pygame.time.get_ticks()
-                self.creepers_provider.draw_creepers(self)
-                self.explodes_drawer(self)
-            # if self.ocelot_manager: # TODO: Раскоментить когда появится логика оцелота
-            #     self.ocelot_manager.update_ocelots(steps=1, drawer=self)
-            #     self.ocelot_manager.draw_ocelots(self)
-            self.ocelot.draw_step(self)  # TODO: УДАЛИТЬ
+
+                self.running_game.step_draw()
+                if self.explodes_drawer:
+                    self.explodes_drawer(self, int(self.creepers_params.radius_explosion / 10))
+                if self.explodes_drawer:
+                    self.sparkle_drawer(self)
 
             self.manager.draw_ui(self.screen)
+
+            fps = self.clock.get_fps()
+            fps_text = font.render(f"FPS: {fps:.1f}", True, (255, 255, 255))
+            self.screen.blit(fps_text, (1820, 10))
 
             pygame.display.flip()
 
         pygame.quit()
 
 
+def run():
+    SimulationView().run()
+
+
 if __name__ == "__main__":
-    Simulation().run()
+    run()

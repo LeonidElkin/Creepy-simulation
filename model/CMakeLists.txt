@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
-option(BUILD_TESTING "enable test" ON)
+option(BUILD_TESTING "enable test" OFF)
 
 project(Creepy-simulation LANGUAGES CXX VERSION 1.0)
 
@@ -24,6 +24,7 @@ elseif (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS 19.40)
         message(FATAL_ERROR "MSVC version 19.40 or higher is required, but ${CMAKE_CXX_COMPILER_VERSION} was given.")
     endif ()
+    add_compile_options(/openmp)
 else ()
     message(WARNING "You are using an unsupported compiler! Compilation has only been tested with Clang, MSVC and GCC.")
 endif ()
@@ -39,7 +40,6 @@ include(cmake/sanitizers.cmake)
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_sanitizers()
 endif ()
-
 
 # Testing
 if (BUILD_TESTING)
