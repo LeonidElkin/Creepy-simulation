@@ -10,7 +10,7 @@ class FieldParams {
   Rectangle bounds_;
   std::function<double(Point p1, Point p2)> distanceFunc;
 
-  [[nodiscard]] static const std::optional<Point> checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
+  [[nodiscard]] static std::optional<Point> checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
                                                              Point corner2) ;
   [[nodiscard]] std::vector<Point> getCorners(Rectangle bedrock) const;
 

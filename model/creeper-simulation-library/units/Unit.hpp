@@ -32,7 +32,7 @@ class UnitsParams {
 };
 
 class Unit : public std::enable_shared_from_this<Unit> {
-  Point coord_;
+  Point coord_{};
   size_t id_;
 
  protected:

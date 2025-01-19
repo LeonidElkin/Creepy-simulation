@@ -77,7 +77,9 @@ void Creeper::walk() {
   }
   switch (state_) {
     case CreepersParams::State::Born:
-      setCoord(params_->generatePos({}));
+      do {
+        setCoord(params_->generatePos({}));
+      } while (params_->getFieldParams()->checkInsideBlock(getCoord()));
       break;
     case CreepersParams::State::Bonk:
       break;

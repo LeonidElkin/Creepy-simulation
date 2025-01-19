@@ -7,8 +7,8 @@
 
 static bool isBetween(double a, double b, double c) { return (c >= std::min(a, b) && c <= std::max(a, b)); }
 
-const std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
-                                                          Point corner2) {
+std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, Point unitsNewCoord, Point corner1,
+                                                    Point corner2) {
   double A1 = unitsNewCoord.y - unitsOldCoord.y;
   double B1 = unitsOldCoord.x - unitsNewCoord.x;
   double A2 = corner2.y - corner1.y;
@@ -25,7 +25,9 @@ const std::optional<Point> FieldParams::checkIntersection(Point unitsOldCoord, P
   if (isBetween(corner1.x, corner2.x, intersection.x) && isBetween(corner1.y, corner2.y, intersection.y) &&
       isBetween(unitsOldCoord.x, unitsNewCoord.x, intersection.x) &&
       isBetween(unitsOldCoord.y, unitsNewCoord.y, intersection.y)) {
-    return intersection;
+    constexpr auto stepback = 1;
+    return {{intersection.x + (intersection.x - unitsOldCoord.x > 0 ? -stepback : stepback),
+             intersection.y + (intersection.y - unitsOldCoord.y > 0 ? -stepback : stepback)}};
   }
   return std::nullopt;
 }
@@ -40,14 +42,14 @@ std::vector<Point> FieldParams::getCorners(Rectangle bedrock) const {
 std::optional<Point> FieldParams::checkIntersections(const Point unitsOldCoord, const Point unitsNewCoord) const {
   auto range = std::vector<std::optional<Point>>();
   range.reserve(4 * bedrocks_.size());
-  if (range.empty()) return std::nullopt;
+  if (4 * bedrocks_.size() == 0) return std::nullopt;
   for (const auto& bedrock : bedrocks_) {
     auto corners = getCorners(bedrock);
     for (const auto i : std::views::iota(0, 4)) {
       range.push_back(checkIntersection(unitsOldCoord, unitsNewCoord, corners[i], corners[(i + 1) % 4]));
     }
   }
-  return std::ranges::min(range, std::ranges::less{}, [&](const std::optional<Point>& nearest) {
+  return std::ranges::min(range, {}, [&](const std::optional<Point>& nearest) {
     return nearest ? std::abs(unitsOldCoord.x - nearest->x) + std::abs(unitsOldCoord.y - nearest->y)
                    : std::numeric_limits<double>::max();
   });
