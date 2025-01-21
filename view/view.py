@@ -40,16 +40,17 @@ class DrawExplosion:
 
     def _update_frame(self, frame_count):
         """
-        Updates the explosion frame based on the elapsed time.
+        Updates the sparkle frame based on the elapsed time.
 
         @param frame_count: The total number of frames in the explosion animation.
         @return: True if the animation has completed, otherwise False.
         """
         timer = 100
-        if pygame.time.get_ticks() - self.explosion_timer > timer:
+        current_time = pygame.time.get_ticks()
+        if current_time - self.explosion_timer > timer:
             self.explosion_frame_index += 1
-            self.explosion_timer = pygame.time.get_ticks()
-        return self.explosion_frame_index > frame_count
+            self.explosion_timer = current_time
+        return self.explosion_frame_index >= frame_count
 
     def __call__(self, drawer, scale=1):
         """
@@ -103,10 +104,12 @@ class DrawSparkle:
         @return: True if the animation has completed, otherwise False.
         """
         timer = 100
-        if pygame.time.get_ticks() - self.sparkle_timer > timer:
+        current_time = pygame.time.get_ticks()
+        if current_time - self.sparkle_timer > timer:
             self.sparkle_frame_index += 1
-            self.sparkle_timer = pygame.time.get_ticks()
-        return self.sparkle_frame_index > frame_count
+            self.sparkle_timer = current_time
+        # Возвращаем True только если кадры закончились
+        return self.sparkle_frame_index >= frame_count
 
     def __call__(self, drawer, scale=2):
         """
