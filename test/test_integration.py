@@ -1,8 +1,13 @@
+import os
+import sys
+
 import creepers_lib
 import pygame
 import pytest
 
 from view.view import SimulationView
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 
 @pytest.fixture

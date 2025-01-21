@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+
 
       - name: Install Conan
         run: pip install conan

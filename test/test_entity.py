@@ -1,9 +1,13 @@
+import os
+import sys
 from unittest.mock import Mock
 
 from creepers_lib import CreeperState, SteveState
 
 from view.units.creeper_drawer import CreeperDrawer, CreepersManager
 from view.units.steve_drawer import SteveDrawer, SteveManager
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 
 class TestCreeper:

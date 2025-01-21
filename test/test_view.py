@@ -1,3 +1,5 @@
+import os
+import sys
 from unittest.mock import Mock, patch
 
 import pygame
@@ -5,6 +7,8 @@ import pytest
 
 from view.block import Block
 from view.view import DrawExplosion, DrawSparkle, SimulationView
+
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 
 
 class TestView:
