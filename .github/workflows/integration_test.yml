@@ -31,6 +31,8 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
 
+      - name: Add project root to PYTHONPATH
+        run: echo "PYTHONPATH=$(pwd):$PYTHONPATH" >> $GITHUB_ENV
 
       - name: Install Conan
         run: pip install conan
