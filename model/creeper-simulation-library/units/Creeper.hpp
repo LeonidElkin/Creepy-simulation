@@ -17,13 +17,12 @@ class CreepersParams final : public UnitsParams {
                  uint32_t unitsCount);
 };
 
-class Creeper final : public Unit, public std::enable_shared_from_this<Creeper> {
+class Creeper final : public Unit {
   std::shared_ptr<CreepersParams> params_;
   CreepersParams::State state_{CreepersParams::State::Born};
   std::shared_ptr<Steve> target_;
 
   Point moveTo(Point to);
-
   Point bonkedMove(Point to);
 
  public:
@@ -34,6 +33,9 @@ class Creeper final : public Unit, public std::enable_shared_from_this<Creeper> 
   void steveSearch(const std::shared_ptr<Steve> &steve);
 
   void walk() override;
+
+  using Unit::setID;
+  using Unit::setCoord;
 
   void updateState(const std::shared_ptr<Unit> &another) override;
 

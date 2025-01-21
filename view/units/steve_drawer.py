@@ -23,7 +23,7 @@ class SteveDrawer(EntityDrawer):
     def set_img(self):
         if self.dead:
             self.image = self.drawer.image_provider.steve_image_grave
-        elif self.state in (SteveState.Walk, SteveState.Born, SteveState.Dead):
+        elif self.state in (SteveState.Born, SteveState.Dead):
             self.image = self.drawer.image_provider.steve
         else:
             logger.error(f"invalid steve state {self.state}")

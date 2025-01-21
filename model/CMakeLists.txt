@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 option(BUILD_TESTING "enable test" OFF)
+option(TEST_COVERAGE "enable providing test coverage" OFF)
 
 project(Creepy-simulation LANGUAGES CXX VERSION 1.0)
 
@@ -43,6 +44,11 @@ endif ()
 
 # Testing
 if (BUILD_TESTING)
+    # Coverage
+    if (TEST_COVERAGE)
+        add_compile_options(-fprofile-arcs -ftest-coverage)
+        add_link_options(-fprofile-arcs -ftest-coverage)
+    endif ()
     include(CTest)
     enable_testing()
     add_subdirectory(tests)

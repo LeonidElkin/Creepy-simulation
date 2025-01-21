@@ -4,12 +4,12 @@
 
 class StevesParams final : public UnitsParams {
  public:
-  enum class State : std::uint8_t { Born, Walk, Dead };
+  enum class State : std::uint8_t { Born, Dead };
 
   StevesParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount);
 };
 
-class Steve final : public Unit, std::enable_shared_from_this<Steve> {
+class Steve final : public Unit {
   std::shared_ptr<StevesParams> params_;
   StevesParams::State state_{StevesParams::State::Born};
 
@@ -17,6 +17,10 @@ class Steve final : public Unit, std::enable_shared_from_this<Steve> {
   Steve(const size_t id, const std::shared_ptr<StevesParams> &params) : Unit(id, params), params_(params) {}
 
   void updateState(const std::shared_ptr<Unit> &another) override;
+
+  using Unit::setID;
+
+  using Unit::setCoord;
 
   void walk() override;
 

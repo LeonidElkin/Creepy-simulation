@@ -86,7 +86,6 @@ PYBIND11_MODULE(creepers_lib, handle) {
 
   py::enum_<StevesParams::State>(handle, "SteveState")
       .value("Born", StevesParams::State::Born)
-      .value("Walk", StevesParams::State::Walk)
       .value("Dead", StevesParams::State::Dead);
   py::class_<Steve, std::shared_ptr<Steve>>(handle, "Steve")
       .def("get_coord",

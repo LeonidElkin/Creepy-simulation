@@ -31,7 +31,7 @@ class UnitsParams {
   void operator=(UnitsParams &&) = delete;
 };
 
-class Unit : public std::enable_shared_from_this<Unit> {
+class Unit {
   Point coord_;
   size_t id_;
 
