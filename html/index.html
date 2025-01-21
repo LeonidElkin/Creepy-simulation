@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Creepy-simulation: Creepy-simulation</title>
+<title>Creepy-simulation: Main Page</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -69,7 +69,7 @@ var searchBox = new SearchBox("searchBox", "search/",'.html');
 </div>
 <script type="text/javascript">
 /* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
-$(document).ready(function(){initNavTree('md_README.html',''); initResizable(); });
+$(document).ready(function(){initNavTree('index.html',''); initResizable(); });
 /* @license-end */
 </script>
 <div id="doc-content">
@@ -94,54 +94,13 @@ $(document).ready(function(){initNavTree('md_README.html',''); initResizable(); 
 </div>
 </div>
 
-<div><div class="header">
-  <div class="headertitle"><div class="title">Creepy-simulation</div></div>
+<div class="header">
+  <div class="headertitle"><div class="title">Creepy-simulation Documentation</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p><a class="anchor" id="autotoc_md0"></a> </p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Get Started</h1>
-<h2><a class="anchor" id="autotoc_md2"></a>
-Для запуска проекта нужно иметь</h2>
-<ul>
-<li><code>python</code> &gt;= 3.10</li>
-<li><code>poetry</code></li>
-<li>компилятор <code>g++</code> &gt;= 14 | <code>clang</code> &gt;= 18 | <code>msvc</code> &gt;= 19.40</li>
-</ul>
-<h2><a class="anchor" id="autotoc_md3"></a>
-Установка</h2>
-<ol type="1">
-<li>В коммандной строке напишите <code>poetry install</code>, чтобы подключить все необходимые зависимости</li>
-<li>Далее напишите <code>poetry run build</code>, чтобы сбилдить проект</li>
-</ol>
-<h2><a class="anchor" id="autotoc_md4"></a>
-Запуск</h2>
-<p>Можете запускать <code>poetry run main</code></p>
-<h1><a class="anchor" id="autotoc_md5"></a>
-Description</h1>
-<p>Creepy-simulation представляет поле, населенное криперами. Криперы могут взорваться, если подойдут достаточно близко к другому криперу, либо могут начать шипеть, если находятся подальше.</p>
-<p>Все криперы при рождении находятся в состоянии <code>born</code> и являются неуязвимыми, он выйдет из этого состояния, когда впервые подвигается. Если крипер долго слоняется без дела, он может заснуть, он выйдет из этого состояния, если кто-то заставит его взорваться или начать шипеть. Когда крипер взрывается, он умирает и рождается заново в случайном месте на поле, он также будет в состоянии <code>born</code>. Крипер шипит с вероятностью обратной квадрату расстояния между каким-то крипером, он перестанет шипеть, если вероятность не выпадет снова на следующем обновлении.</p>
-<h1><a class="anchor" id="autotoc_md6"></a>
-Additional features</h1>
-<p>В данном проекте реализованы следующие дополнительные фичи:</p>
-<ul>
-<li>Использованы различные функции состояния: Евклидово, в полярных координатах, манхэттенское</li>
-<li>Криперы имеют три уникальных состояния: <code>born</code>, <code>sleep</code>, <code>explode</code></li>
-<li>Логгируются взаимодействия криперов</li>
-<li>Плавная и красивая отрисовка</li>
-</ul>
-<p>NEW:</p><ul>
-<li>Спавн Стивов на поле</li>
-<li>Криперы при виде Стивов бегут за ними, чтобы взорвать</li>
-<li>Правой кнопкой мыши можно поставить бедрок (не проходимая область), если Криперы ударяются в бедрок, то они умирают</li>
-<li>Зум поля на колёсико мыши</li>
-</ul>
-<h1><a class="anchor" id="autotoc_md7"></a>
-Example</h1>
-<p><img src="img/example.gif" alt="example.gif" class="inline"/></p>
-<p><img src="img/steve_example.gif" alt="example2.gif" class="inline"/> <img src="img/zoom_example.gif" alt="example3.gif" class="inline"/> <img src="img/bedrock_example.gif" alt="example4.gif" class="inline"/> </p>
-</div></div><!-- contents -->
-</div><!-- PageDoc -->
+<ul><li><a href="index.html"><span>Main&#160;Page</span></a>
+</li></ul>
+</div><!-- contents -->
 </div><!-- doc-content -->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
