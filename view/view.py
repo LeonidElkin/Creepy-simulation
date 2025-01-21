@@ -20,12 +20,31 @@ sys.path.append(package_path)
 
 
 class DrawExplosion:
+    """
+    @class DrawExplosion
+    @brief Handles the animation of explosions.
+
+    The DrawExplosion class manages the rendering and frame updates for explosion animations
+    based on their positions and timing.
+    """
+
     def __init__(self, points):
+        """
+        Initializes a DrawExplosion object.
+
+        @param points: A list of points where the explosion occurs.
+        """
         self.explosion_frame_index = 0
         self.points = points
         self.explosion_timer = pygame.time.get_ticks()
 
     def _update_frame(self, frame_count):
+        """
+        Updates the explosion frame based on the elapsed time.
+
+        @param frame_count: The total number of frames in the explosion animation.
+        @return: True if the animation has completed, otherwise False.
+        """
         timer = 100
         if pygame.time.get_ticks() - self.explosion_timer > timer:
             self.explosion_frame_index += 1
@@ -33,6 +52,12 @@ class DrawExplosion:
         return self.explosion_frame_index > frame_count
 
     def __call__(self, drawer, scale=1):
+        """
+        Renders the explosion frames at the specified points.
+
+        @param drawer: The object responsible for rendering.
+        @param image_provider: The ImageProvider object providing the explosion images.
+        """
         if not self.points:
             return False
         if self._update_frame(len(drawer.image_provider.explosion_frames) - 1):
@@ -53,12 +78,30 @@ class DrawExplosion:
 
 
 class DrawSparkle:
+    """
+    @class DrawSparkle
+    @brief Handles the animation of sparkles.
+
+    The DrawSparkle class manages the rendering and frame updates for sparkle animations.
+    """
+
     def __init__(self, points):
+        """
+        Initializes a DrawSparkle object.
+
+        @param points: A list of points where the sparkles occur.
+        """
         self.sparkle_frame_index = 0
         self.points = points
         self.sparkle_timer = pygame.time.get_ticks()
 
     def _update_frame(self, frame_count):
+        """
+        Updates the sparkle frame based on the elapsed time.
+
+        @param frame_count: The total number of frames in the sparkle animation.
+        @return: True if the animation has completed, otherwise False.
+        """
         timer = 100
         if pygame.time.get_ticks() - self.sparkle_timer > timer:
             self.sparkle_frame_index += 1
@@ -66,6 +109,13 @@ class DrawSparkle:
         return self.sparkle_frame_index > frame_count
 
     def __call__(self, drawer, scale=2):
+        """
+        Renders the sparkle frames at the specified points.
+
+        @param drawer: The object responsible for rendering.
+        @param scale: Scaling factor for the sparkle.
+        @return: True if the animation is ongoing, False if it is finished.
+        """
         if not self.points:
             return False
         if self._update_frame(len(drawer.image_provider.sparkle_frames) - 1):
@@ -86,7 +136,21 @@ class DrawSparkle:
 
 
 class SimulationView:
+    """
+    @class SimulationView
+    @brief Manages the overall simulation view, including rendering and user interactions.
+
+    The SimulationView class handles the game loop, rendering of creepers and Steves,
+    user interactions like zoom and pan, and managing the UI.
+    """
+
     def __init__(self, width=1920, height=1080):
+        """
+        Initializes a SimulationView object.
+
+        @param width: The width of the simulation window.
+        @param height: The height of the simulation window.
+        """
         import ui_elems
 
         pygame.init()
@@ -148,6 +212,12 @@ class SimulationView:
         self.simulation = None
 
     def _handle_mouse_button_down(self, event):
+        """
+        Handles user input events such as mouse and UI interactions.
+
+        @param event: The pygame event to handle.
+        @return: False if the event signals to quit, otherwise True.
+        """
         right_button = 3
         if event.button == 1 and self.zoom_level > 1.0:  # Dragging только при zoom_level > 1.0
             self.dragging = True
@@ -159,6 +229,12 @@ class SimulationView:
         return True
 
     def _handle_mouse_button_up(self, event):
+        """
+        Handles mouse button up events.
+
+        @param event: The pygame event for mouse button up.
+        @return: True if the event is processed.
+        """
         if event.button == 1:
             self.dragging = False
         return True
@@ -241,12 +317,18 @@ class SimulationView:
         return True
 
     def start_game(self):
+        """
+        Starts the game and initializes the simulation.
+        """
         logger.debug("Starting game...")
         # Инициализация поля и криперов, Steve
         self.running_game = RunningGame(self, (self.center_x, self.center_y))
         logger.info("Game initialized successfully.")
 
     def draw_background(self):
+        """
+        Draws the background of the simulation view.
+        """
         if self.zoom_level < 1.0:  # фон всегда покрывает весь экран
             # Масштабируем фон до размеров экрана
             scaled_background = pygame.transform.scale(self.background_image, (self.width, self.height))
@@ -270,6 +352,9 @@ class SimulationView:
         self.screen.blit(scaled_background, display_rect)
 
     def run(self):
+        """
+        Runs the main game loop.
+        """
         running = True
         update_time = 60
         font = pygame.font.SysFont(None, 30)
@@ -319,6 +404,9 @@ class SimulationView:
 
 
 def run():
+    """
+    Entry point to start the simulation view.
+    """
     SimulationView().run()
 
 
