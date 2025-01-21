@@ -1,0 +1,4 @@
+var searchData=
+[
+  ['get_20started_0',['Get Started',['../md_README.html#autotoc_md1',1,'']]]
+];
