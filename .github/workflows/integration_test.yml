@@ -12,6 +12,14 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.12'
+      - name: Install GCC
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-14 g++-14
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-14 1
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-14 1
+          sudo update-alternatives --set gcc /usr/bin/gcc-14
+          sudo update-alternatives --set g++ /usr/bin/g++-14
       - name: Install Poetry
         run: |
           python -m pip install --upgrade pip
