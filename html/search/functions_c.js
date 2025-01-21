@@ -1,7 +1,5 @@
 var searchData=
 [
-  ['unit_0',['unit',['../classUnit.html#a0e8dd2cefc4c939285e564a3ea9f8d6e',1,'Unit::Unit(size_t id, const std::shared_ptr&lt; UnitsParams &gt; &amp;params)'],['../classUnit.html#a8bfef82cf14e7e6a2044dc939c3b35de',1,'Unit::Unit(const Unit &amp;other)=default'],['../classUnit.html#acdc848c0723bf7daab0f19d02d240446',1,'Unit::Unit(Unit &amp;&amp;other)=default']]],
-  ['unitsparams_1',['unitsparams',['../classUnitsParams.html#a1e06dc9a9a63edd57deb711b13c37751',1,'UnitsParams::UnitsParams(double moveRadius, const std::shared_ptr&lt; FieldParams &gt; &amp;fieldParams, uint32_t unitsCount)'],['../classUnitsParams.html#aefea851b2c2d3a3d3862e9c77a0103ce',1,'UnitsParams::UnitsParams(const UnitsParams &amp;)=delete'],['../classUnitsParams.html#ae899c72be46e2718d4d6db5074c9cd03',1,'UnitsParams::UnitsParams(UnitsParams &amp;&amp;)=delete']]],
-  ['updatefield_2',['updateField',['../classSimulation.html#ad6d93199da7536096be1df1384a6fa1a',1,'Simulation']]],
-  ['updatestate_3',['updatestate',['../classCreeper.html#aebbc5ccea96b27399aa6868fb96be151',1,'Creeper::updateState()'],['../classSteve.html#a352aa635b44c99670e4b3f58917af807',1,'Steve::updateState()'],['../classUnit.html#a12e6ec31449199ef780f50602cb2b607',1,'Unit::updateState()']]]
+  ['operator_3d_0',['operator=',['../classUnitsParams.html#a02d3c97b3ee5a5ade35ac0e4b07542ec',1,'UnitsParams::operator=(const UnitsParams &amp;)=delete'],['../classUnitsParams.html#a9d0565779d8c42659aac704e620129aa',1,'UnitsParams::operator=(UnitsParams &amp;&amp;)=delete'],['../classUnit.html#a64bb6aa53593ae0337676449b0dfa1d9',1,'Unit::operator=(const Unit &amp;other)=default'],['../classUnit.html#a818bc97d23d998d01a96217058039930',1,'Unit::operator=(Unit &amp;&amp;other)=default']]],
+  ['operator_3d_3d_1',['operator==',['../structPoint.html#ab75f0f18a344370e936ef2a8a87c44c3',1,'Point::operator==()'],['../structRectangle.html#a2e4af35cfccfc75d0e52891f87ecf9ec',1,'Rectangle::operator==()']]]
 ];

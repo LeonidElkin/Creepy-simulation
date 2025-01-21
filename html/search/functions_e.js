@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['_7eunit_0',['~Unit',['../classUnit.html#a33361af029acdb5177052f40e6d4b18f',1,'Unit']]],
-  ['_7eunitsparams_1',['~UnitsParams',['../classUnitsParams.html#a09e42d95ba2e8e7303b823b85a66bdea',1,'UnitsParams']]]
+  ['rectangle_0',['Rectangle',['../structRectangle.html#ac0b73bd6b7cb2b03e092b0aed4a6e15d',1,'Rectangle']]],
+  ['refreshactives_1',['refreshActives',['../classCreepersManager.html#a03e66cb162fa3e2eec55aa6aa5a05c1e',1,'CreepersManager']]],
+  ['run_2',['run',['../classview_1_1view_1_1SimulationView.html#a03f54f9fd4bfddf84e0bd5827a866201',1,'view.view.SimulationView.run()'],['../namespaceview_1_1view.html#afa2e787e250895c44d1b63be88de7f33',1,'view.view.run()']]]
 ];

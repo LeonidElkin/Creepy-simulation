@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['rectangle_0',['Rectangle',['../structRectangle.html#ac0b73bd6b7cb2b03e092b0aed4a6e15d',1,'Rectangle']]],
-  ['refreshactives_1',['refreshActives',['../classCreepersManager.html#a03e66cb162fa3e2eec55aa6aa5a05c1e',1,'CreepersManager']]]
+  ['linear_5fto_5flog_0',['linear_to_log',['../classview_1_1ui__elems_1_1CreeperSlider.html#a872c6ea2e02bbdd4d6d4ac604c6e44f6',1,'view::ui_elems::CreeperSlider']]],
+  ['log_5fto_5flinear_1',['log_to_linear',['../classview_1_1ui__elems_1_1CreeperSlider.html#a8b089bd85e14e4c040f64f429c3512f7',1,'view::ui_elems::CreeperSlider']]]
 ];

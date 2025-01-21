@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['point_0',['Point',['../structPoint.html',1,'']]],
-  ['polarpoint_1',['PolarPoint',['../structDistanceFunc_1_1PolarPoint.html',1,'DistanceFunc']]]
+  ['drawexplosion_0',['DrawExplosion',['../classview_1_1view_1_1DrawExplosion.html',1,'view::view']]],
+  ['drawsparkle_1',['DrawSparkle',['../classview_1_1view_1_1DrawSparkle.html',1,'view::view']]]
 ];

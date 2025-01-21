@@ -1,25 +1,11 @@
 var searchData=
 [
-  ['setbedrock_0',['setbedrock',['../classFieldParams.html#a9b8fc60deaaf2279ebe1f075f93efdcd',1,'FieldParams::setBedrock()'],['../classSimulation.html#aa96c1d38bb571b0ad8f043a71ff80a5b',1,'Simulation::setBedrock()'],['../classSimulationFabric.html#a6e5220e7fd52f830cbc1c387d863e0ce',1,'SimulationFabric::setBedrock()']]],
-  ['setcoord_1',['setCoord',['../classUnit.html#abd1da6f203b1f87a6b1fdd33bbe9ef1b',1,'Unit']]],
-  ['setcreeperparams_2',['setCreeperParams',['../classSimulationFabric.html#a752f94b53c12f09a86fd91dfa7eaffe3',1,'SimulationFabric']]],
-  ['setfieldparams_3',['setFieldParams',['../classSimulationFabric.html#ac54b23a0c6a6e42e62964cdd6ffb1e6a',1,'SimulationFabric']]],
-  ['setid_4',['setID',['../classUnit.html#a6bfcc8e510f240f0c70869e6fedfb4bb',1,'Unit']]],
-  ['setsteveparams_5',['setSteveParams',['../classSimulationFabric.html#a8c1a84a92c3f38ebec33fb9f6e7f0efb',1,'SimulationFabric']]],
-  ['simulation_6',['simulation',['../classSimulation.html',1,'Simulation'],['../classSimulation.html#a30c7aa45cf26d5c4cbad538b207de669',1,'Simulation::Simulation()'],['../classStevesManager.html#aeb51e0a4c44d4192cfbdb79598859172',1,'StevesManager::Simulation'],['../classCreepersManager.html#aaceef4d2c1036e4af361ba26c15fffa1',1,'CreepersManager::Simulation']]],
-  ['simulation_2ecpp_7',['Simulation.cpp',['../Simulation_8cpp.html',1,'']]],
-  ['simulation_2ehpp_8',['Simulation.hpp',['../Simulation_8hpp.html',1,'']]],
-  ['simulationfabric_9',['simulationfabric',['../classSimulationFabric.html',1,'SimulationFabric'],['../classSimulationFabric.html#a09428209ce051d38b7b9de31e81c3ef2',1,'SimulationFabric::SimulationFabric()']]],
-  ['simulationfabric_2ehpp_10',['SimulationFabric.hpp',['../SimulationFabric_8hpp.html',1,'']]],
-  ['sleep_11',['Sleep',['../classCreepersParams.html#a1d7e8f61e3e31eb7ba8e7bb9f75f57c6a243924bfd56a682be235638b53961e09',1,'CreepersParams']]],
-  ['sleep_5fprobability_12',['sleep_probability',['../Creeper_8cpp.html#a7573901afd543f7f7f6a85c3cdeb5909',1,'Creeper.cpp']]],
-  ['state_13',['state',['../classCreepersParams.html#a1d7e8f61e3e31eb7ba8e7bb9f75f57c6',1,'CreepersParams::State'],['../classStevesParams.html#a79587f313ff1f652314f127ba0558d44',1,'StevesParams::State']]],
-  ['steve_14',['steve',['../classSteve.html',1,'Steve'],['../classSteve.html#a7af669cecd7a3ec1610a5fbb6159bbbf',1,'Steve::Steve()']]],
-  ['steve_2ecpp_15',['Steve.cpp',['../Steve_8cpp.html',1,'']]],
-  ['steve_2ehpp_16',['Steve.hpp',['../Steve_8hpp.html',1,'']]],
-  ['stevesearch_17',['steveSearch',['../classCreeper.html#a93491fe88b1b8585834db63d5a5d56d1',1,'Creeper']]],
-  ['stevesmanager_18',['stevesmanager',['../classStevesManager.html',1,'StevesManager'],['../classStevesManager.html#a1da9171c0bd72c9c19d04b1cbe4ef4dc',1,'StevesManager::StevesManager()']]],
-  ['stevesmanager_2ecpp_19',['StevesManager.cpp',['../StevesManager_8cpp.html',1,'']]],
-  ['stevesmanager_2ehpp_20',['StevesManager.hpp',['../StevesManager_8hpp.html',1,'']]],
-  ['stevesparams_21',['stevesparams',['../classStevesParams.html',1,'StevesParams'],['../classStevesParams.html#ad93066cc8ea4523d58ade9bca6c37611',1,'StevesParams::StevesParams()']]]
+  ['package_5fpath_0',['package_path',['../namespaceview_1_1view.html#a414c36b2c32ad87db4426db4889da4e7',1,'view::view']]],
+  ['parameters_1',['parameters',['../classview_1_1view_1_1SimulationView.html#a78c244ccd942c7165a2b1f6215e4c9a7',1,'view::view::SimulationView']]],
+  ['params_2',['params',['../classview_1_1view_1_1SimulationView.html#a5343ca2e656492d5f411b67dbfd616fb',1,'view::view::SimulationView']]],
+  ['point_3',['Point',['../structPoint.html',1,'']]],
+  ['points_4',['points',['../classview_1_1view_1_1DrawExplosion.html#aacbb99de9b73b6231cb44ac41b2249ac',1,'view.view.DrawExplosion.points'],['../classview_1_1view_1_1DrawSparkle.html#ab8dbd421780ceb002ca8c7a8411e5282',1,'view.view.DrawSparkle.points']]],
+  ['polar_5',['Polar',['../namespaceDistanceFunc.html#a77d91f3f76277e2a5a56c0697d9eabc4ae266cfd65ad46a67fc54b0efd38e40dd',1,'DistanceFunc']]],
+  ['polarpoint_6',['PolarPoint',['../structDistanceFunc_1_1PolarPoint.html',1,'DistanceFunc']]],
+  ['polarsquared_7',['polarSquared',['../namespaceDistanceFunc.html#a1936efbc5d3ea074f4383e02191f051c',1,'DistanceFunc']]]
 ];

@@ -30,6 +30,7 @@ var NAVTREE =
       [ "Namespace Members", "namespacemembers.html", [
         [ "All", "namespacemembers.html", null ],
         [ "Functions", "namespacemembers_func.html", null ],
+        [ "Variables", "namespacemembers_vars.html", null ],
         [ "Enumerations", "namespacemembers_enum.html", null ]
       ] ]
     ] ],
@@ -38,7 +39,7 @@ var NAVTREE =
       [ "Class Index", "classes.html", null ],
       [ "Class Hierarchy", "hierarchy.html", "hierarchy" ],
       [ "Class Members", "functions.html", [
-        [ "All", "functions.html", null ],
+        [ "All", "functions.html", "functions_dup" ],
         [ "Functions", "functions_func.html", null ],
         [ "Variables", "functions_vars.html", null ],
         [ "Enumerations", "functions_enum.html", null ],
@@ -58,7 +59,9 @@ var NAVTREE =
 
 var NAVTREEINDEX =
 [
-"Creeper_8cpp.html"
+"Creeper_8cpp.html",
+"classsteve__drawer_1_1SteveManager.html#ad9a943b5649267448b49631f945caf60",
+"classview_1_1view_1_1SimulationView.html#a877b641cc5cce21ad8f8613adb7fa0de"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';
