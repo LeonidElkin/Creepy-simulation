@@ -19,7 +19,7 @@ jobs:
         run: |
           rm -rf html
           doxygen Doxyfile
-          touch html/.nojekyll
+          touch docs/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
