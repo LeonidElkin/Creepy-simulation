@@ -51,7 +51,6 @@ class ImageProvider:
         self.steve_image_grave = pygame.transform.scale(
             pygame.image.load("view/image/grave.png").convert_alpha(), big_img_size
         )
-        self.ocelot = pygame.transform.scale(pygame.image.load("view/image/ocelot.png").convert_alpha(), img_size)
         self.steve = pygame.transform.scale(pygame.image.load("view/image/steve.png").convert_alpha(), img_size)
         self.bedrock = pygame.transform.scale(pygame.image.load("view/image/bedrock.png").convert_alpha(), bedrock)
         self.bedrock_spawn = pygame.transform.scale(
