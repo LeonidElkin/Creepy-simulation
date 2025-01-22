@@ -19,7 +19,6 @@ using namespace pybind11::literals;
           {rightUpBound[0].cast<double>(), rightUpBound[1].cast<double>()}};
 }
 
-
 class SimulationProvider {
   Simulation original_;
   std::optional<std::future<void>> future_;
@@ -45,36 +44,6 @@ class SimulationProvider {
     original_.deleteBedrock(boundsToRectangle(leftDownBound, rightUpBound));
     return *this;
   }
-};
-
-class SimulationFabricProvider {
-  SimulationFabric original_;
-
- public:
-  SimulationFabricProvider() = default;
-
-  SimulationFabricProvider& setFieldParams(const py::tuple& leftDownBound, const py::tuple& rightUpBound,
-                                           const DistanceFunc::Type distanceFunc) {
-    original_.setFieldParams(boundsToRectangle(leftDownBound, rightUpBound), funcToType(distanceFunc));
-    return *this;
-  }
-
-  SimulationFabricProvider& setCreeperParams(double moveRadius, double explodeRadius, uint32_t count) {
-    original_.setCreeperParams(moveRadius, explodeRadius, count);
-    return *this;
-  }
-
-  SimulationFabricProvider& setSteveParams(double moveRadius, uint32_t count) {
-    original_.setSteveParams(moveRadius, count);
-    return *this;
-  }
-
-  SimulationFabricProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
-    original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
-    return *this;
-  }
-
-  SimulationProvider build() { return SimulationProvider(original_.build()); }
 };
 
 PYBIND11_MODULE(creepers_lib, handle) {
@@ -119,15 +88,24 @@ PYBIND11_MODULE(creepers_lib, handle) {
       .def("get_state", &Creeper::getState);
   py::class_<CreepersManager>(handle, "CreepersManager").def("get_creepers", &CreepersManager::getCreepers);
 
-  py::class_<SimulationFabricProvider>(handle, "SimulationFabric")
+  py::class_<SimulationFabric>(handle, "SimulationFabric")
       .def(py::init<>())
-      .def("set_field_params", &SimulationFabricProvider::setFieldParams, "left_down_bound"_a, "right_up_bound"_a,
-           "distance_func"_a)
-      .def("set_creeper_params", &SimulationFabricProvider::setCreeperParams, "move_radius"_a, "explode_radius"_a,
-           "count"_a)
-      .def("set_steve_params", &SimulationFabricProvider::setSteveParams, "move_radius"_a, "count"_a)
-      .def("set_bedrock", &SimulationFabricProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)
-      .def("build", &SimulationFabricProvider::build);
+      .def(
+          "set_field_params",
+          [](SimulationFabric& fabric, const py::tuple& leftDownBound, const py::tuple& rightUpBound,
+             const DistanceFunc::Type distanceFunc) {
+            return fabric.setFieldParams(boundsToRectangle(leftDownBound, rightUpBound), funcToType(distanceFunc));
+          },
+          "left_down_bound"_a, "right_up_bound"_a, "distance_func"_a)
+      .def("set_creeper_params", &SimulationFabric::setCreeperParams, "move_radius"_a, "explode_radius"_a, "count"_a)
+      .def("set_steve_params", &SimulationFabric::setSteveParams, "move_radius"_a, "count"_a)
+      .def(
+          "set_bedrock",
+          [](SimulationFabric& fabric, const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+            return fabric.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
+          },
+          "left_down_bound"_a, "right_up_bound"_a)
+      .def("build", [](SimulationFabric& fabric) { return SimulationProvider(fabric.build()); });
   py::class_<SimulationProvider>(handle, "Simulation")
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
       .def("wait_update_field", &SimulationProvider::waitUpdateSimulation)
