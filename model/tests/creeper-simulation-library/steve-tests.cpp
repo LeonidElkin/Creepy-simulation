@@ -49,18 +49,6 @@ TEST(Steve, GetIdTest) {
   EXPECT_EQ(steve.getID(), 1);
 }
 
-TEST(Steve, SetTrivialTest) {
-  auto point1 = Point(3, 3);
-  auto point2 = Point(2, 2);
-  auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point2, point1}, DistanceFunc::euclideanSquared);
-  auto steveParams = std::make_shared<StevesParams>(1, fieldsParams, 1);
-  auto steve = Steve(1, steveParams);
-  steve.setCoord(Point(2.3, 2.5));
-  steve.setID(2);
-  EXPECT_EQ(steve.getCoord(), Point(2.3, 2.5));
-  EXPECT_EQ(steve.getID(), 2);
-}
-
 TEST(SteveParams, GetTrivialTest) {
   auto point = Point(3, 3);
   auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point, point}, DistanceFunc::euclideanSquared);

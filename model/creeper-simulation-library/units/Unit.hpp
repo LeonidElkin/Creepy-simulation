@@ -67,11 +67,6 @@ class Unit {
 
  protected:
  /**
-  * @brief Sets the ID of the unit.
-  * @param id The unique ID.
-  */
-  void setID(const size_t id) { id_ = id; }
- /**
   * @brief Sets the coordinates of the unit.
   * @param coord The new coordinates.
   */

@@ -56,8 +56,4 @@ class Steve final : public Unit {
   * @return The state of the Steve.
   */
   decltype(state_) getState() { return state_; }
-
-  using Unit::setID;
-
-  using Unit::setCoord;
 };
