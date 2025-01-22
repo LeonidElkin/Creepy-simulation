@@ -58,7 +58,7 @@ class Steve final : public Unit, std::enable_shared_from_this<Steve> {
   * @return The state of the Steve.
   */
   decltype(state_) getState() { return state_; }
-  
+
   using Unit::setID;
 
   using Unit::setCoord;
