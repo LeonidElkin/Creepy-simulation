@@ -18,6 +18,9 @@ Point UnitsParams::generatePos(const std::optional<Point> initialPoint) {
   return Point(xDist(getRandom()), yDist(getRandom()));
 }
 
-Unit::Unit(const size_t id, const std::shared_ptr<UnitsParams> &params) : coord_(params->generatePos({})), id_(id) {
+Unit::Unit(const size_t id, const std::shared_ptr<UnitsParams> &params) : id_(id) {
+  do {
+    setCoord(params->generatePos({}));
+  } while (params->getFieldParams()->checkInsideBlock(getCoord()));
   DLOG(INFO) << "spawn on (" << coord_.x << ", " << coord_.y << ")";
 }

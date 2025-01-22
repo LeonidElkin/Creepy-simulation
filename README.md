@@ -34,6 +34,17 @@ Creepy-simulation представляет поле, населенное кри
 - Логгируются взаимодействия криперов
 - Плавная и красивая отрисовка
 
+NEW:
+- Спавн Стивов на поле
+- Криперы при виде Стивов бегут за ними, чтобы взорвать
+- Правой кнопкой мыши можно поставить бедрок (не проходимая область), если Криперы ударяются в бедрок, то они умирают
+- Зум поля на колёсико мыши
+
+[Документация](https://leonidelkin.github.io/Creepy-simulation/)
 ## Example
 
 ![example.gif](img/example.gif)
+
+![example2.gif](img/steve_example.gif)
+![example3.gif](img/zoom_example.gif)
+![example4.gif](img/bedrock_example.gif)

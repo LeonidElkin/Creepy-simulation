@@ -8,9 +8,23 @@ from view.units.steve_drawer import SteveManager
 
 
 class RunningGame:
+    """
+    @class RunningGame
+    @brief Manages the main game loop and interactions within the simulation.
+
+    The RunningGame class handles the initialization, management, and updates of the simulation,
+    including managing creepers and Steves.
+    """
+
     simulation: creepers_lib.Simulation
 
     def __init__(self, app, position_shift):
+        """
+        Initializes the RunningGame object.
+
+        @param app: The main application object providing game settings and context.
+        @param position_shift: The positional offset for rendering objects.
+        """
         self.app = app
         self.offset = position_shift
         self.start_game()
@@ -20,6 +34,11 @@ class RunningGame:
         self.last_update_time = 0
 
     def start_game(self):
+        """
+        Initializes the simulation with the configured parameters.
+
+        Sets up the simulation field, distance function, and parameters for creepers and Steves.
+        """
         simulationFabric = creepers_lib.SimulationFabric()
 
         width = self.app.width
@@ -29,13 +48,21 @@ class RunningGame:
         logger.info(f"Field params set: width={width}, height={height}, dist_func={dist_func}")
         simulationFabric.set_creeper_params(*astuple(self.app.creepers_params))
         simulationFabric.set_steve_params(*astuple(self.app.steve_params))
+
+        self.app.blocks.extend(self.app.waiting_blocks)
+        self.app.waiting_blocks = []
+        for block in self.app.blocks:
+            simulationFabric.set_bedrock(*block.get_borders(self.offset))
         print(self.app.creepers_params)
 
         self.simulation = simulationFabric.build()
-        for block in self.app.blocks:
-            self.simulation.set_bedrock(*block.get_borders(self.offset))
 
     def algo_update(self, thao):
+        """
+        Updates the simulation state and manages rendering of objects.
+
+        @param current_time: The current time in milliseconds.
+        """
         self.simulation.wait_update_field()
         for block in self.app.waiting_blocks:
             self.simulation.set_bedrock(*block.get_borders(self.offset))
@@ -47,5 +74,10 @@ class RunningGame:
         self.simulation.run_update_field()
 
     def step_draw(self):
+        """
+        Renders the simulation objects on the given surface.
+
+        @param surface: The pygame surface to draw on.
+        """
         self.creepers_manager.draw_creepers(self.app)
         self.steve_manager.draw_steves(self.app)

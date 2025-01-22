@@ -6,7 +6,20 @@ bedrock = (50, 50)
 
 
 class ImageProvider:
+    """
+    @class ImageProvider
+    @brief Manages game images, including animations and static assets.
+
+    The ImageProvider class loads and scales images from predefined paths, providing
+    easy access to them during the game.
+    """
+
     def __init__(self):
+        """
+        Initializes the ImageProvider object.
+
+        Loads and scales images for explosions, sparkles, and creeper animations.
+        """
         self.scale = 1
         _explosion_frames = [
             pygame.image.load(f"view/image/explosion/regularExplosion{i}.png").convert_alpha() for i in range(0, 8)

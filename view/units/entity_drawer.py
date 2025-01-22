@@ -2,7 +2,21 @@ import pygame
 
 
 class EntityDrawer:
+    """
+    @class EntityDrawer
+    @brief Base class for drawing and updating the position of entities in the simulation.
+
+    The EntityDrawer class manages the position, movement, and rendering of entities.
+    """
+
     def __init__(self, position: tuple[float, float], image, drawer):
+        """
+        Initializes an EntityDrawer object.
+
+        @param position: The initial position of the entity.
+        @param image: The image used for rendering the entity.
+        @param drawer: The drawer object managing the rendering context.
+        """
         self.drawer = drawer
         self.cur_x, self.cur_y = position
         self.target_x, self.target_y = position
@@ -10,10 +24,22 @@ class EntityDrawer:
         self.image = image
 
     def update(self, new_position: tuple[float, float], steps, state=None):
+        """
+        Updates the target position and movement steps for the entity.
+
+        @param new_position: The new target position of the entity.
+        @param steps: The number of steps required to reach the target position.
+        @param state: Optional state information for the entity.
+        """
         self.target_x, self.target_y = new_position
         self._set_target(steps)
 
     def _set_target(self, steps):
+        """
+        Configures the movement steps and direction to the target position.
+
+        @param steps: The number of steps to reach the target position.
+        """
         self.steps_left = steps
         if steps > 0:
             self.dx = (self.target_x - self.cur_x) / steps
@@ -22,6 +48,11 @@ class EntityDrawer:
             self.dx = self.dy = 0
 
     def update_position(self):
+        """
+        Updates the current position of the entity based on its movement steps.
+
+        @return: True if the entity has remaining steps to move, otherwise False.
+        """
         if self.steps_left > 0:
             self.cur_x += self.dx
             self.cur_y += self.dy
@@ -29,6 +60,11 @@ class EntityDrawer:
         return self.steps_left > 0
 
     def draw_step(self):
+        """
+        Updates the position and renders the entity on the screen.
+
+        Ensures that the entity is only rendered if it is within the visible bounds.
+        """
         self.update_position()
 
         screen_x = self.cur_x * self.drawer.zoom_level + self.drawer.offset_x
@@ -45,6 +81,13 @@ class EntityDrawer:
 
 
 def entity_within_bounds(entity, drawer):
+    """
+    Checks if an entity is within the visible bounds of the drawer.
+
+    @param entity: The entity to check.
+    @param drawer: The drawer object managing the rendering context.
+    @return: True if the entity is within the visible bounds, otherwise False.
+    """
     # Вычисляем границы видимой области
     scaled_width = drawer.width / drawer.zoom_level
     scaled_height = drawer.height / drawer.zoom_level

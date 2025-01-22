@@ -9,21 +9,59 @@ slider_text_size = (250, 40)
 
 
 class UiElement(ABC):
+    """
+    @class UiElement
+    @brief Abstract base class for user interface elements.
+
+    The UiElement class provides a common interface for handling events
+    and managing labels for UI components.
+    """
+
     def __init__(self, app):
+        """
+        Initializes a UiElement object.
+
+        @param app: The main application object managing the UI.
+        """
         self.label = None
         self.event = None
         self.app = app
 
     def add_label(self, label):
+        """
+        Adds a label to the UI element.
+
+        @param label: The label to associate with this UI element.
+        """
         self.label = label
 
     @abstractmethod
     def handel(self, event):
+        """
+        Abstract method for handling events.
+
+        Must be implemented by derived classes.
+
+        @param event: The event to handle.
+        """
         pass
 
 
 class CreeperSlider(UiElement):
+    """
+    @class CreeperSlider
+    @brief UI element for adjusting the number of creepers in the simulation.
+
+    The CreeperSlider provides a logarithmic slider for selecting the number of creepers,
+    with an associated label to display the current value.
+    """
+
     def __init__(self, app):
+        """
+        Initializes a CreeperSlider object.
+
+        @param app: The main application object managing the UI.
+        """
         super().__init__(app)
         self.lin_min = 0
         self.lin_max = 100
@@ -44,16 +82,35 @@ class CreeperSlider(UiElement):
         )
 
     def linear_to_log(self, linear_value):
+        """
+        Converts a linear value to a logarithmic scale.
+
+        @param lin_value: The linear value to convert.
+        @return: The corresponding logarithmic value.
+        """
         linear_ratio = (linear_value - self.lin_min) / (self.lin_max - self.lin_min)
         log_value = self.log_min * (self.log_max / self.log_min) ** linear_ratio
         return int(log_value)
 
     def log_to_linear(self, log_value):
+        """
+        Converts a logarithmic value to a linear scale.
+
+        @param log_value: The logarithmic value to convert.
+        @return: The corresponding linear value.
+        """
         log_ratio = math.log(log_value / self.log_min) / math.log(self.log_max / self.log_min)
         linear_value = self.lin_min + log_ratio * (self.lin_max - self.lin_min)
         return linear_value
 
     def handel(self, event):
+        """
+        Handles events related to the slider.
+
+        Updates the creeper count in the application parameters.
+
+        @param event: The event to handle.
+        """
         self.app.creepers_params.creeper_count = self.linear_to_log(int(event.value))
         self.label.set_text(f"Creepers: {self.app.creepers_params.creeper_count}")
 

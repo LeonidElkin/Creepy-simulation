@@ -8,12 +8,34 @@ from view.units.entity_drawer import EntityDrawer, entity_within_bounds
 
 @dataclass
 class SteveParams:
+    """
+    @class SteveParams
+    @brief Configuration parameters for Steves.
+
+    Defines the default parameters such as radius and count.
+    """
+
     radius: float = 20
     count: int = 0
 
 
 class SteveDrawer(EntityDrawer):
+    """
+    @class SteveDrawer
+    @brief Manages the rendering and state transitions of individual Steves.
+
+    The SteveDrawer class extends the EntityDrawer to handle specific behaviors
+    and visuals associated with Steves.
+    """
+
     def __init__(self, position: tuple[float, float], state: SteveState, drawer):
+        """
+        Initializes a SteveDrawer object.
+
+        @param position: The initial position of the Steve.
+        @param state: The current state of the Steve (e.g., Walk, Born, Dead).
+        @param drawer: The drawer object managing rendering.
+        """
         super().__init__(position, None, drawer)
         self.dx = self.dy = 0
         self.state = state
@@ -21,6 +43,9 @@ class SteveDrawer(EntityDrawer):
         self.set_img()
 
     def set_img(self):
+        """
+        Updates the image associated with the Steve based on its current state.
+        """
         if self.dead:
             self.image = self.drawer.image_provider.steve_image_grave
         elif self.state in (SteveState.Born, SteveState.Dead):
@@ -30,6 +55,13 @@ class SteveDrawer(EntityDrawer):
             self.image = self.drawer.image_provider.bedrock
 
     def update(self, new_position: tuple[float, float], steps, state=None):
+        """
+        Updates the position and state of the Steve.
+
+        @param new_position: The new position of the Steve.
+        @param steps: Number of steps to reach the target position.
+        @param state: The new state of the Steve.
+        """
         if self.state == SteveState.Dead:
             self.dead = True
 
@@ -41,7 +73,22 @@ class SteveDrawer(EntityDrawer):
 
 
 class SteveManager:
+    """
+    @class SteveManager
+    @brief Handles the collection of Steves and their interactions.
+
+    The SteveManager class manages a collection of SteveDrawer objects,
+    updating their states and rendering them within the simulation.
+    """
+
     def __init__(self, app, manager, position_shift):
+        """
+        Initializes the SteveManager object.
+
+        @param app: The application managing the simulation.
+        @param manager: The underlying Steve manager from the simulation library.
+        @param position_shift: The positional offset for rendering Steves.
+        """
         self.manager = manager
         self.shift = position_shift
         steves_data = self.manager.get_steves()
@@ -50,6 +97,13 @@ class SteveManager:
         self.steves = [SteveDrawer(coord, state, app) for coord, state in self._steves2data(self.manager.get_steves())]
 
     def _steves2data(self, steves):
+        """
+        Converts Steves data into coordinates and states, applying positional shift.
+
+        @param steves: The list of Steves from the simulation library.
+        @return: A generator yielding shifted coordinates and states for each Steve.
+        """
+
         def shift_coord(coord):
             return coord[0] + self.shift[0], coord[1] + self.shift[1]
 
@@ -58,6 +112,11 @@ class SteveManager:
         return ((shift_coord(steve.get_coord()), steve.get_state()) for steve in steves)
 
     def update_steves(self, steps):
+        """
+        Updates the states and positions of all Steves.
+
+        @param steps: The number of steps for updating Steve positions.
+        """
         data = list(self._steves2data(self.manager.get_steves()))
         if len(self.steves) != len(data):
             logger.error(f"Mismatch in steve counts: {len(self.steves)} vs {len(data)}")
@@ -73,6 +132,11 @@ class SteveManager:
         logger.info("Steves updated.")
 
     def draw_steves(self, drawer):
+        """
+        Renders all Steves on the provided drawer surface.
+
+        @param drawer: The drawing surface or manager responsible for rendering.
+        """
         for index, steve in enumerate(self.steves):
             if entity_within_bounds(steve, drawer):
                 try:
