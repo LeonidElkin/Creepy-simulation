@@ -71,7 +71,7 @@ class TestSteve:
         """Test initialization of SteveDrawer."""
         mock_drawer = Mock()
         mock_drawer.image_provider.steve = "steve_image"
-        steve = SteveDrawer((0, 0), SteveState.Walk, mock_drawer)
+        steve = SteveDrawer((0, 0), SteveState.Born, mock_drawer)
 
         assert steve.cur_x == 0
         assert steve.cur_y == 0
@@ -81,7 +81,7 @@ class TestSteve:
         """Test the update method of SteveDrawer."""
         mock_drawer = Mock()
         mock_drawer.image_provider.steve = "steve_image"
-        steve = SteveDrawer((0, 0), SteveState.Walk, mock_drawer)
+        steve = SteveDrawer((0, 0), SteveState.Born, mock_drawer)
 
         steve.update((10, 10), 5, SteveState.Born)
 
@@ -93,7 +93,7 @@ class TestSteve:
         """Test initialization of SteveManager."""
         mock_app = Mock()
         mock_manager = Mock()
-        mock_manager.get_steves.return_value = [Mock(get_coord=lambda: (0, 0), get_state=lambda: SteveState.Walk)]
+        mock_manager.get_steves.return_value = [Mock(get_coord=lambda: (0, 0), get_state=lambda: SteveState.Born)]
         steve_manager = SteveManager(mock_app, mock_manager, (5, 5))
 
         assert len(steve_manager.steves) == 1
@@ -104,7 +104,7 @@ class TestSteve:
         """Test the update_steves method."""
         mock_app = Mock()
         mock_manager = Mock()
-        mock_manager.get_steves.return_value = [Mock(get_coord=lambda: (0, 0), get_state=lambda: SteveState.Walk)]
+        mock_manager.get_steves.return_value = [Mock(get_coord=lambda: (0, 0), get_state=lambda: SteveState.Born)]
         steve_manager = SteveManager(mock_app, mock_manager, (5, 5))
 
         mock_manager.get_steves.return_value = [Mock(get_coord=lambda: (10, 10), get_state=lambda: SteveState.Dead)]
