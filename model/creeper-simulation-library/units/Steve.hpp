@@ -7,19 +7,17 @@
  */
 class StevesParams final : public UnitsParams {
  public:
-
-class Steve final : public Unit {
- /**
+  /**
   * @enum State
   * @brief Possible states of a Steve.
-  */
+   */
   enum class State : std::uint8_t { Born, Dead };
- /**
+  /**
   * @brief Constructs the StevesParams object.
   * @param moveRadius Movement radius for Steve units.
   * @param fieldParams Shared pointer to field parameters.
   * @param unitsCount Number of Steve units in the simulation.
-  */
+   */
   StevesParams(double moveRadius, const std::shared_ptr<FieldParams> &fieldParams, uint32_t unitsCount);
 };
 /**
@@ -29,7 +27,7 @@ class Steve final : public Unit {
  * The Steve class manages the behavior, state, and interactions of a single Steve
  * within the simulation.
  */
-class Steve final : public Unit, std::enable_shared_from_this<Steve> {
+class Steve final : public Unit {
   std::shared_ptr<StevesParams> params_;
   StevesParams::State state_{StevesParams::State::Born};
 
