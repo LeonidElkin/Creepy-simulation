@@ -78,6 +78,7 @@ class Creeper final : public Unit {
   void walk() override;
 
   using Unit::setID;
+
   using Unit::setCoord;
 
   void updateState(const std::shared_ptr<Unit> &another) override;
