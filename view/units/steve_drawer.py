@@ -38,15 +38,18 @@ class SteveDrawer(EntityDrawer):
         """
         super().__init__(position, None, drawer)
         self.dx = self.dy = 0
+        self.image = self.get_img(state, None)
         self.state = state
-        self.image = self.get_img(state)
 
-    def get_img(self, state):
+    def get_img(self, state, prev):
         """
         Updates the image associated with the Steve based on its current state.
         """
         if state == SteveState.Dead:
-            image = self.drawer.image_provider.steve_image_grave
+            if prev == SteveState.Walk:
+                image = self.get_img(prev, None)
+            else:
+                image = self.drawer.image_provider.steve_image_grave
         elif state == SteveState.Walk:
             image = self.drawer.image_provider.steve
         else:
@@ -63,11 +66,11 @@ class SteveDrawer(EntityDrawer):
         @param new_state: The new state of the Steve.
         """
 
-        self.state = new_state
         self.target_x, self.target_y = new_position
         self._set_target(steps)
 
-        self.image = self.get_img(new_state)
+        self.image = self.get_img(new_state, self.state)
+        self.state = new_state
 
 
 class SteveManager:
