@@ -58,6 +58,8 @@ class SimulationProvider {
     }
   }
 
+  [[nodiscard]] bool dataIsReady() const { return dataReady_; }
+
   CreepersManager& getCreepersManager() {
     if (!dataReady_) {
       throw std::runtime_error("SimulationProvider::getCreepersManager() called while data is updating");
@@ -149,6 +151,7 @@ PYBIND11_MODULE(creepers_lib, handle) {
   py::class_<SimulationProvider, std::shared_ptr<SimulationProvider>>(handle, "Simulation")
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
       .def("wait_update_field", &SimulationProvider::waitUpdateSimulation)
+      .def("data_is_ready", &SimulationProvider::dataIsReady)
       .def("get_creepers_manager", &SimulationProvider::getCreepersManager)
       .def("get_steves_manager", &SimulationProvider::getStevesManager)
       .def("set_bedrock", &SimulationProvider::setBedrock, "left_down_bound"_a, "right_up_bound"_a)

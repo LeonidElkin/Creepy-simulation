@@ -74,6 +74,12 @@ class RunningGame:
         self.creepers_manager.update_creepers(max(1, thao // 16))
         self.simulation.run_update_field()
 
+    def data_is_ready(self):
+        """
+        Allow gui doesn't wait algo update and slow down.
+        """
+        return self.simulation.data_is_ready()
+
     def step_draw(self):
         """
         Renders the simulation objects on the given surface.
