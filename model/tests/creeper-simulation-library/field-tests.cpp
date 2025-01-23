@@ -69,10 +69,17 @@ TEST(Simulation, AndTwoWillExplode) {
   auto creepers = simulation.getCreepersManager().getCreepers();
   for (auto i = 0; i < 100; i++) {
     simulation.updateField();
-    if (creepers[0]->getState() == CreepersParams::State::Explodes || creepers[1]->getState() == CreepersParams::State::Explodes) {
+    if (creepers[0]->getState() == CreepersParams::State::Explodes ||
+        creepers[1]->getState() == CreepersParams::State::Explodes) {
       break;
     }
   }
   EXPECT_EQ(creepers[0]->getState(), CreepersParams::State::Explodes);
   EXPECT_EQ(creepers[1]->getState(), CreepersParams::State::Explodes);
+}
+
+TEST(Field, Trivial) {
+  auto point = Point(3, 3);
+  auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point, point}, DistanceFunc::euclideanSquared);
+  EXPECT_EQ(fieldsParams->getBounds(), Rectangle(point, point));
 }

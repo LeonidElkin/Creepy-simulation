@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.20 FATAL_ERROR)
 
 option(BUILD_TESTING "enable test" OFF)
+option(TEST_COVERAGE "enable providing test coverage" OFF)
 
 project(Creepy-simulation LANGUAGES CXX VERSION 1.0)
 
@@ -43,6 +44,13 @@ endif ()
 
 # Testing
 if (BUILD_TESTING)
+    # Coverage
+    if (TEST_COVERAGE AND (CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID STREQUAL "Clang"))
+        add_compile_options(-fprofile-arcs -ftest-coverage)
+        add_link_options(-fprofile-arcs -ftest-coverage)
+    elseif (TEST_COVERAGE)
+        message(WARNING "Test coverage files won't be generated because it's supported only if you're using Clang or GCC compiler")
+    endif ()
     include(CTest)
     enable_testing()
     add_subdirectory(tests)

@@ -30,6 +30,7 @@ class CreepersParams final : public UnitsParams {
   CreepersParams(double moveRadius, double explodeRadius, const std::shared_ptr<FieldParams> &fieldParams,
                  uint32_t unitsCount);
 };
+
 /**
  * @class Creeper
  * @brief Represents an individual creeper in the simulation.
@@ -37,7 +38,7 @@ class CreepersParams final : public UnitsParams {
  * The Creeper class manages the behavior, state, and interactions of a single creeper
  * within the simulation.
  */
-class Creeper final : public Unit, public std::enable_shared_from_this<Creeper> {
+class Creeper final : public Unit {
   std::shared_ptr<CreepersParams> params_;
   CreepersParams::State state_{CreepersParams::State::Born};
   std::shared_ptr<Steve> target_;
@@ -47,6 +48,7 @@ class Creeper final : public Unit, public std::enable_shared_from_this<Creeper> 
   * @return New position of the creeper.
   */
   Point moveTo(Point to);
+
  /**
   * @brief Moves the creeper after being bonked.
   * @param to Target point.

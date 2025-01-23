@@ -380,7 +380,7 @@ class SimulationView:
 
             if self.running_game:
                 current_time = pygame.time.get_ticks()
-                if current_time - self.last_update_time >= self.thao:
+                if current_time - self.last_update_time >= self.thao and self.running_game.data_is_ready():
                     self.explodes_drawer = DrawExplosion(copy(self.will_explodes))
                     self.sparkle_drawer = DrawSparkle(copy(self.will_sparkle))
                     self.will_explodes = set()

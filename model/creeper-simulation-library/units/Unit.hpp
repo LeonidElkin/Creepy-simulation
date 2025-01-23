@@ -56,20 +56,16 @@ class UnitsParams {
 
   void operator=(UnitsParams &&) = delete;
 };
+
 /**
  * @class Unit
  * @brief Represents a generic unit in the simulation.
  */
-class Unit : public std::enable_shared_from_this<Unit> {
+class Unit {
   Point coord_{};
   size_t id_;
 
  protected:
- /**
-  * @brief Sets the ID of the unit.
-  * @param id The unique ID.
-  */
-  void setID(const size_t id) { id_ = id; }
  /**
   * @brief Sets the coordinates of the unit.
   * @param coord The new coordinates.

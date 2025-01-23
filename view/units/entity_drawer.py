@@ -23,13 +23,13 @@ class EntityDrawer:
         self.steps_left = 0
         self.image = image
 
-    def update(self, new_position: tuple[float, float], steps, state=None):
+    def update(self, new_position: tuple[float, float], steps, new_state=None):
         """
         Updates the target position and movement steps for the entity.
 
         @param new_position: The new target position of the entity.
         @param steps: The number of steps required to reach the target position.
-        @param state: Optional state information for the entity.
+        @param new_state: Optional state information for the entity.
         """
         self.target_x, self.target_y = new_position
         self._set_target(steps)

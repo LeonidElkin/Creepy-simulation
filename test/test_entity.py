@@ -83,7 +83,7 @@ class TestSteve:
         mock_drawer.image_provider.steve = "steve_image"
         steve = SteveDrawer((0, 0), SteveState.Walk, mock_drawer)
 
-        steve.update((10, 10), 5, SteveState.Born)
+        steve.update((10, 10), 5, SteveState.Walk)
 
         assert steve.target_x == 10
         assert steve.target_y == 10

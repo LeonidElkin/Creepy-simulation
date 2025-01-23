@@ -4,7 +4,6 @@
 #include <functional>
 
 #include "Creeper.hpp"
-#include "SimulationFabric.hpp"
 #include "utils.hpp"
 
 TEST(Creeper, InitTest) {
@@ -56,8 +55,8 @@ TEST(Creeper, HissingTest) {
   auto point1 = Point(2, 2);
   auto point2 = Point(3, 3);
   auto moveRadius = 1;
-  auto fieldsParams =
-      std::make_shared<FieldParams>(Rectangle{point1, point2}, [](Point, Point) { return std::numeric_limits<double>::min(); });
+  auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point1, point2},
+                                                    [](Point, Point) { return std::numeric_limits<double>::min(); });
   auto creeperParams = std::make_shared<CreepersParams>(moveRadius, 0, fieldsParams, 2);
   auto creeper1 = std::make_shared<Creeper>(1, creeperParams);
   auto creeper2 = std::make_shared<Creeper>(2, creeperParams);
@@ -79,8 +78,8 @@ TEST(Creeper, ExplodeTest) {
   auto point1 = Point(2, 2);
   auto point2 = Point(3, 3);
   auto moveRadius = 1;
-  auto fieldsParams =
-      std::make_shared<FieldParams>(Rectangle{point1, point2}, [](Point, Point) { return std::numeric_limits<double>::min(); });
+  auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point1, point2},
+                                                    [](Point, Point) { return std::numeric_limits<double>::min(); });
   auto creeperParams = std::make_shared<CreepersParams>(moveRadius, 10, fieldsParams, 2);
   auto creeper1 = std::make_shared<Creeper>(1, creeperParams);
   auto creeper2 = std::make_shared<Creeper>(2, creeperParams);
@@ -106,8 +105,8 @@ TEST(Creeper, SleepTest) {
   auto point2 = Point(3, 3);
   auto moveRadius = 1;
   auto explodeRadius = 10;
-  auto fieldsParams =
-      std::make_shared<FieldParams>(Rectangle{point1, point2}, [](Point, Point) { return std::numeric_limits<double>::min(); });
+  auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point1, point2},
+                                                    [](Point, Point) { return std::numeric_limits<double>::min(); });
   auto creeperParams = std::make_shared<CreepersParams>(moveRadius, explodeRadius, fieldsParams, 1);
   auto creeper = Creeper(1, creeperParams);
   creeper.begin();
@@ -115,4 +114,16 @@ TEST(Creeper, SleepTest) {
     creeper.walk();
   }
   EXPECT_EQ(creeper.getState(), CreepersParams::State::Sleep);
+}
+
+TEST(Creeper, SteveSearchTest) {
+  auto point = Point(3, 3);
+  auto fieldsParams = std::make_shared<FieldParams>(Rectangle{point, point}, DistanceFunc::euclideanSquared);
+  auto creeperParams = std::make_shared<CreepersParams>(0, 1, fieldsParams, 1);
+  auto steveParams = std::make_shared<StevesParams>(1, fieldsParams, 1);
+  auto creeper = Creeper(1, creeperParams);
+  auto steve = std::make_shared<Steve>(2, steveParams);
+  creeper.begin();
+  creeper.steveSearch(steve);
+  EXPECT_EQ(creeper.getState(), CreepersParams::State::GoToSteve);
 }

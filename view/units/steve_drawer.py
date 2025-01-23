@@ -38,38 +38,39 @@ class SteveDrawer(EntityDrawer):
         """
         super().__init__(position, None, drawer)
         self.dx = self.dy = 0
+        self.image = self.get_img(state, None)
         self.state = state
-        self.dead = False
-        self.set_img()
 
-    def set_img(self):
+    def get_img(self, state, prev):
         """
         Updates the image associated with the Steve based on its current state.
         """
-        if self.dead:
-            self.image = self.drawer.image_provider.steve_image_grave
-        elif self.state in (SteveState.Walk, SteveState.Born, SteveState.Dead):
-            self.image = self.drawer.image_provider.steve
+        if state == SteveState.Dead:
+            if prev == SteveState.Walk:
+                image = self.get_img(prev, None)
+            else:
+                image = self.drawer.image_provider.steve_image_grave
+        elif state == SteveState.Walk:
+            image = self.drawer.image_provider.steve
         else:
             logger.error(f"invalid steve state {self.state}")
-            self.image = self.drawer.image_provider.bedrock
+            image = self.drawer.image_provider.bedrock
+        return image
 
-    def update(self, new_position: tuple[float, float], steps, state=None):
+    def update(self, new_position: tuple[float, float], steps, new_state=None):
         """
         Updates the position and state of the Steve.
 
         @param new_position: The new position of the Steve.
         @param steps: Number of steps to reach the target position.
-        @param state: The new state of the Steve.
+        @param new_state: The new state of the Steve.
         """
-        if self.state == SteveState.Dead:
-            self.dead = True
 
-        self.state = state
         self.target_x, self.target_y = new_position
         self._set_target(steps)
 
-        self.set_img()
+        self.image = self.get_img(new_state, self.state)
+        self.state = new_state
 
 
 class SteveManager:
