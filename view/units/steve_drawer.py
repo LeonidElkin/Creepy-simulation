@@ -47,7 +47,7 @@ class SteveDrawer(EntityDrawer):
         """
         if state == SteveState.Dead:
             image = self.drawer.image_provider.steve_image_grave
-        elif state == SteveState.Born:
+        elif state == SteveState.Walk:
             image = self.drawer.image_provider.steve
         else:
             logger.error(f"invalid steve state {self.state}")

@@ -11,7 +11,7 @@ class StevesParams final : public UnitsParams {
   * @enum State
   * @brief Possible states of a Steve.
    */
-  enum class State : std::uint8_t { Born, Dead };
+  enum class State : std::uint8_t { Walk, Dead };
   /**
   * @brief Constructs the StevesParams object.
   * @param moveRadius Movement radius for Steve units.
@@ -29,7 +29,7 @@ class StevesParams final : public UnitsParams {
  */
 class Steve final : public Unit {
   std::shared_ptr<StevesParams> params_;
-  StevesParams::State state_{StevesParams::State::Born};
+  StevesParams::State state_{StevesParams::State::Walk};
 
  public:
  /**

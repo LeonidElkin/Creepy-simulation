@@ -14,7 +14,7 @@ TEST(Steve, InitTest) {
   auto steve = Steve(1, steveParams);
   EXPECT_EQ(steve.getCoord().x, point.x);
   EXPECT_EQ(steve.getCoord().y, point.y);
-  EXPECT_EQ(steve.getState(), StevesParams::State::Born);
+  EXPECT_EQ(steve.getState(), StevesParams::State::Walk);
 }
 
 TEST(Steve, DeadTest) {
