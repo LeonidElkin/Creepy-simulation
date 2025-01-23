@@ -21,28 +21,68 @@ using namespace pybind11::literals;
 
 class SimulationProvider {
   Simulation original_;
-  std::optional<std::future<void>> future_;
+  volatile bool algoRunning_ = false;
+  volatile bool dataReady_ = true;
+  std::jthread thread_;
 
  public:
-  explicit SimulationProvider(Simulation simulation) : original_(std::move(simulation)) {}
+  explicit SimulationProvider(Simulation simulation) : original_(std::move(simulation)) {
+    thread_ = std::jthread([this](const std::stop_token& stopToken) {
+      while (true) {
+        if (stopToken.stop_requested()) {
+          return;
+        }
+        if (algoRunning_) {
+          DLOG(INFO) << "Start algo update";
+          original_.updateField();
+          DLOG(INFO) << "End algo update";
+          algoRunning_ = false;
+          dataReady_ = true;
+        } else {
+          std::this_thread::yield();
+        }
+      }
+    });
+  }
 
   auto runUpdateSimulation() {
-    future_ = std::async(std::launch::async, [this] { original_.updateField(); });
+    if (algoRunning_) {
+      throw std::runtime_error("Field is already updating");
+    }
+    dataReady_ = false;
+    algoRunning_ = true;
   }
 
-  void waitUpdateSimulation() const { future_->wait(); }
+  void waitUpdateSimulation() const {
+    while (!dataReady_) {
+    }
+  }
 
-  CreepersManager& getCreepersManager() { return original_.getCreepersManager(); }
-  StevesManager& getStevesManager() { return original_.getStevesManager(); }
+  CreepersManager& getCreepersManager() {
+    if (!dataReady_) {
+      throw std::runtime_error("SimulationProvider::getCreepersManager() called while data is updating");
+    }
+    return original_.getCreepersManager();
+  }
+  StevesManager& getStevesManager() {
+    if (!dataReady_) {
+      throw std::runtime_error("SimulationProvider::getStevesManager() called while data is updating");
+    }
+    return original_.getStevesManager();
+  }
 
-  SimulationProvider& setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+  void setBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    if (!dataReady_) {
+      throw std::runtime_error("SimulationProvider::setBedrock() called while data is updating");
+    }
     original_.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
-    return *this;
   }
 
-  SimulationProvider& deleteBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+  void deleteBedrock(const py::tuple& leftDownBound, const py::tuple& rightUpBound) {
+    if (!dataReady_) {
+      throw std::runtime_error("SimulationProvider::deleteBedrock() called while data is updating");
+    }
     original_.deleteBedrock(boundsToRectangle(leftDownBound, rightUpBound));
-    return *this;
   }
 };
 
@@ -105,8 +145,8 @@ PYBIND11_MODULE(creepers_lib, handle) {
             return fabric.setBedrock(boundsToRectangle(leftDownBound, rightUpBound));
           },
           "left_down_bound"_a, "right_up_bound"_a)
-      .def("build", [](SimulationFabric& fabric) { return SimulationProvider(fabric.build()); });
-  py::class_<SimulationProvider>(handle, "Simulation")
+      .def("build", [](SimulationFabric& fabric) { return std::make_shared<SimulationProvider>(fabric.build()); });
+  py::class_<SimulationProvider, std::shared_ptr<SimulationProvider>>(handle, "Simulation")
       .def("run_update_field", &SimulationProvider::runUpdateSimulation)
       .def("wait_update_field", &SimulationProvider::waitUpdateSimulation)
       .def("get_creepers_manager", &SimulationProvider::getCreepersManager)

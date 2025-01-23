@@ -56,6 +56,7 @@ class RunningGame:
         print(self.app.creepers_params)
 
         self.simulation = simulationFabric.build()
+        logger.info("Simulation initialized")
 
     def algo_update(self, thao):
         """
